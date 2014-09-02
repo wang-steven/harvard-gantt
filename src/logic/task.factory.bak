@@ -1,0 +1,374 @@
+gantt.factory('Task', ['dateFunctions', function (df) {
+    var Task = function(id, row, subject, color, classes, priority, from, to, data, est, lct) {
+        var self = this;
+
+        self.id = id;
+        self.gantt = row.gantt;
+        self.row = row;
+        self.subject = subject+'('+id+')';
+        self.color = color;
+        self.classes = classes;
+        self.priority = priority;
+        self.from = df.clone(from);
+        self.to = df.clone(to);
+        self.process = data.process;
+        self.job = data.job;
+        self.previousOperation = data.previousOperation;
+        self.nextOperations = data.nextOperations;
+        self.data = data;
+        self.dirty = false;
+        self.openLightbox = false;
+        self.openContextMenu = false;
+
+        if(est !== undefined && lct !== undefined){
+            self.est = df.clone(est);  //Earliest Start Time
+            self.lct = df.clone(lct);  //Latest Completion Time
+        }
+
+        self.checkIfMilestone = function() {
+            self.isMilestone = self.from - self.to === 0;
+        };
+        self.checkIfFinished = function() {
+            self.isFinished = !!data.finished;
+            //self.isMoving = !self.isFinished;
+        };
+        self.checkIfPin = function() {
+            self.isPin = !!data.pin;
+        };
+        self.checkParallelFrom = function() {
+            if (self.isParallel === true && data.s2sMins >= 0) {
+                self.parallelFrom = df.clone(data.expectedSetupFinishTime);
+                self.parallelFrom = df.addMinutes(self.parallelFrom, data.s2sMins);
+            } else {
+                self.parallelFrom = df.clone(self.to);
+                self.isParallel = false;
+            }
+        };
+        self.checkIfParallel = function() {
+            self.isParallel = !!data.parallel;
+            self.checkParallelFrom();
+        };
+        self.rejectMoving = function() {
+            self.dirty = false;
+            self.from = df.clone(self.data.expectedStartTime);
+            self.to = df.clone(self.data.expectedFinishTime);
+            if (self.isParallel === true) {
+                self.parallelFrom = df.clone(self.data.expectedSetupFinishTime);
+                self.parallelFrom = df.addMinutes(self.parallelFrom, data.s2sMins);
+            } else {
+                self.parallelFrom = self.to;
+            }
+            self.row.setMinMaxDateByTask(self);
+            self.updatePosAndSize();
+            self.checkIfMilestone();
+        };
+        // self.updateIfOverlapInTheSameRow = function( task ) {
+        //     if (task !== undefined) {
+        //         var tasksMap = self.row.tasksMap, jobsMap = self.gantt.jobsMap, i, j, k, l, timestamp = false, width = 0;
+        //         // If really overlap.
+        //         if (task.from < self.to && task.to > self.from) {
+        //             // Whatever is parallel or pin, there is no rule to overlap.
+        //             // Need to wait when "previousOperation" is done.
+        //             // And this task must wait the previous task and also its previous are done if needed.
+
+        //             // Tasks in the same job.
+        //             if (task.job.id === self.job.id) {
+        //                 if (task.nextOperations.length > 0 &&
+        //                     task.nextOperations.indexOf(self.id) >= 0) {
+        //                     width = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(self.from);
+        //                         self.from = task.to;
+        //                         self.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.from) + width, true);
+        //                         self.row.setMinMaxDateByTask(self);
+        //                         self.updatePosAndSize();
+        //                         self.checkIfMilestone();
+        //                         return self;
+        //                 } else if (self.previousOperation === task.id ||
+        //                     (self.nextOperations.length > 0 &&
+        //                     self.nextOperations.indexOf(task.id) >= 0)) {
+        //                         width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                         task.from = self.to;
+        //                         task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.from) + width, true);
+        //                         task.row.setMinMaxDateByTask(task);
+        //                         task.updatePosAndSize();
+        //                         task.checkIfMilestone();
+        //                         return task;
+        //                 } else if (tasksMap[self.row.id] === undefined ||
+        //                     tasksMap[self.row.id][task.previousOperation] === undefined ||
+        //                     (tasksMap[self.row.id][task.previousOperation].nextOperations.length > 0 &&
+        //                      tasksMap[self.row.id][task.previousOperation].nextOperations.indexOf(task.id) < 0)) {
+        //                         width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                         task.to = self.from;
+        //                         task.from = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.to) - width, true);
+        //                         task.row.setMinMaxDateByTask(task);
+        //                         task.updatePosAndSize();
+        //                         task.checkIfMilestone();
+
+        //                         return task;
+        //                 } else {
+        //                     return false;
+        //                 }
+        //             } else {
+        //                 // Check if tasks are different job.
+        //                 // If needWaitPrevProcess is true, need to wait all previous process are done.
+        //                 if (task.process.previousProcesses.indexOf(self.process.id) >= 0) {
+        //                     // Check the operations in previous process last datetime.
+        //                     timestamp = false;
+        //                     if (jobsMap[self.job.id] !== undefined &&
+        //                         jobsMap[self.job.id].tasks !== undefined &&
+        //                         jobsMap[self.job.id].tasks.length > 0) {
+        //                         for (k = 0, l = jobsMap[self.job.id].tasks.length - 1; l >= k; l--) {
+        //                             if (jobsMap[self.job.id].tasks[l].isFinished === true) continue;
+        //                             timestamp = jobsMap[self.job.id].tasks[l].to;
+        //                             break;
+        //                         }
+        //                     }
+        //                     if (timestamp === false) timestamp = self.to;
+        //                     width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                     task.from = timestamp;
+        //                     task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.from) + width, true);
+        //                     task.row.setMinMaxDateByTask(task);
+        //                     task.updatePosAndSize();
+        //                     task.checkIfMilestone();
+        //                     return task;
+        //                 } else if(self.process.previousProcesses.indexOf(task.process.id) >= 0) {
+        //                     width = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(self.from);
+        //                     self.from = task.to;
+        //                     self.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.from) + width, true);
+        //                     self.row.setMinMaxDateByTask(self);
+        //                     self.updatePosAndSize();
+        //                     self.checkIfMilestone();
+        //                     return self;
+        //                 }
+        //                 return false;
+        //             }
+        //         } else {
+        //             console.log(task.id, self.id);
+        //             // Not overlap, check the tasks.
+        //             // Tasks in the same job.
+        //             if (task.job.id === self.job.id) {
+        //                 if (self.to < task.from && task.nextOperations.indexOf(self.id) >= 0) {
+        //                     width = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(self.from);
+        //                     self.from = task.to;
+        //                     self.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.to) + width, true);
+        //                     self.row.setMinMaxDateByTask(self);
+        //                     self.updatePosAndSize();
+        //                     self.checkIfMilestone();
+        //                     return self;
+        //                 }
+        //             } else {
+        //                 // Not the same job but must wait for previous process done.
+        //                 if (task.process.previousProcesses.indexOf(self.process.id) >= 0) {
+        //                     timestamp = false;
+        //                     if (jobsMap[self.job.id] !== undefined &&
+        //                         jobsMap[self.job.id].tasks !== undefined &&
+        //                         jobsMap[self.job.id].tasks.length > 0) {
+        //                         for (k = 0, l = jobsMap[self.job.id].tasks.length - 1; l >= k; l--) {
+        //                             if (jobsMap[self.job.id].tasks[l].isFinished === true) continue;
+        //                             if (task.from <= jobsMap[self.job.id].tasks[l].to) {
+        //                                 timestamp = jobsMap[self.job.id].tasks[l].to;
+        //                                 break;
+        //                             }
+        //                         }
+        //                     }
+        //                     if (timestamp !== false) {
+        //                         width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                         task.from = timestamp;
+        //                         task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.from) + width, true);
+        //                         task.row.setMinMaxDateByTask(task);
+        //                         task.updatePosAndSize();
+        //                         task.checkIfMilestone();
+        //                         return task;
+        //                     } else {
+        //                         return false;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return false;
+        // };
+        // self.updateIfOverlapInTheSameJobs = function( task ) {
+        //     if (task !== undefined) {
+        //         var tasksMap = self.row.tasksMap, jobsMap = self.gantt.jobsMap, i, j, k, l, timestamp = false, width = 0;
+        //         // If really overlap.
+        //         if (task.from < self.to && task.to > self.from) {
+        //             // If the first Task allow parallel.
+        //             width = df.clone(self.data.expectedSetupFinishTime);
+        //             if (self.data.s2sMins >= 0) {
+        //                 width = df.addMinutes(width, self.data.s2sMins);
+        //             }
+        //             if (self.isParallel === true) {
+        //                 if (task.from <= width) {
+        //                     width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                     task.from = df.clone(self.data.expectedSetupFinishTime);
+        //                     task.from = (self.data.s2sMins >= 0) ? df.addMinutes(task.from, self.data.s2sMins) : task.from;
+        //                     task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.from) + width, true);
+        //                     task.row.setMinMaxDateByTask(task);
+        //                     task.updatePosAndSize();
+        //                     task.checkIfMilestone();
+
+        //                     return task;
+        //                 } else {
+        //                     return false;
+        //                 }
+        //             } else if (task.isParallel === true) {
+        //                 return false;
+        //             } else {
+        //                 if (self.nextOperations.length > 0 &&
+        //                     self.nextOperations.indexOf(task.id) >= 0) {
+        //                     width = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //                     task.from = self.to;
+        //                     task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.from) + width, true);
+        //                     task.row.setMinMaxDateByTask(task);
+        //                     task.updatePosAndSize();
+        //                     task.checkIfMilestone();
+
+        //                     return task;
+        //                 } else if (task.nextOperations.length > 0 &&
+        //                     task.nextOperations.indexOf(self.id) >= 0) {
+        //                     width = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(self.from);
+        //                     self.from = task.to;
+        //                     self.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.from) + width, true);
+        //                     self.row.setMinMaxDateByTask(self);
+        //                     self.updatePosAndSize();
+        //                     self.checkIfMilestone();
+
+        //                     return self;
+        //                 }
+        //             }
+        //         } else {
+        //             // If not overlap but priority is changed.
+        //             console.log(2, task.id, self.id);
+        //             // If the first Task allow parallel.
+        //             // width = df.clone(task.data.expectedSetupFinishTime);
+        //             // if (task.data.s2sMins >= 0) {
+        //             //     width = df.addMinutes(width, task.data.s2sMins);
+        //             // }
+        //             // if (task.isParallel === true && self.from <= width) {
+        //             //     width = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(self.from);
+        //             //     self.from = df.clone(task.data.expectedSetupFinishTime);
+        //             //     self.from = df.addMinutes(self.from, task.data.s2sMins);
+        //             //     self.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.from) + width, true);
+        //             //     self.row.setMinMaxDateByTask(self);
+        //             //     self.updatePosAndSize();
+        //             //     self.checkIfMilestone();
+
+        //             //     return task;
+        //             // }
+        //         }
+        //     }
+        //     // if (task !== undefined && task.id !== self.id) {
+        //     //     // If tasks dateline overlap or wait previous process, check the previous task dateline.
+        //     //     if (task.from < self.to && task.to > self.from ||
+        //     //         data.process.needWaitPrevProcess === true && task.id === data.previousOperation && task.to > self.to || task.data.process.needWaitPrevProcess === true && task.data.previousOperation === self.id && task.to <= self.from) {
+        //     //         // If need wait previous process, check the previous task dateline.
+        //     //         if (data.process.needWaitPrevProcess === true && task.id === data.previousOperation && (task.to > self.to || task.to > self.from)) {
+        //     //             shift = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //     //             task.from = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.from) - shift, true);
+        //     //             task.to = self.from;
+        //     //         // If need wait previous process, check the previous task dateline.
+        //     //         } else if (task.data.process.needWaitPrevProcess === true && task.data.previousOperation === self.id && task.to <= self.from) {
+        //     //             shift = self.gantt.getPositionByDate(task.to) - self.gantt.getPositionByDate(task.from);
+        //     //             task.from = self.to;
+        //     //             task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(self.to) + shift, true);
+        //     //         } else {
+        //     //             shift = self.gantt.getPositionByDate(self.to) - self.gantt.getPositionByDate(task.from);
+        //     //             task.from = self.to;
+        //     //             task.to = self.gantt.getDateByPosition(self.gantt.getPositionByDate(task.to) + shift, true);
+        //     //         }
+        //     //         task.row.setMinMaxDateByTask(task);
+        //     //         task.updatePosAndSize();
+        //     //         task.checkIfMilestone();
+
+        //     //         return true;
+        //     //     }
+        //     // }
+        //     return false;
+        // };
+
+        self.checkIfMilestone();
+        self.checkIfFinished();
+        self.checkIfPin();
+        self.checkIfParallel();
+
+        self.hasBounds = function() {
+            return self.bounds !== undefined;
+        };
+
+        // Updates the pos and size of the task according to the from - to date
+        self.updatePosAndSize = function() {
+            self.left = self.gantt.getPositionByDate(self.from);
+            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
+
+            if (self.est !== undefined && self.lct !== undefined) {
+                self.bounds = {};
+                self.bounds.left = self.gantt.getPositionByDate(self.est);
+                self.bounds.width = Math.round((self.gantt.getPositionByDate(self.lct) - self.bounds.left) * 10) / 10;
+            }
+        };
+
+        // Expands the start of the task to the specified position (in em)
+        self.setFrom = function(x) {
+            if (x > self.left + self.width) {
+                x = self.left + self.width;
+            } else if (x < 0) {
+                x = 0;
+            }
+
+            self.from = self.gantt.getDateByPosition(x, true);
+            self.row.setMinMaxDateByTask(self);
+            self.updatePosAndSize();
+            self.checkIfMilestone();
+        };
+
+        // Expands the end of the task to the specified position (in em)
+        self.setTo = function(x) {
+            if (x < self.left) {
+                x = self.left;
+            } else if (x > self.gantt.width) {
+                x = self.gantt.width;
+            }
+
+            self.to = self.gantt.getDateByPosition(x, false);
+            self.row.setMinMaxDateByTask(self);
+            self.updatePosAndSize();
+            self.checkIfMilestone();
+        };
+
+        // Moves the task to the specified position (in em)
+        self.moveTo = function(x) {
+            if (x < 0) {
+                x = 0;
+            } else if (x + self.width >= self.gantt.width) {
+                x = self.gantt.width - self.width;
+            }
+
+            self.from = self.gantt.getDateByPosition(x, true);
+            self.left = self.gantt.getPositionByDate(self.from);
+
+            self.to = self.gantt.getDateByPosition(self.left + self.width, false);
+            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
+
+            self.row.setMinMaxDateByTask(self);
+        };
+
+        self.copy = function(task) {
+            self.subject = task.subject;
+            self.color = task.color;
+            self.classes = task.classes;
+            self.priority = task.priority;
+            self.from = df.clone(task.from);
+            self.to = df.clone(task.to);
+            self.est = task.est !== undefined ? df.clone(task.est): undefined;
+            self.lct = task.lct !== undefined ? df.clone(task.lct): undefined;
+            data = task.data;
+            self.isMilestone = task.isMilestone;
+        };
+
+        self.clone = function() {
+            return new Task(self.id, self.row, self.subject, self.color, self.classes, self.priority, self.from, self.to, data, self.est, self.lct);
+        };
+    };
+
+    return Task;
+}]);

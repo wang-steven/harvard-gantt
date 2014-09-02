@@ -1,0 +1,486 @@
+.gantt {
+    width: 100%;
+    line-height: 1;
+}
+
+.gantt-scrollable {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.gantt-context-menu .dropdown-menu {
+    position: relative;
+    display: inherit;
+}
+
+.gantt-context-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    z-index: 999999999;
+}
+
+.gantt-head, .gantt-labels {
+    cursor: default;
+}
+
+.gantt-labels {
+    float: left;
+    border-right: 1px solid #dddddd;
+}
+
+.gantt-labels-head {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #dddddd;
+}
+
+.gantt-labels-body {
+    overflow: hidden;
+}
+
+.gantt-head {
+    overflow: hidden;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+}
+
+.gantt-head-row, .gantt-labels-head-row {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    height: 2em;
+    white-space: nowrap;
+}
+
+.gantt-head-row-bottom {
+    border-bottom: 1px solid #dddddd;
+}
+
+.gantt-head-row span {
+    position: absolute;
+    border-right: 1px solid #dddddd;
+}
+
+.gantt-labels-row span, .gantt-labels-head-row span, .gantt-head-row span {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    display: inline-block;
+    height: 2em;
+    text-align: center;
+    padding-top: 0.5em;
+    overflow: hidden;
+    text-overflow: clip;
+}
+.gantt-labels-row-description-dept-and-machine span:first-child {
+    min-width: 40%;
+    text-align: left;
+}
+
+.gantt-labels-row span, .gantt-labels-head-row {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.gantt-labels-head-row {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.gantt-labels-row {
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.gantt-body {
+    position: relative;
+    width: 100%;
+}
+
+.gantt-body-background {
+    position: absolute;
+    width: 100%;
+}
+
+.gantt-body-foreground {
+    position: absolute;
+    height: 100%;
+}
+
+.gantt-foreground-col, .gantt-foreground-col-weekend, .gantt-foreground-col-nonworkhour {
+    position: absolute;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+	display: inline-block;
+    height: 100%;
+    border-right: 1px solid #dddddd;
+}
+
+.gantt-foreground-col-weekend, .gantt-foreground-col-nonworkhour {
+    background-color: rgba(200, 200, 200, 0.3);
+}
+
+.gantt-background-row-alt {
+	background-color: #EFEFEF;
+}
+
+.gantt-row {
+    position: relative;
+}
+
+/* Move row to top when hovering to ensure its tooltips
+     appear above other tasks which may have higher z-index.  */
+.gantt-row:hover {
+    z-index: 999999;
+}
+
+.gantt-row-height {
+    height: 2em;
+}
+
+.gantt-task {
+	position: absolute;
+    margin: auto;
+    top: 0; bottom: 0;
+    min-width: 0.6em;
+    height: 80%;
+    background-color: grey;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.8) inset;
+    -moz-box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.8) inset;
+    -o-box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.8) inset;
+    -ms-box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.8) inset;
+    box-shadow: 0 0 1px 1px rgba(100, 100, 100, 0.8) inset;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: move;
+}
+.gantt-task-highlight {
+    -webkit-box-shadow: 0 0 1px 1px rgba(255, 0, 0, 0.8);
+    -moz-box-shadow: 0 0 1px 1px rgba(255, 0, 0, 0.8);
+    -o-box-shadow: 0 0 1px 1px rgba(255, 0, 0, 0.8);
+    -ms-box-shadow: 0 0 1px 1px rgba(255, 0, 0, 0.8);
+    box-shadow: 0 0 1px 1px rgba(255, 0, 0, 0.8);
+}
+.gantt-task-milestone {
+    position: absolute;
+    margin: auto;
+    top: 0; bottom: 0;
+    width: 0.6em !important;
+    height: 80%;
+    background-color: grey;
+    border-radius: 0.3em;
+}
+
+.gantt-task-content {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 0.3em;
+    overflow: hidden;
+}
+
+.gantt-task-content span  {
+    display: inline-block;
+    white-space: nowrap;
+    /*text-overflow: ellipsis;*/
+}
+
+.gantt-task-info, .gantt-task-context-menu, .tooltip-on-task-machine {
+    position: fixed;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    padding: 9px 12px;
+    opacity: 0;
+}
+.tooltip-on-task-machine {
+    z-index: 999;
+}
+
+.gantt-task-info-content {
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gantt-task-is-pin, .gantt-task-is-finished {
+    color: red;
+}
+
+.gantt-task-infoArrow:before, .gantt-task-infoArrowR:before {
+    position: absolute;
+    top: 100%;
+    width: 0px; height: 0px;
+    border-top: 8px solid rgba(0, 0, 0, 0.1);
+    border-right: 8px solid transparent;
+    border-left: 8px solid transparent;
+    content: '';
+}
+
+.gantt-task-infoArrow:before {
+    left: 10px;
+}
+
+.gantt-task-infoArrowR:before {
+    right: 10px;
+}
+
+.gantt-task-infoArrow:after, .gantt-task-infoArrowR:after {
+    position: absolute;
+    top: 100%;
+    width: 0px; height: 0px;
+    border-top: 7px solid #ffffff;
+    border-right: 7px solid transparent;
+    border-left: 7px solid transparent;
+    content: '';
+}
+
+.gantt-task-infoArrow:after {
+    left: 11px;
+}
+
+.gantt-task-infoArrowR:after {
+    right: 11px;
+}
+
+.gantt-task-bounds {
+    height:125%;
+    top:-12.5%;
+    position: absolute;
+    z-index: 99;
+    border-left: 1px dashed;
+    border-right: 1px dashed;
+    pointer-events: none;
+}
+.gantt-task-bounds::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 1px;
+    background: transparent;
+    box-shadow: 0 0 2px red;
+}
+.gantt-task-bounds::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 1px;
+    background: transparent;
+    box-shadow: 0 0 2px red;
+}
+/*
+.gantt-task-bounds-in {
+    border-color: #2E4F2E;
+}
+.gantt-task-bounds-out {
+    border-color: #FF6347;
+}
+
+.tree-node {
+    border: 1px solid #dae2ea;
+    background: #f8faff;
+    color: #7c9eb2;
+}
+.tree-node-content {
+    margin: 10px;
+}
+.tree-handle {
+    padding: 10px;
+    background: #428bca;
+    color: #FFF;
+    margin-right: 10px;
+}
+
+/* Flow chart and other lightbox */
+.gantt-job-flowchart,
+.gantt-tasks-on-mahcine-ui-tree,
+.gantt-add-new-task,
+.gantt-task-editor,
+.task-information,
+.task-show-on-processing-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    color: white;
+}
+.gantt-job-flowchart svg {
+    overflow: hidden;
+    background: #ffffff;
+    margin: 1em auto;
+    display: block;
+}
+
+.gantt-job-flowchart .node rect {
+    stroke: #333333;
+    stroke-width: 1.5px;
+    fill: #ffffff;
+}
+
+.gantt-job-flowchart .edgeLabel rect {
+    fill: #ffffff;
+}
+
+.gantt-job-flowchart .edgePath {
+    stroke: #333333;
+    stroke-width: 1.5px;
+    fill: none;
+}
+.gantt-job-flowchart .flow-chart-subject {
+    color: #353535;
+}
+.gantt-tasks-on-mahcine-ui-tree {
+    overflow: scroll;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.gantt-tasks-on-mahcine-ui-tree .tree-node-table {
+    width: 200em;
+    margin: 4em auto 0;
+    background: white;
+    color: #333333;
+
+}
+.gantt-tasks-on-mahcine-ui-tree tbody {
+    width: 100%;
+}
+.gantt-tasks-on-mahcine-ui-tree th {
+    height: 4em;
+    background: #efefef;
+}
+.gantt-tasks-on-mahcine-ui-tree th, td {
+    border-bottom: 1px solid #333333;
+}
+.gantt-tasks-on-mahcine-ui-tree p {
+    margin-bottom: 0;
+}
+.gantt-tasks-on-mahcine-ui-tree .node-ui-odd-row {
+    background: rgba(102, 204, 194, 0.8);
+}
+.gantt-tasks-on-mahcine-ui-tree .node-ui-odd-row-alt {
+    background: white;
+}
+.gantt-tasks-on-mahcine-ui-tree .node-ui-odd-row,
+.gantt-tasks-on-mahcine-ui-tree .node-ui-odd-row-alt,
+.angular-ui-tree-nodes {
+    min-height: 4em;
+}
+.angular-ui-tree-nodes {
+    background: rgba(249, 145, 87, 0.8);
+}
+.gantt-tasks-on-mahcine-ui-tree input { display: inline-block; width: 90%; color: black; }
+.gantt-tasks-on-mahcine-ui-tree .task-id,
+.angular-ui-tree-nodes .task-id { width: 10em; text-align: center; padding: 1.5em 0; display: none; }
+.gantt-tasks-on-mahcine-ui-tree .task-subject,
+.angular-ui-tree-nodes .task-subject { width: 10em; text-align: center; }
+
+.gantt-tasks-on-mahcine-ui-tree .task-pono,
+.angular-ui-tree-nodes .task-pono { width: 10em; text-align: center; padding: 1.5em 0; }
+.gantt-tasks-on-mahcine-ui-tree .task-code,
+.angular-ui-tree-nodes .task-code { width: 10em; text-align: center; padding: 1.5em 0; }
+.gantt-tasks-on-mahcine-ui-tree .task-jobtype,
+.angular-ui-tree-nodes .task-jobtype { width: 10em; text-align: center; padding: 1.5em 0; }
+.gantt-tasks-on-mahcine-ui-tree .task-quantity,
+.angular-ui-tree-nodes .task-quantity { width: 10em; text-align: center; padding: 1.5em 0; }
+
+.gantt-tasks-on-mahcine-ui-tree .task-data,
+.angular-ui-tree-nodes .task-data { width: 20em; text-align: left; }
+.gantt-tasks-on-mahcine-ui-tree .task-from,
+.angular-ui-tree-nodes .task-from { width: 17em; text-align: left; }
+.gantt-tasks-on-mahcine-ui-tree .task-to,
+.angular-ui-tree-nodes .task-to { width: 17em; text-align: left; }
+.gantt-tasks-on-mahcine-ui-tree .task-minutes,
+.angular-ui-tree-nodes .task-minutes { width: 4em; text-align: center; }
+.gantt-tasks-on-mahcine-ui-tree .task-pin,
+.angular-ui-tree-nodes .task-pin { width: 3em; text-align: center; }
+.angular-ui-tree-nodes .task-pin input { width: 1em; }
+
+.gantt-tasks-on-mahcine-ui-tree .btn {
+    margin: 1em auto;
+}
+.gantt-tasks-on-mahcine-ui-tree .float-buttons {
+    position: fixed;
+    left: 1em;
+    top: 1em;
+    overflow: hidden;
+}
+.gantt-add-new-task .panel-default,
+.gantt-task-editor .panel-default {
+    color: #333333;
+}
+
+.gantt-add-new-task,
+.gantt-task-editor {
+    bottom: 0;
+    overflow: auto;
+}
+
+#modifyTask_poNo_dropdown {
+    overflow: hidden
+    height: 10em
+}
+.task-show-on-processing-lightbox .table {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+.task-show-on-processing-lightbox .table .table-cell {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+div.tooltip-on-task-machine-table {
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+}
+table.tooltip-on-task-machine-table {
+    border: 0 none;
+    border-spacing: 0.5em;
+    border-collapse: separate;
+}
+table.tooltip-on-task-machine-table th {
+    font-size: 1.2em;
+    text-align: center;
+}
+table.tooltip-on-task-machine-table td {
+    border: 0 none;
+    font-size: 1em;
+}
+ul.tooltip-on-task-machine-contextmenu {
+    list-style: none;
+    padding: 0 0 0 1em;
+    margin: 0;
+}
+ul.tooltip-on-task-machine-contextmenu li {
+    padding: 0;
+    margin: 0;
+    line-height: 1.2em;
+}

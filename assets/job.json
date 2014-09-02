@@ -1,0 +1,426 @@
+[ {
+  "job" : {
+    "id" : 577
+  },
+  "operationQueue" : [ {
+    "id" : 29766,
+    "operationCode" : "ggg-G",
+    "priority" : 200,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29765,
+    "nextOperations" : [ 29767 ],
+    "runOnMachineId" : 1,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 2,
+      "code" : "PT",
+      "descript" : "PT",
+      "displayNames" : "PT",
+      "needMachine" : true,
+      "priority" : 2
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 90,
+    "productionTime" : 13,
+    "productionCapacity" : 31,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : false,
+    "parallelCode" : null,
+    "new" : false,
+    "expectedStartTime" : "2014-06-19T08:00:00.000",
+    "expectedSetupFinishTime" : "2014-06-19T09:30:00.000",
+    "expectedFinishTime" : "2014-06-19T09:43:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29767,
+    "operationCode" : "ggg-G",
+    "priority" : 200,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29766,
+    "nextOperations" : [ 29769, 29770, 29771, 29772, 29768 ],
+    "runOnMachineId" : 1,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 2,
+      "code" : "PT",
+      "descript" : "PT",
+      "displayNames" : "PT",
+      "needMachine" : true,
+      "priority" : 2
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 90,
+    "productionTime" : 13,
+    "productionCapacity" : 31,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : false,
+    "parallelCode" : null,
+    "new" : false,
+    "expectedStartTime" : "2014-06-19T09:44:00.000",
+    "expectedSetupFinishTime" : "2014-06-19T11:14:00.000",
+    "expectedFinishTime" : "2014-06-19T11:27:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29768,
+    "operationCode" : "ggg-G",
+    "priority" : 500,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29767,
+    "nextOperations" : [ 29769 ],
+    "runOnMachineId" : 7,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 5,
+      "code" : "MID_MAG_MTL",
+      "descript" : "MID_MAG_MTL",
+      "displayNames" : "Mid Mag",
+      "needMachine" : true,
+      "priority" : 5
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 30,
+    "productionTime" : 56,
+    "productionCapacity" : 7,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "1",
+    "new" : false,
+    "expectedStartTime" : "2014-06-19T11:28:00.000",
+    "expectedSetupFinishTime" : "2014-06-19T11:58:00.000",
+    "expectedFinishTime" : "2014-06-19T12:54:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29769,
+    "operationCode" : "ggg-G",
+    "priority" : 600,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29768,
+    "nextOperations" : [ 29770 ],
+    "runOnMachineId" : 12,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 6,
+      "code" : "MID_LAM_SYSCO",
+      "descript" : "MID_LAM_SYSCO",
+      "displayNames" : "Mid Lam",
+      "needMachine" : true,
+      "priority" : 6
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 0,
+    "productionTime" : 1,
+    "productionCapacity" : 2147483647,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "1",
+    "new" : false,
+    "expectedStartTime" : "2014-06-19T12:55:00.000",
+    "expectedSetupFinishTime" : "2014-06-19T12:55:00.000",
+    "expectedFinishTime" : "2014-06-19T12:56:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29770,
+    "operationCode" : "ggg-G",
+    "priority" : 700,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29769,
+    "nextOperations" : [ 29771 ],
+    "runOnMachineId" : 16,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 7,
+      "code" : "MID_LAM_COLLATE",
+      "descript" : "MID_LAM_COLLATE",
+      "displayNames" : "Mid Lam",
+      "needMachine" : true,
+      "priority" : 7
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 30,
+    "productionTime" : 43,
+    "productionCapacity" : 9,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "1",
+    "new" : false,
+    "expectedStartTime" : "2014-06-19T12:57:00.000",
+    "expectedSetupFinishTime" : "2014-06-19T13:27:00.000",
+    "expectedFinishTime" : "2014-06-19T14:10:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29771,
+    "operationCode" : "ggg-G",
+    "priority" : 800,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29770,
+    "nextOperations" : [ 29772 ],
+    "runOnMachineId" : 17,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 8,
+      "code" : "MID_LAM_OASYS",
+      "descript" : "MID_LAM_OASYS",
+      "displayNames" : "Mid Lam",
+      "needMachine" : true,
+      "priority" : 8
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 240,
+    "productionTime" : 78,
+    "productionCapacity" : 5,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "1",
+    "new" : false,
+    "expectedStartTime" : "2014-06-20T08:00:00.000",
+    "expectedSetupFinishTime" : "2014-06-20T12:00:00.000",
+    "expectedFinishTime" : "2014-06-20T13:18:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29772,
+    "operationCode" : "ggg-G",
+    "priority" : 900,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2954,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29765, 29766, 29767, 29769, 29770, 29771, 29772, 29768 ],
+      "previousProcesses" : [ ]
+    },
+    "previousOperation" : 29771,
+    "nextOperations" : [ ],
+    "runOnMachineId" : 20,
+    "quantity" : 386,
+    "processingType" : "GANG",
+    "factoryOperation" : {
+      "id" : 9,
+      "code" : "MID_DIE_CAR25",
+      "descript" : "MID_DIE_CAR25",
+      "displayNames" : "Mid Die Cut",
+      "needMachine" : true,
+      "priority" : 9
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 15,
+    "productionTime" : 78,
+    "productionCapacity" : 5,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "1",
+    "new" : false,
+    "expectedStartTime" : "2014-06-20T13:19:00.000",
+    "expectedSetupFinishTime" : "2014-06-20T13:34:00.000",
+    "expectedFinishTime" : "2014-06-20T14:52:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29761,
+    "operationCode" : "1460935B",
+    "priority" : 2100,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2952,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29759, 29761, 29762, 29760 ],
+      "previousProcesses" : [ 2954 ]
+    },
+    "previousOperation" : 29760,
+    "nextOperations" : [ 29762 ],
+    "runOnMachineId" : 30,
+    "quantity" : 12345,
+    "processingType" : "JOB_FILE",
+    "factoryOperation" : {
+      "id" : 19,
+      "code" : "PZ_VERSA",
+      "descript" : "PZ_VERSA",
+      "displayNames" : "PZ",
+      "needMachine" : true,
+      "priority" : 21
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 40,
+    "productionTime" : 43,
+    "productionCapacity" : 292,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "B",
+    "new" : false,
+    "expectedStartTime" : "2014-06-20T14:53:00.000",
+    "expectedSetupFinishTime" : "2014-06-20T15:33:00.000",
+    "expectedFinishTime" : "2014-06-20T16:16:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29762,
+    "operationCode" : "1460935B",
+    "priority" : 2300,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2952,
+      "needWaitPrevProcess" : true,
+      "operations" : [ 29759, 29761, 29762, 29760 ],
+      "previousProcesses" : [ 2954 ]
+    },
+    "previousOperation" : 29761,
+    "nextOperations" : [ ],
+    "runOnMachineId" : 39,
+    "quantity" : 12345,
+    "processingType" : "JOB_FILE",
+    "factoryOperation" : {
+      "id" : 23,
+      "code" : "QA",
+      "descript" : "QA",
+      "displayNames" : "QA",
+      "needMachine" : true,
+      "priority" : 23
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 15,
+    "productionTime" : 40,
+    "productionCapacity" : 312,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "B",
+    "new" : false,
+    "expectedStartTime" : "2014-06-20T16:17:00.000",
+    "expectedSetupFinishTime" : "2014-06-20T16:32:00.000",
+    "expectedFinishTime" : "2014-06-20T17:12:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  }, {
+    "id" : 29764,
+    "operationCode" : "1460933B",
+    "priority" : 3000,
+    "job" : {
+      "id" : 577
+    },
+    "process" : {
+      "id" : 2953,
+      "needWaitPrevProcess" : false,
+      "operations" : [ 29764, 29763 ],
+      "previousProcesses" : [ 2952 ]
+    },
+    "previousOperation" : 29763,
+    "nextOperations" : [ ],
+    "runOnMachineId" : 66,
+    "quantity" : 12345,
+    "processingType" : "JOB_FILE",
+    "factoryOperation" : {
+      "id" : 30,
+      "code" : "PK_AUTO",
+      "descript" : "PK_AUTO",
+      "displayNames" : "Packing",
+      "needMachine" : true,
+      "priority" : 30
+    },
+    "jobFile" : null,
+    "pin" : false,
+    "setupTime" : 120,
+    "productionTime" : 100,
+    "productionCapacity" : 124,
+    "finished" : false,
+    "inProcessing" : false,
+    "parallel" : true,
+    "parallelCode" : "B",
+    "new" : false,
+    "expectedStartTime" : "2014-06-21T08:00:00.000",
+    "expectedSetupFinishTime" : "2014-06-21T10:00:00.000",
+    "expectedFinishTime" : "2014-06-21T11:40:00.000",
+    "actualStartTime" : null,
+    "actualSteupFinishTime" : null,
+    "actualFinishTime" : null
+  } ]
+} ]

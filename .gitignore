@@ -1,0 +1,9 @@
+.idea
+.DS_Store
+online
+node_modules
+bower_components
+*.sublime-*
+*.swp
+HtmlGantt.iml
+

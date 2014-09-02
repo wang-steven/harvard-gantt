@@ -1,0 +1,580 @@
+<div class="gantt">
+    <div class="gantt-labels">
+         <!-- ng-style="(labelsWidth > 0 && {'width': labelsWidth+'px'} || {})"
+         gantt-label-resizable="labelsWidth" gantt-label-resize-min="50" on-label-resized="raiseLabelsResized(width)" > -->
+        <div class="gantt-labels-head"
+             ng-show="gantt.columns.length > 0">
+            <div class="gantt-labels-head-row"
+                 ng-click="raiseLabelHeaderClickedEvent($event)"
+                 ng-dblclick="raiseLabelHeaderDblClickedEvent($event)"
+                 gantt-right-click="raiseLabelHeaderContextMenuEvent($event)"
+                 ng-style="{'height': '4em'}">
+                <span style="padding-top:0;height:auto;">Department and Machines</span>
+                <gantt-department ng-model="gantt.departmentMap"></gantt-department>
+            </div>
+        </div>
+        <div class="gantt-labels-body"
+             ng-style="(maxHeight > 0 && {'max-height': (maxHeight-ganttHeader.offsetHeight)+'px'} || {})"
+             ng-show="gantt.columns.length > 0">
+            <div gantt-vertical-scroll-receiver
+                 ng-style="{'position': 'relative'}">
+                <div class="gantt-labels-row gantt-row-height"
+                     ng-class-odd="'gantt-background-row'"
+                     ng-class-even="'gantt-background-row-alt'"
+                     ng-click="raiseLabelClickedEvent($event, row)"
+                     ng-dblclick="raiseLabelDblClickedEvent($event, row)"
+                     gantt-right-click="raiseLabelContextMenuEvent($event, row)"
+                     ng-repeat="row in gantt.rows | ganttColumnPaginationLimit:gantt.columnPagination:gantt.columnPage track by $index"
+                     ng-if="row.showup === true">
+                    <gantt-sortable swap="swapRows(a,b)" active="allowRowSorting" ng-model="row">
+                        <div class="gantt-labels-row-description-dept-and-machine">
+                            <span>{{ row.department.name }}</span>
+                            <span>{{ row.description }}</span>
+                        </div>
+                    </gantt-sortable>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gantt-head"
+         ng-show="gantt.columns.length > 0">
+        <div gantt-horizontal-scroll-receiver
+             ng-style="{'position': 'relative', 'width': gantt.width+'em'}">
+            <div class="gantt-head-row" ng-class="'gantt-head-row-bottom'" ng-if="gantt.headers.month !== undefined && gantt.headers.week === undefined && gantt.headers.day === undefined && gantt.headers.minute === undefined">&nbsp;</div>
+            <div class="gantt-head-row"
+                 ng-class="((gantt.headers.week !== undefined || gantt.headers.day !== undefined) && 'gantt-head-row-bottom' || '')"
+                 ng-if="gantt.headers.month !== undefined">
+                <span ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                      ng-repeat="c in gantt.headers.month | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                    {{ c.date | date:'MMMM yyyy' }}
+                </span>
+            </div>
+            <div class="gantt-head-row" ng-if="gantt.headers.week !== undefined">
+                <span ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                      ng-repeat="c in gantt.headers.week | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                    {{ c.week }}
+                </span>
+            </div>
+            <div class="gantt-head-row"
+                ng-class="(gantt.headers.hour !== undefined && gantt.headers.minute === undefined && 'gantt-head-row-bottom' || '')"
+                ng-if="gantt.headers.day !== undefined">
+                <span ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                      ng-repeat="c in gantt.headers.day | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                    {{ (viewScale === 'hour' || viewScale === 'minute') && (c.date | date:'dd EEEE, yyyy/MM') || (c.date | date:'dd') }}
+                </span>
+            </div>
+            <div class="gantt-head-row"
+                ng-class="(gantt.headers.minute !== undefined && 'gantt-head-row-bottom' || '')"
+                ng-if="gantt.headers.hour !== undefined">
+                <span ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                      ng-repeat="c in gantt.headers.hour | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                    {{ (viewScale === 'threehours' || viewScale === 'sixhours' || viewScale === 'eighthours' || viewScale === 'twevelhours') && ((c.date | date:'HH') + ' - ' + (c.nexthour | date:'HH')) || (c.date | date:'HH')}}
+                </span>
+            </div>
+            <div class="gantt-head-row" ng-if="gantt.headers.minute !== undefined">
+                <span ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                      ng-repeat="c in gantt.headers.minute | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                    {{ c.date | date:'mm' }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="gantt-scrollable"
+         gantt-scroll-sender
+         gantt-limit-updater
+         ng-style="(maxHeight > 0 && {'max-height': (maxHeight-ganttHeader.offsetHeight)+'px', 'overflow-y': 'scroll'} || {'overflow-y': 'hidden'})"
+         ng-style="{'overflow-x': (gantt.rows.length == 0 && 'hidden' || 'scroll')}">
+        <div class="gantt-body"
+             ng-style="{'width': gantt.width+'em'}">
+            <div class="gantt-body-background">
+                <div class="gantt-row-height"
+                     ng-class-odd="'gantt-background-row'"
+                     ng-class-even="'gantt-background-row-alt'"
+                     ng-repeat="row in gantt.rows | ganttColumnPaginationLimit:gantt.columnPagination:gantt.columnPage track by $index"
+                     ng-if="row.showup === true">
+                </div>
+            </div>
+            <div class="gantt-body-foreground">
+                <div ng-class="((viewScale === 'hour' || viewScale === 'threehours' || viewScale === 'sixhours' || viewScale === 'eighthours' || viewScale === 'twevelhours' || viewScale === 'minute') && !c.isWorkHour && 'gantt-foreground-col-nonworkhour' || (c.isWeekend && 'gantt-foreground-col-weekend' || 'gantt-foreground-col'))"
+                     ng-style="{'width': c.width+'em', 'left': c.left+'em'}"
+                     ng-repeat="c in gantt.columns | ganttColumnLimit:scroll_start:scroll_width track by $index">
+                </div>
+            </div>
+            <div class="gantt-body-content">
+                <div class="gantt-row gantt-row-height"
+                     ng-click="raiseDOMRowClickedEvent($event, row)"
+                     ng-dblclick="raiseDOMRowDblClickedEvent($event, row)"
+                     gantt-right-click="raiseDOMRowContextMenuEvent($event, row)"
+                     ng-repeat="row in gantt.rows | ganttColumnPaginationLimit:gantt.columnPagination:gantt.columnPage track by row.id"
+                     ng-if="row.showup === true">
+                    <gantt-task ng-repeat="task in row.tasks | ganttTaskLimit:scroll_start:scroll_width track by task.id"></gantt-task>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <button type="button" class="btn btn-small btn-primary btn-block" ng-click="exportGanttData()">Save</button>
+    <gantt-context-menu ng-if="gantt.contextMenu !== undefined" ng-model="gantt.contextMenu"></gantt-context-menu>
+    <gantt-machine-tasks ng-if="gantt.tasksOnMachine !== undefined"></gantt-machine-tasks>
+    <gantt-machine-tooltip ng-if="gantt.tooltipTaskOnMachine !== undefined" ng-model="gantt.tooltipTaskOnMachine"></gantt-machine-tooltip>
+    <gantt-job-flowchart ng-if="gantt.jobFlowChart !== undefined" ng-model="gantt.jobFlowChart"></gantt-job-flowchart>
+    <gantt-task-editor ng-if="gantt.enableTaskEditor !== undefined" ng-model="gantt.enableTaskEditor"></gantt-task-editor>
+    <gantt-task-information ng-if="gantt.showTaskInformation !== undefined" ng-model="gantt.showTaskInformation"></gantt-task-information>
+    <gantt-task-on-processing ng-show="gantt.showOnProcessing === true" ng-model="gantt.showOnProcessing"></gantt-task-on-processing>
+
+    <!--
+    ******* Inline templates *******
+    You can specify your own templates by either changing the default ones below or by
+    adding an attribute template-url="<url to your template>" on the specific element.
+    -->
+
+    <!-- Task template -->
+    <script type="text/ng-template" id="default.task.tmpl.html">
+        <div ng-show="task.isDeleted === false && task.showup === true" ng-class="(task.isMilestone === true && ['gantt-task-milestone'] || task.isHighlight === true && ['gantt-task-highlight','gantt-task'] || ['gantt-task']).concat(task.classes)"
+             ng-style="{'left': ((task.isMilestone === true || task.width === 0) && (task.left-0.3) || task.left)+'em', 'width': task.width +'em', 'z-index': (task.isMoving === true && 999 || task.priority || 10), 'background-color': task.color}">
+            <gantt-bounds ng-if="task.bounds !== undefined" ng-model="task"></gantt-bounds>
+            <gantt-tooltip ng-if="showTooltips && (task.isMouseOver || task.isMoving)" ng-model="task"></gantt-tooltip>
+            <div class="gantt-task-content">
+                <span ng-style="css(task.color)">
+                    {{ (task.isMilestone === true && '&nbsp;' || task.subject) }}
+                </span>
+            </div>
+        </div>
+    </script>
+
+    <!-- Task tooltip template -->
+    <!-- Move ng-if from parent to tooltip directive when https://github.com/angular/angular.js/issues/7183 is fixed -->
+    <script type="text/ng-template" id="default.tooltip.tmpl.html">
+        <div class="gantt-task-info" ng-style="css">
+            <div class="gantt-task-info-content">
+                Po#: {{ task.job.poNo }}<br>
+                Operation Code: {{ task.data.operationCode }}<br>
+                Processing Type: {{ task.data.processingType }}<br>
+                QTY: {{ task.data.quantity }}<br>
+                Duration: {{((task.to - task.from) / 1000 / 60 / 60).toFixed(2) + ' (hrs)'}}<br/>
+                <small>
+                    {{ task.isMilestone === true && (task.from | date:'MMM d, HH:mm:ss') || (task.from | date:'MMM d, HH:mm:ss') + ' - ' + (task.to | date:'MMM d, HH:mm:ss') }}
+                    <br ng-if="task.isFinished === true || task.isPin === true">
+                    <span class="gantt-task-is-pin" ng-if="task.isPin === true">
+                        <i class="glyphicon glyphicon-pushpin small"></i> Pin
+                    </span>
+                    <span class="gantt-task-is-finished" ng-if="task.isFinished === true">
+                        <i class="glyphicon glyphicon-exclamation-sign small"></i> Finished
+                    </span>
+                </small>
+            </div>
+        </div>
+    </script>
+
+    <!-- Task bounds template -->
+    <!-- Replace ng-show with ng-if when https://github.com/angular/angular.js/issues/7183 is fixed -->
+    <script type="text/ng-template" id="default.bounds.tmpl.html">
+        <div ng-show='visible' class='gantt-task-bounds' ng-style='getCss()' ng-class='getClass()'></div>
+    </script>
+
+    <script type="text/ng-template" id="gantt.processingLightbox.tmpl.html">
+    <div class="task-show-on-processing-lightbox">
+      <div class="table">
+        <div class="table-cell">
+          <h3>Processing...</h3>
+          <button type="button" ng-click="show = undefined" id="hiddenProcessing" style="display: none;">HIDE</button>
+        </div>
+      </div>
+    </div>
+    </script>
+
+    <!-- Tasks on Machine -->
+    <script type="text/ng-template" id="default.tasksonmachine.tmpl.html">
+      <div ui-tree="treeOptions" class="gantt-tasks-on-mahcine-ui-tree" data-max-depth="1">
+        <h1 class="tree-node-slogan">{{machine.description}}</h1>
+        <table class="tree-node-table" ng-style="tableWidth()">
+          <tbody ui-tree-nodes="" ng-model="machine.tasks">
+            <tr id="tree-node-table-header">
+              <th class="task-id">ID</th>
+              <th class="task-pono">PO#</th>
+              <th class="task-code">#</th>
+              <th class="task-jobtype">Job Type</th>
+              <th class="task-quantity">Quantity</th>
+              <th class="task-code" ng-repeat="th in extentionTh">{{ th }}</th>
+              <th class="task-from">From</th>
+              <th class="task-to">To</th>
+              <th class="task-minutes">Mins.</th>
+              <th class="task-pin">Pin</th>
+            </tr>
+            <tr class="machine-task-node" ng-repeat="(index, task) in machine.tasks | ganttMachineUI2Limit track by task.id"
+            ng-if="task.isFinished === false && task.inProcessing === false && task.isDeleted === false"
+            ui-tree-node=""
+            data-task-id="{{ task.id }}"
+            ng-style="css(task.color)"
+            ng-include="'default.ui-tree.tmpl.html'"></tr>
+          </tbody>
+        </table>
+        <div class="float-buttons">
+          <button class="btn btn-default" type="button" ng-click="gantt.tasksOnMachine = undefined; gantt.tooltipTaskOnMachine = undefined">Close</button>
+        </div>
+      </div>
+    </script>
+    <script type="text/ng-template" id="default.ui-tree.tmpl.html">
+      <td ui-tree-handle class="task-id">{{ task.id }}</td>
+      <td ui-tree-handle class="task-pono">{{ task.job.poNo}}</td>
+      <td ui-tree-handle class="task-code">{{ task.data.operationCode }}</td>
+      <td ui-tree-handle class="task-jobtype">{{ task.data.processingType }}</td>
+      <td ui-tree-handle class="task-quantity">{{ task.data.quantity }}</td>
+      <td ui-tree-handle  class="task-code"  ng-repeat="(i, th) in extentionTh">{{ task.tooltips.ui[i] }}</td>
+      <td class="task-from"><input type="datetime-local" value="{{ task.from | date:'yyyy-MM-ddTHH:mm' }}" ng-blur="changeTaskFrom()"></td>
+      <td class="task-to"><input type="datetime-local" value="{{ task.to | date:'yyyy-MM-ddTHH:mm' }}" ng-blur=""></td>
+      <td class="task-minutes"><input type="number" value="{{ (task.to - task.from) / 60000 }}" size="4" ng-blur=""></td>
+      <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" value="pin" ng-blur=""></td>
+    </script>
+    <script type="text/ng-template" id="gantt.tooltiponmachine.tmpl.html">
+      <div class="tooltip-on-task-machine" ng-style="css">
+      <!--
+        <table class="tooltip-on-task-machine-table">
+          <tbody>
+            <tr>
+              <th colspan="2">{{ taskTitle }}</th>
+            </tr>
+            <tr ng-repeat="(i, head) in taskInformation.head track by $index">
+              <td class="item">{{ head }}</td><td class="value">{{ taskInformation.data[i] }}</td>
+            </tr>
+          </tobdy>
+        </table>
+        <hr>
+        -->
+        <ul class="tooltip-on-task-machine-contextmenu">
+          <li><a href="#" ng-click="task.isPin = !task.isPin">{{ task.isPin === true &&  'Pined' || 'Pin' }}</a></li>
+          <li><a href="#" ng-click="task.isFinish = !task.isFinish">{{ task.isFinish === true && 'Finished' || 'Finish' }}</a></li>
+          <li><a href="#" ng-click="editThisTask(task)">Edit Task</a></li>
+          <li><a href="#" ng-click="showTaskJobFlow(task)">Show Job Flow</a></li>
+          <li><a href="#" ng-click="showThisTaskInformation(task)">More Information</a></li>
+        </ul>
+        <hr>
+        <ul class="tooltip-on-task-machine-contextmenu">
+          <li><a href="#" ng-click="deleteThisTask(task)">Delete</a></li>
+        </ul>
+      </div>
+    </script>
+
+    <!-- Flow Chart template -->
+    <script type="text/ng-template" id="default.flowchart.tmpl.html">
+      <div class="gantt-job-flowchart" ng-style="css">
+        <h3 class="flow-chart-subject">JOB: {{ job.id }}</h3>
+        <svg id="gantt-job-flowchart-svg" width="100%" height="400">
+          <g transform="translate(20,20)">
+        </svg>
+        <button class="btn btn-default" type="button" ng-click="job.gantt.jobFlowChart = undefined">Close</button>
+      </div>
+    </script>
+
+    <!-- Context Menu template -->
+    <script type="text/ng-template" id="default.contentmenu.tmpl.html">
+      <div class="gantt-context-menu" ng-style="{top: menu.event.clientY+'px', left: menu.event.clientX+'px'}">
+        <ul class="dropdown-menu" role="menu">
+          <li ng-repeat="item in menu.items" class="{{ item.key === 'divider' ? item.key : '' }}"><a ng-if="item.key !== 'divider'" ng-click="contextMenuLink(menu.type, menu.target, item.key, menu.element)" href="#">{{ item.name }}</a></li>
+        </ul>
+      </div>
+    </script>
+
+    <!-- Department template -->
+    <script type="text/ng-template" id="default.department.tmpl.html">
+      <form role="form" class="form-inline">
+        <div class="form-group">
+          <select class="form-control" ng-model="ganttDepartmentFilter" ng-init="ganttDepartmentFilter=-1">
+            <option label="Select Dept." value="-1">Select Dept.</option>
+            <option ng-repeat="row in departmentMap" label="{{ row.name }}" value="{{ $index }}">{{ row.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <select class="form-control" ng-model="ganttSubDepartmentFilter" ng-init="ganttSubDepartmentFilter=-1">
+            <option label="Select Subdept." value="-1">Select Subdept.</option>
+            <option ng-repeat="(key, row) in departmentMap[ganttDepartmentFilter].sub" label="{{ row.name }}" value="{{ key }}">{{ row.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <ul class="pagination" style="margin: 0;">
+            <li><a href="#" ng-click="previousColumnPage()"><i class="glyphicon glyphicon-chevron-left"></i></a></li>
+            <li><a href="#">{{ columnPage }}</a></li>
+            <li><a href="#" ng-click="nextColumnPage()"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
+          </ul>
+        </div>
+      </form>
+    </script>
+    <!-- Task Information -->
+    <script type="text/ng-template" id="gantt.information.tmpl.html">
+      <div class="task-information">
+        <iframe ng-src="checkUrl()" width="100%" height="90%"></iframe>
+        <button class="btn btn-default" type="button" ng-click="gantt.showTaskInformation = undefined">Close</button>
+      </div>
+    </script>
+    <!-- Edit Task -->
+    <script type="text/ng-template" id="gantt.taskEditor.tmpl.html">
+      <div class="gantt-task-editor container-fluid" ng-style="css">
+        <div class="row">
+          <div class="col-md-2">&nbsp;</div>
+          <div class="col-md-8">
+            <h1></h1>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Task Information</h3>
+              </div>
+              <div class="panel-body">
+                <form class="form-horizontal" id="editForm" ng-model="editTask" name="taskEditorForm">
+                  <input type="hidden" name="modifyTask_rowId" ng-model="editTask.rowId" value="{{ editTask.rowId }}">
+                  <input type="hidden" name="modifyTask_taskId" ng-model="editTask.taskId" value="{{ editTask.taskId }}">
+                  <input type="hidden" name="modifyTask_fuzzyPoNo" ng-model="editTask.fuzzyPoNo" value="{{ editTask.fuzzyPoNo }}">
+                  <input type="hidden" name="modifyTask_PoId" ng-model="editTask.poId" value="{{ editTask.poId }}">
+                  <div class="form-group">
+                    <label for="poNo" class="col-lg-2 control-label">PO# </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.type === 'Edit'">
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="modifyTask_poNo" id="modifyTask_poNo_dropdown">
+                          <li role="presentation" ng-model="poFuzzySearch" ng-repeat="poNo in poFuzzySearch">
+                            <a role="menuitem" tabindex="-1" href="#{{ poNo.value }}" ng-click="toggleFuzzyDropdown(poNo.value)">{{ poNo.label }}</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <label for="ComboId" class="col-lg-2 control-label">ComboId </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" ng-options="combo.value as combo.label for combo in editTask.comboList" required required ng-disabled="editTask.type === 'Edit'">
+                          <option label="Select Combo" value="">Select Combo</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="productId" class="col-lg-2 control-label">Product </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_productId" ng-model="editTask.productId" ng-options="product.value as product.label for product in editTask.productList" required required ng-disabled="editTask.type === 'Edit'">
+                          <option label="Select Product" value="">Select Product</option>
+                        </select>
+                      </div>
+                    </div>
+                    <label for="process.id" class="col-lg-2 control-label">Process </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_processId" ng-model="editTask.processId" ng-options="process.value as process.label for process in editTask.processList" required required ng-disabled="editTask.type === 'Edit'">
+                          <option label="Select Process" value="">Select Process</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="factoryOperationGroup" class="col-lg-2 control-label">Operation Group </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <input class="form-control" name="modifyTask_factoryOperationGroup" ng-model="editTask.factoryOperation.displayNames" required disabled="disabled">
+                      </div>
+                    </div>
+                    <label for="factoryOperation.id" class="col-lg-2 control-label">Operation </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <input class="form-control" name="modifyTask_factoryOperationCode" ng-model="editTask.factoryOperation.code" required disabled="disabled">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-if="editTask.type === 'New'">
+                    <label for="previousOperation" class="col-lg-2 control-label">Previous Task </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_previousTask" ng-model="editTask.previousTask" ng-options="task.value as task.label for task in editTask.previousOperation" required>
+                          <option label="Select Previous" value="">Select Previous</option>
+                        </select>
+                      </div>
+                    </div>
+                    <label for="nextOperation" class="col-lg-2 control-label">Next Task </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_nextTask" ng-model="editTask.nextTask" ng-options="task.value as task.label for task in editTask.nextOperation" required>
+                          <option label="Select Next" value="">Select Next</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="processingType" class="col-lg-2 control-label">Processing Type </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <select class="form-control" name="modifyTask_processingType" ng-model="editTask.processingType" required>
+                          <option value="GANG" ng-selected="editTask.processingType === 'GANG'">Gang</option>
+                          <option value="JOB" ng-selected="editTask.processingType === 'JOB'">Job</option>
+                          <option value="JOB_FILE" ng-selected="editTask.processingType === 'JOB_FILE'">Job File</option>
+                        </select>
+                      </div>
+                    </div>
+                    <label for="operationCode" class="col-lg-2 control-label">Operation Code </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <input type="text" class="form-control" name="modifyTask_operationCode" ng-model="editTask.operationCode" value="{{ editTask.operationCode }}" required></input>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="pin" class="col-lg-2 control-label" title="Pin">Pin</label>
+                    <div class="col-lg-2">
+                      <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required>
+                        <option value="false" ng-selected="editTask.isPin === false">N</option>
+                        <option value="true" ng-selected="editTask.isPin === true">Y</option>
+                      </select>
+                    </div>
+                    <label for="finished" class="col-lg-2 control-label" title="Finish">Finish</label>
+                    <div class="col-lg-2">
+                      <select class="form-control" name="modifyTask_isFinished" id="finished" ng-model="editTask.isFinished" required>
+                        <option value="false" ng-selected="editTask.isFinished === false">N</option>
+                        <option value="true" ng-selected="editTask.isFinished === true">Y</option>
+                      </select>
+                    </div>
+                    <label for="inProcessing" class="col-lg-2 control-label" title="In Processing">In Processing</label>
+                    <div class="col-lg-2">
+                      <select class="form-control" name="modifyTask_inProcessing" id="inProcessing" ng-model="editTask.inProcessing" required>
+                        <option value="false" ng-selected="editTask.inProcessing === false">N</option>
+                        <option value="true" ng-selected="editTask.inProcessing === true">Y</option>
+                      </select>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="priority" class="col-lg-3 control-label">Priority </label>
+                    <div class="col-lg-3">
+                      <div class="input-group">
+                        <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required disabled="disabled">
+                      </div>
+                      <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="up" class="col-lg-3 control-label">Up </label>
+                    <div class="col-lg-3">
+                      <div class="input-group">
+                        <span class="input-group-addon">PDT</span>
+                        <input type="text" class="form-control" id="up" name="modifyTask_up" ng-model="editTask.up" value="{{ editTask.up }}" placeholder="Up" ng-required="editTask.processingType === 'GANG'">
+                        <span class="input-group-addon">SHT</span>
+                        <input type="text" class="form-control" id="sheetUp" name="modifyTask_sheetUp" ng-model="editTask.sheetUp" value="{{ editTask.sheetUp }}"  placeholder="Sheet Up">
+                      </div>
+                      <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="parallel " class="col-lg-3 control-label">Parallel </label>
+                    <div class="col-lg-3">
+                      <select class="form-control" name="modifyTask_isParallel" id="parallel" ng-model="editTask.isParallel">
+                        <option value="false" ng-selected="editTask.isParallel === false">N</option>
+                        <option value="true" ng-selected="editTask.isParallel === true">Y</option>
+                      </select>
+                      <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="parallelCode" class="col-lg-3 control-label">Parallel Code </label>
+                    <div class="col-lg-3">
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="parallelCode" name="modifyTask_parallelCode" ng-model="editTask.parallelCode" value="{{ editTask.parallelCode }}" ng-required="editTask.isParallel === true">
+                      </div>
+                      <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="s2sMins" class="col-lg-3 control-label">Start to Start Minutes</label>
+                    <div class="col-lg-3">
+                      <input type="number" class="form-control" id="s2sMins" name="modifyTask_s2sMins" ng-model="editTask.s2sMins" value="{{ editTask.s2sMins }}">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="timeclockEmployeeId" class="col-lg-3 control-label">EmployeeId </label>
+                    <div class="col-lg-3">
+                      <input type="number" class="form-control" id="timeclockEmployeeId" name="modifyTask_timeclockEmployeeId" ng-model="editTask.timeclockEmployeeId" value="{{ editTask.timeclockEmployeeId }}">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="expectedStartTime" class="col-lg-3 control-label">Expect Start </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="expectedStartTime" name="modifyTask_expectedStartTime" placeholder="yyyy-MM-ddThh:mm" ng-model="editTask.expectedStartTime" value="{{ editTask.expectedStartTime | date: 'yyyy-MM-ddThh:mm' }}">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="expectedSetupFinishTime" class="col-lg-3 control-label">Expect Setup Finish </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="expectedSetupFinishTime" name="modifyTask_expectedSetupFinishTime" placeholder="yyyy-MM-ddThh:mm" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy-MM-ddThh:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="expectedFinishTime" class="col-lg-3 control-label">Expect Production Finish </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="expectedFinishTime" name="modifyTask_expectedFinishTime" placeholder="yyyy-MM-ddThh:mm" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy-MM-ddThh:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="quantity" class="col-lg-3 control-label">Expect Quantity </label>
+                    <div class="col-lg-3">
+                      <input type="number" class="form-control" id="quantity" name="modifyTask_quantity" placeholder="Expect Quantity"
+                         ng-model="editTask.quantity" value="{{ editTask.quantity }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group" style="display: none;">
+                    <label for="runOnMachineId" class="col-lg-3 control-label">Expect Machine </label>
+                    <div class="col-lg-3">
+                      <input type="text" class="form-control" name="modifyTask_runOnMachineId" id="runOnMachineId" ng-model="editTask.runOnMachineId" value="{{ editTask.runOnMachineId }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" disabled="disabled">
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="actualStartTime" class="col-lg-3 control-label">Actual Start </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="actualStartTime" name="modifyTask_actualStartTime" ng-model="editTask.actualStartTime" placeholder="yyyy-MM-ddThh:mm" value="{{ editTask.actualStartTime | date: 'yyyy-MM-ddThh:mm' }}" ng-required="editTask.inProcessing === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="actualSetupFinishTime" class="col-lg-3 control-label">Actual Setup Finish </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="actualSetupFinishTime" name="modifyTask_actualSetupFinishTime" ng-model="editTask.actualSetupFinishTime" placeholder="yyyy-MM-ddThh:mm" value="{{ editTask.actualSetupFinishTime | date: 'yyyy-MM-ddThh:mm' }}" ng-required="editTask.inProcessing === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="actualFinishTime" class="col-lg-3 control-label">Actual Production Finish </label>
+                    <div class="col-lg-3">
+                      <input type="datetime-local" class="form-control" id="actualFinishTime" name="modifyTask_actualFinishTime" ng-model="editTask.actualFinishTime" placeholder="yyyy-MM-ddThh:mm" value="{{ editTask.actualFinishTime | date: 'yyyy-MM-ddThh:mm' }}" ng-required="editTask.inProcessing === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                    <label for="actualQuantity" class="col-lg-3 control-label">Actual Quantity </label>
+                    <div class="col-lg-3">
+                      <input type="number" class="form-control" id="actualQuantity" name="modifyTask_actualQuantity" placeholder="Actual Quantity"
+                         ng-model="editTask.actualQuantity" value="{{ editTask.actualQuantity }}" ng-required="editTask.inProcessing === true">
+                        <span class="help-block"><div class="text-danger"></div></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group" style="display: none;">
+                    <label for="actualRunOnMachineId" class="col-lg-3 control-label">Actual Machine </label>
+                    <div class="col-lg-3">
+                      <input type="text" class="form-control" name="modifyTask_actualRunOnMachineId" id="actualRunOnMachineId" ng-model="editTask.actualRunOnMachineId" value="{{ editTask.actualRunOnMachineId }}" ng-required="editTask.inProcessing === true" disabled="disabled">
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="btn-group btn-group-justified">
+                <a href="#" class="btn btn-lg btn-primary btn-block" data-loading-text="Loading" id="saveButton" ng-click="saveTaskEditor()">
+                  <span class="glyphicon glyphicon-save"></span>&nbsp;Save
+                </a>
+                <a href="#" class="btn btn-lg btn-warning btn-block" data-loading-text="Loading" id="cancelButton" ng-click="disableTaskEditor()">
+                  <span class="glyphicon glyphicon-share-alt"></span>&nbsp;Close
+                </a>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-md-2">&nbsp;</div>
+        </div>
+      </div>
+    </script>
+</div>

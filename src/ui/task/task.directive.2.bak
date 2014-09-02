@@ -1,0 +1,1141 @@
+gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 'debounce', 'dateFunctions', 'mouseOffset', 'mouseButton', 'binarySearch', '_', function ($window, $document, $timeout, smartEvent, debounce, df, mouseOffset, mouseButton, bs, _) {
+    return {
+        restrict: "E",
+        templateUrl: function (tElement, tAttrs) {
+            if (tAttrs.templateUrl === undefined) {
+                return "default.task.tmpl.html";
+            } else {
+                return tAttrs.templateUrl;
+            }
+        },
+        replace: true,
+        controller: ['$scope', '$element', function ($scope, $element) {
+            var resizeAreaWidthBig = 5;
+            var resizeAreaWidthSmall = 3;
+            var scrollSpeed = 15;
+            var scrollTriggerDistance = 5;
+
+            var windowElement = angular.element($window);
+            var ganttBodyElement = $element.parent().parent();
+            var ganttScrollElement = ganttBodyElement.parent().parent();
+            var taskHasBeenChanged = false;
+            var mouseOffsetInEm;
+            var moveStartX;
+            var scrollInterval;
+            var rejectTaskMoving = false;
+
+            $element.bind('mousedown', function (e) {
+                $scope.gantt.contextMenu = undefined;
+                if ($scope.task.isFinished === true || $scope.task.inProcessing === true) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                } else {
+                    $scope.$apply(function() {
+                        var mode = getMoveMode(e);
+                        if (mode !== "" && mouseButton.getButton(e) === 1) {
+                            var offsetX = mouseOffset.getOffsetForElement(ganttBodyElement[0], e).x;
+                            enableMoveMode(mode, offsetX);
+
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+
+            $element.bind('click', function (e) {
+                $scope.$apply(function() {
+                    $scope.gantt.contextMenu = undefined;
+                    // Only raise click event if there was no task update event
+                    if (!taskHasBeenChanged) {
+                        toggleTaskHighlight();
+                        $scope.raiseTaskClickedEvent(e, $scope.task);
+                    }
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            });
+
+            $element.bind('dblclick', function (e) {
+                $scope.$apply(function() {
+                    // Only raise dbl click event if there was no task update event
+                    if (!taskHasBeenChanged) {
+                        $scope.raiseTaskDblClickedEvent(e, $scope.task);
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            });
+
+            $element.bind('contextmenu', function (e) {
+                $scope.$apply(function() {
+                    // Only raise click event if there was no task update event
+                    $scope.gantt.jobFlowChart = undefined;
+                    if (!taskHasBeenChanged) {
+                        $scope.gantt.contextMenu = {
+                            event: e,
+                            type: 'task',
+                            target: $scope.task,
+                            items: [
+                                { key: 'pin', name: ($scope.task.isPin === true ? 'Unpin' : 'Pin') },
+                                { key: 'finished', name: ($scope.task.isFinished === true ? 'Finished' : 'Finish') },
+                                { key: 'add', name: 'Create Task' },
+                                { key: 'edit', name: 'Edit' },
+                                { key: 'flowchart', name: 'Show Job Flow' },
+                                { key: 'info', name: 'Show Information' },
+                                { key: 'divider', name: '' },
+                                { key: 'delete', name: 'Delete' }
+                            ]
+                        };
+                        $scope.raiseTaskContextMenuEvent(e, $scope.task);
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            });
+
+            $element.bind("mousemove", debounce(function (e) {
+                var mode = getMoveMode(e);
+                if (mode !== "" && mode !== "M") {
+                    $element.css("cursor", getCursor(mode));
+                } else {
+                    $element.css("cursor", '');
+                }
+
+                $scope.task.mouseX = e.clientX;
+            }, 5));
+
+            $element.bind('mouseenter', function (e) {
+                $scope.$apply(function() {
+                    $scope.task.mouseX = e.clientX;
+                    $scope.task.isMouseOver = true;
+                });
+            });
+
+            $element.bind('mouseleave', function () {
+                $scope.$apply(function() {
+                    $scope.task.isMouseOver = false;
+                });
+            });
+
+            var handleMove = function(mode, mousePos) {
+                if ($scope.task.isMoving === false) {
+                    return;
+                }
+
+                moveTask(mode, mousePos);
+                scrollScreen(mode, mousePos);
+            };
+
+            var moveTask = function(mode, mousePos) {
+                $scope.task.mouseOffsetX = mousePos.x;
+                var xInEm = mousePos.x / $scope.getPxToEmFactor();
+                if (mode === "M") {
+                    if ($scope.allowTaskRowSwitching) {
+                        var targetRow = getRowByY(mousePos.y);
+                        if (targetRow !== undefined &&
+                            $scope.task.row.id !== targetRow.id &&
+                            targetRow.showup === true) {
+                            targetRow.moveTaskToRow($scope.task);
+                        }
+                    }
+
+                    if ($scope.allowTaskMoving) {
+                        $scope.task.moveTo(xInEm - mouseOffsetInEm);
+                    }
+                } else if (mode === "E") {
+                    $scope.task.setTo(xInEm);
+                } else {
+                    $scope.task.setFrom(xInEm);
+                }
+
+                taskHasBeenChanged = true;
+            };
+
+            var scrollScreen = function(mode, mousePos) {
+                var leftScreenBorder = ganttScrollElement[0].scrollLeft;
+                var keepOnScrolling = false;
+
+                if (mousePos.x < moveStartX) {
+                    // Scroll to the left
+                    if (mousePos.x <= leftScreenBorder + scrollTriggerDistance) {
+                        mousePos.x -= scrollSpeed;
+                        keepOnScrolling = true;
+                        $scope.scrollLeft(scrollSpeed);
+                    }
+                } else {
+                    // Scroll to the right
+                    var screenWidth = ganttScrollElement[0].offsetWidth;
+                    var rightScreenBorder = leftScreenBorder + screenWidth;
+
+                    if (mousePos.x >= rightScreenBorder - scrollTriggerDistance) {
+                        mousePos.x += scrollSpeed;
+                        keepOnScrolling = true;
+                        $scope.scrollRight(scrollSpeed);
+                    }
+                }
+
+                if (keepOnScrolling) {
+                    scrollInterval = $timeout(function() { handleMove(mode, mousePos); }, 100, true);
+                }
+            };
+
+            var clearScrollInterval = function() {
+                if (scrollInterval !== undefined) {
+                    $timeout.cancel(scrollInterval);
+                    scrollInterval = undefined;
+                }
+            };
+
+            var getRowByY = function(y) {
+                //var rowHeight = ganttBodyElement[0].offsetHeight / $scope.task.row.gantt.rows.length;
+                var rowHeight = ganttBodyElement[0].offsetHeight / $scope.task.row.gantt.rowsCounter;
+                var pos = Math.floor(y / rowHeight);
+                if ($scope.task.row.gantt.rows.length === $scope.task.row.gantt.rowsCounter) {
+                    return $scope.task.row.gantt.rows[pos];
+                } else {
+                    return $scope.task.row.gantt.rows[$scope.task.row.gantt.visibleRows[pos] * 1];
+                }
+            };
+
+            var getMoveMode = function (e) {
+                var x = mouseOffset.getOffset(e).x;
+
+                var distance = 0;
+
+                // Define resize&move area. Make sure the move area does not get too small.
+                if ($scope.allowTaskResizing) {
+                    distance = $element[0].offsetWidth < 10 ? resizeAreaWidthSmall: resizeAreaWidthBig;
+                }
+
+                if ($scope.allowTaskResizing && x > $element[0].offsetWidth - distance) {
+                    return "E";
+                } else if ($scope.allowTaskResizing && x < distance) {
+                    return "W";
+                } else if (($scope.allowTaskMoving || $scope.allowTaskRowSwitching) && x >= distance && x <= $element[0].offsetWidth - distance) {
+                    return "M";
+                } else {
+                    return "";
+                }
+            };
+
+            var getCursor = function(mode) {
+                switch(mode) {
+                    case "E": return 'e-resize';
+                    case "W": return 'w-resize';
+                    case "M": return 'move';
+                }
+            };
+
+            var enableMoveMode = function (mode, x) {
+                taskHasBeenChanged = false;
+                $scope.task.isMoving = true;
+
+                moveStartX = x;
+                var xInEm = moveStartX / $scope.getPxToEmFactor();
+                mouseOffsetInEm = xInEm - $scope.task.left;
+
+                var taskMoveHandler = debounce(function(e) {
+                    var mousePos = mouseOffset.getOffsetForElement(ganttBodyElement[0], e);
+                    clearScrollInterval();
+                    handleMove(mode, mousePos);
+                }, 5);
+                smartEvent($scope, windowElement, 'mousemove', taskMoveHandler).bind();
+
+                smartEvent($scope, windowElement, 'mouseup', function() {
+                    $scope.$apply(function() {
+                        windowElement.unbind('mousemove', taskMoveHandler);
+                        disableMoveMode();
+                    });
+                }).bindOnce();
+
+                angular.element($document[0].body).css({
+                    '-moz-user-select': '-moz-none',
+                    '-webkit-user-select': 'none',
+                    '-ms-user-select': 'none',
+                    'user-select': 'none',
+                    'cursor': getCursor(mode)
+                });
+            };
+
+            var disableMoveMode = function () {
+                $scope.task.isMoving = false;
+                clearScrollInterval();
+
+                $element.css("cursor", '');
+                angular.element($document[0].body).css({
+                    '-moz-user-select': '',
+                    '-webkit-user-select': '',
+                    '-ms-user-select': '',
+                    'user-select': '',
+                    'cursor': ''
+                });
+
+                if (taskHasBeenChanged === true) {
+                    $scope.task.row.sortTasks(); // Sort tasks so they have the right z-order
+                    checkTaskOverlap(); // Check task overlap in the same job.
+
+                    // Update original data datetime.
+                    var originSetupFinishTime = df.clone($scope.task.data.expectedSetupFinishTime) - df.clone($scope.task.data.expectedStartTime);
+                    originSetupFinishTime = df.addMilliseconds($scope.task.from, originSetupFinishTime, true);
+
+                    $scope.task.data.expectedFinishTime = $scope.task.to.toISOString();
+                    $scope.task.data.expectedStartTime = $scope.task.from.toISOString();
+                    $scope.task.data.expectedSetupFinishTime = originSetupFinishTime.toISOString();
+                    if ($scope.task.isParallel === true) {
+                        $scope.task.parallelFrom = df.addMinutes(originSetupFinishTime, $scope.task.data.s2sMins, true);
+                    } else {
+                        $scope.task.parallelFrom = $scope.task.to;
+                    }
+
+                    $scope.raiseTaskUpdatedEvent($scope.task, true);
+                }
+            };
+
+            var toggleTaskHighlight = function() {
+                var i, j, k, l, m, n, jMap = $scope.gantt.jobsMap;
+                // Turn off the highlight in all tasks and toggle tasks in the same row.
+                for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
+                    for (j = 0, m = _.keys(jMap[k[i]].tasks), n = m.length; j < n; ++j) {
+                        if (parseInt(k[i], 10) === parseInt($scope.task.job.id, 10)) {
+                            jMap[k[i]].tasks[m[j]].isHighlight = !jMap[k[i]].tasks[m[j]].isHighlight;
+                        } else {
+                            jMap[k[i]].tasks[m[j]].isHighlight = false;
+                        }
+                    }
+                }
+            };
+
+            var combineNextProcesses = function(process) {
+                var processes = [];
+                if (process.next !== undefined && process.next.length > 0) {
+                    for (i = 0, l = process.next.length; i < l; ++i) {
+                        processes = _.union(processes, process.next[i]);
+                        if (process.next[i] in $scope.gantt.processesMap) {
+                            processes = _.union(processes, combineNextProcesses($scope.gantt.processesMap[process.next[i]]));
+                        }
+                    }
+                }
+                return processes;
+            };
+
+            var detectTaskDirection = function() {
+                var shift = {
+                    left: $scope.task.from - df.clone($scope.task.data.expectedStartTime),
+                    right: $scope.task.to - df.clone($scope.task.data.expectedFinishTime)
+                };
+                // Task move to left.
+                // Task from extend to original from.
+                // Task to shorten to original to.
+                if ((shift.left < 0 && shift.right < 0) ||
+                    (shift.left < 0 && shift.right === 0) ||
+                    (shift.left === 0 && shift.right < 0)) {
+                    return 'left';
+                // Task move to right.
+                // Task from shorten to original from.
+                // Task to extend to original to.
+                } else if ((shift.left > 0 && shift.right > 0) ||
+                    (shift.left > 0 && shift.right === 0) ||
+                    (shift.left === 0 && shift.right > 0)) {
+                    return 'right';
+                }
+            };
+
+            var shiftToLeft = function(task, timestamp) {
+                var i, j, k, l, m, n, o;
+
+                for (i = 0, k = _.keys($scope.gantt.tasksMap), l = k.length; i < l; ++i) {
+                    if ($scope.gantt.tasksMap[k[i]] === undefined ||
+                        $scope.gantt.tasksMap[k[i]].isFinished === true ||
+                        $scope.gantt.tasksMap[k[i]].id === task.id) {
+                        continue;
+                    // Focus to left hand tasks.
+                    } else if ($scope.gantt.tasksMap[k[i]].from <= timestamp) {
+                        // Overlap.
+                        if (($scope.gantt.tasksMap[k[i]].from >= task.from &&
+                            $scope.gantt.tasksMap[k[i]].from < task.to) ||
+                            ($scope.gantt.tasksMap[k[i]].to >= task.from &&
+                            $scope.gantt.tasksMap[k[i]].to < task.to)) {
+                            // In the same row.
+                            if (task.row.id === $scope.gantt.tasksMap[k[i]].row.id ||
+                                $scope.gantt.tasksMap[k[i]].process.id in task.process.previousProcesses ||
+                                $scope.gantt.tasksMap[k[i]].id === task.perviousOperation ||
+                                $scope.gantt.tasksMap[k[i]].nextOperations.indexOf(task.id) >= 0) {
+
+                                if ($scope.gantt.tasksMap[k[i]].isParallel === true &&
+                                    task.row.id !== $scope.gantt.tasksMap[k[i]].row.id) {
+                                    if ($scope.gantt.tasksMap[k[i]].parallelFrom > task.from) {
+                                        task.parallelFrom = df.addMilliseconds($scope.gantt.tasksMap[k[i]].parallelFrom, task.parallelFrom - task.from, true);
+                                        task.to = df.addMilliseconds($scope.gantt.tasksMap[k[i]].parallelFrom, task.to - task.from, true);
+                                        task.from = df.clone($scope.gantt.tasksMap[k[i]].parallelFrom);
+
+                                        task.row.setMinMaxDateByTask(task);
+                                        task.updatePosAndSize();
+                                        task.checkIfMilestone();
+                                    }
+                                } else {
+                                    task.parallelFrom = df.addMilliseconds(df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true), task.parallelFrom - task.from, true);
+                                    task.to = df.addMilliseconds(df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true), task.to - task.from, true);
+                                    task.from = df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true);
+
+                                    task.row.setMinMaxDateByTask(task);
+                                    task.updatePosAndSize();
+                                    task.checkIfMilestone();
+                                }
+                            }
+                        // Not really overlap.
+                        } else {
+                            if ($scope.gantt.tasksMap[k[i]].from > task.to &&
+                                ($scope.gantt.tasksMap[k[i]].process.id in task.process.previousProcesses ||
+                                $scope.gantt.tasksMap[k[i]].id === task.perviousOperation ||
+                                $scope.gantt.tasksMap[k[i]].nextOperations.indexOf(task.id) >= 0)) {
+
+                                task.parallelFrom = df.addMilliseconds(df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true), task.parallelFrom - task.from, true);
+                                task.to = df.addMilliseconds(df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true), task.to - task.from, true);
+                                task.from = df.addMinutes($scope.gantt.tasksMap[k[i]].to, 1, true);
+
+                                task.row.setMinMaxDateByTask(task);
+                                task.updatePosAndSize();
+                                task.checkIfMilestone();
+                            }
+                        }
+                    }
+                }
+            };
+
+            // var shiftToLeft = function(task) {
+            //     var i, j, k, l, m, n, o, reject = false, nextRoundTasks = [];
+            //     // Get the task's process and check if is first task.
+            //     var process = $scope.gantt.processesMap[task.process.id];
+            //     var costomSort = function(t1, t2) { return t1.from - t2.from; };
+            //     process.tasks.sort(costomSort);
+
+            //     // Check the task if overlap.
+            //     for (i = 0, k = _.keys($scope.gantt.tasksMap), l = k.length; i < l; ++i) {
+            //         if ($scope.gantt.tasksMap[k[i]] === undefined ||
+            //             $scope.gantt.tasksMap[k[i]].isFinished === true ||
+            //             $scope.gantt.tasksMap[k[i]].id === task.id) continue;
+            //         // Force to left hand tasks.
+            //         if ($scope.gantt.tasksMap[k[i]].to <= df.clone(task.data.expectedFinishedTime)) {
+            //             // Overlap.
+            //             if ((task.from >= $scope.gantt.tasksMap[k[i]].from &&
+            //                 task.from < $scope.gantt.tasksMap[k[i]].to) ||
+            //                 (task.to >= $scope.gantt.tasksMap[k[i]].from &&
+            //                 task.to < $scope.gantt.tasksMap[k[i]].to)) {
+            //                 // If the same row.
+            //                 if (task.row.id === $scope.gantt.tasksMap[k[i]].row.id) {
+            //                     task.rejectMoving();
+            //                     reject = 1;
+            //                     break;
+            //                 } else {
+            //                     // Task Overlap and the task is previous of the moved task's process.
+            //                     if ($scope.gantt.processesMap[$scope.gantt.tasksMap[k[i]].process.id].next.indexOf(process.id) >= 0) {
+            //                         task.rejectMoving();
+            //                         reject = 2;
+            //                         break;
+            //                     } else {
+            //                         // If the same process.
+            //                         if ($scope.gantt.tasksMap[k[i]].process.id === process.id) {
+            //                             // Take the next round.
+            //                             if ($scope.gantt.tasksMap[k[i]].inProcessing === true ||
+            //                                 $scope.gantt.tasksMap[k[i]].isPin === true) {
+            //                                 task.rejectMoving();
+            //                                 reject = 3;
+            //                                 break;
+            //                             } else {
+            //                                 if (task.from <= $scope.gantt.tasksMap[k[i]].parallelFrom) {
+            //                                     if (task.isParallel === true) {
+            //                                         task.parallelFrom = df.addMilliseconds($scope.gantt.tasksMap[k[i]].parallelFrom, task.parallelFrom - task.from, true);
+            //                                     } else {
+            //                                         task.parallelFrom = $scope.gantt.tasksMap[k[i]].parallelFrom;
+            //                                     }
+            //                                     task.to = df.addMilliseconds($scope.gantt.tasksMap[k[i]].parallelFrom, task.to - task.from, true);
+            //                                     task.from = $scope.gantt.tasksMap[k[i]].parallelFrom;
+            //                                 }
+            //                             }
+            //                         } else {
+            //                             // Accept task move.
+            //                             // if (task.isParallel === true) {
+            //                             //     task.parallelFrom = df.addMilliseconds($scope.gantt.tasksMap[k[i]].to, task.parallelFrom - task.from, true);
+            //                             // } else {
+            //                             //     task.parallelFrom = $scope.gantt.tasksMap[k[i]].to;
+            //                             // }
+            //                             // task.to = df.addMilliseconds($scope.gantt.tasksMap[k[i]].to, task.from - task.to, true);
+            //                             // task.from = $scope.gantt.tasksMap[k[i]].to;
+            //                         }
+            //                     }
+            //                 }
+            //             } else {
+            //                 // Check if the task move overlap in all the previous processes.
+            //                 for (j = 0, n = process.previous.length; j < n; ++j) {
+            //                     m = $scope.gantt.processesMap[process.previous[j]].tasks.sort(costomSort);
+            //                     if (m.length > 0 && m[(m.length - 1)].parallelFrom > task.from) {
+            //                         task.rejectMoving();
+            //                         reject = 4;
+            //                         break;
+            //                     }
+            //                 }
+            //                 // If the task moved overlap all the previous processes.
+            //                 if (reject !== false) {
+            //                     task.rejectMoving();
+            //                     break;
+            //                 } else {
+            //                     // Accept task move.
+            //                     // if (task.isParallel === true) {
+            //                     //     task.parallelFrom = df.addMilliseconds($scope.gantt.tasksMap[k[i]].to, task.parallelFrom - task.from, true);
+            //                     // } else {
+            //                     //     task.parallelFrom = $scope.gantt.tasksMap[k[i]].to;
+            //                     // }
+            //                     // task.to = df.addMilliseconds($scope.gantt.tasksMap[k[i]].to, task.from - task.to, true);
+            //                     // task.from = $scope.gantt.tasksMap[k[i]].to;
+            //                 }
+            //             }
+            //         }
+            //     }
+
+            //     if (reject !== false) {
+            //         task.rejectMoving();
+            //         return reject;
+            //     } else {
+            //         task.row.setMinMaxDateByTask(task);
+            //         task.updatePosAndSize();
+            //         task.checkIfMilestone();
+
+            //         if (nextRoundTasks.length > 0) {
+            //             for (i = 0, l = nextRoundTasks.lenght; i < l; ++i) {
+            //                 if ((reject = shiftToLeft(nextRoundTasks[i])) !== false) {
+            //                     nextRoundTasks[i].rejectMoving();
+            //                 } else {
+            //                     nextRoundTasks[i].row.setMinMaxDateByTask(nextRoundTasks[i]);
+            //                     nextRoundTasks[i].updatePosAndSize();
+            //                     nextRoundTasks[i].checkIfMilestone();
+            //                 }
+            //             }
+            //         }
+            //     }
+
+            //     return reject;
+            //     return false;
+            // };
+
+            var shiftToRight = function(task, timestamp) {
+                var i, j, k, l, m, n, o, nextRoundTasks = [];
+                // // Get the task's process and check if is first task.
+                // var process = $scope.gantt.processesMap[task.process.id];
+                // var costomSort = function(t1, t2) { return t1.from - t2.from; };
+                // process.tasks.sort(costomSort);
+
+                for (i = 0, k = _.keys($scope.gantt.tasksMap), l = k.length; i < l; ++i) {
+                    if ($scope.gantt.tasksMap[k[i]] === undefined ||
+                        $scope.gantt.tasksMap[k[i]].isFinished === true ||
+                        $scope.gantt.tasksMap[k[i]].id === task.id) {
+                        continue;
+                    // Focus to right hand tasks.
+                    } else if ($scope.gantt.tasksMap[k[i]].from >= timestamp) {
+                        // Overlap.
+                        if ((task.from >= $scope.gantt.tasksMap[k[i]].from &&
+                            task.from < $scope.gantt.tasksMap[k[i]].to) ||
+                            (task.to >= $scope.gantt.tasksMap[k[i]].from &&
+                            task.to < $scope.gantt.tasksMap[k[i]].to)) {
+                            console.log('overlap', $scope.gantt.tasksMap[k[i]].id);
+                            // If task is pin or processing, reject the move.
+                            if ($scope.gantt.tasksMap[k[i]].isPin === true ||
+                                $scope.gantt.tasksMap[k[i]].inProcessing === true) {
+                                rejectTaskMoving = true;
+                                return [];
+                            }
+
+                            // If the same row, or self process is in the task's previous processes.
+                            if (task.row.id === $scope.gantt.tasksMap[k[i]].row.id ||
+                                task.id === $scope.gantt.tasksMap[k[i]].perviousOperation ||
+                                $scope.gantt.tasksMap[k[i]].process.previousProcesses.indexOf(task.process.id) >= 0 ||
+                                task.nextOperations.indexOf($scope.gantt.tasksMap[k[i]].id) >= 0) {
+
+                                if (task.isParallel === true && task.row.id !== $scope.gantt.tasksMap[k[i]].row.id) {
+                                    if (task.parallelFrom > $scope.gantt.tasksMap[k[i]].from) {
+                                        $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(df.addMinutes(task.parallelFrom, 1, true), $scope.gantt.tasksMap[k[i]].parallelFrom - $scope.gantt.tasksMap[k[i]].from, true);
+                                        $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(df.addMinutes(task.parallelFrom, 1, true), $scope.gantt.tasksMap[k[i]].to - $scope.gantt.tasksMap[k[i]].from, true);
+                                        $scope.gantt.tasksMap[k[i]].from = df.addMinutes(task.parallelFrom, 1, true);
+
+                                        $scope.gantt.tasksMap[k[i]].row.setMinMaxDateByTask($scope.gantt.tasksMap[k[i]]);
+                                        $scope.gantt.tasksMap[k[i]].updatePosAndSize();
+                                        $scope.gantt.tasksMap[k[i]].checkIfMilestone();
+
+                                        // Add to the next round.
+                                        nextRoundTasks.push($scope.gantt.tasksMap[k[i]]);
+                                    } else {
+                                        return [];
+                                    }
+                                } else {
+                                    $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(df.addMinutes(task.to, 1, true), $scope.gantt.tasksMap[k[i]].parallelFrom - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(df.addMinutes(task.to, 1, true), $scope.gantt.tasksMap[k[i]].to - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].from = df.addMinutes(task.to, 1, true);
+
+                                    $scope.gantt.tasksMap[k[i]].row.setMinMaxDateByTask($scope.gantt.tasksMap[k[i]]);
+                                    $scope.gantt.tasksMap[k[i]].updatePosAndSize();
+                                    $scope.gantt.tasksMap[k[i]].checkIfMilestone();
+
+                                    // Add to the next round.
+                                    nextRoundTasks.push($scope.gantt.tasksMap[k[i]]);
+                                }
+                            }
+                        // Not really overlap.
+                        } else {
+                            if (task.from > $scope.gantt.tasksMap[k[i]].to && (task.process.id in $scope.gantt.tasksMap[k[i]].process.previousProcesses ||
+                                task.id === $scope.gantt.tasksMap[k[i]].perviousOperation ||
+                                task.nextOperations.indexOf($scope.gantt.tasksMap[k[i]].id) >= 0)) {
+
+                                // If task is pin or processing, reject the move.
+                                if ($scope.gantt.tasksMap[k[i]].isPin === true ||
+                                    $scope.gantt.tasksMap[k[i]].inProcessing === true) {
+                                    rejectTaskMoving = true;
+                                    return [];
+                                }
+
+                                if ($scope.gantt.tasksMap[k[i]].isParallel === true && task.row.id !== $scope.gantt.tasksMap[k[i]].row.id) {
+                                    $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(df.addMinutes(task.parallelFrom, 1, true), $scope.gantt.tasksMap[k[i]].parallelFrom - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(df.addMinutes(task.parallelFrom, 1, true), $scope.gantt.tasksMap[k[i]].to - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].from = df.addMinutes(task.parallelFrom, 1, true);
+                                } else {
+                                    $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(df.addMinutes(task.to, 1, true), $scope.gantt.tasksMap[k[i]].parallelFrom - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(df.addMinutes(task.to, 1, true), $scope.gantt.tasksMap[k[i]].to - $scope.gantt.tasksMap[k[i]].from, true);
+                                    $scope.gantt.tasksMap[k[i]].from = df.addMinutes(task.to, 1, true);
+                                }
+
+                                $scope.gantt.tasksMap[k[i]].row.setMinMaxDateByTask($scope.gantt.tasksMap[k[i]]);
+                                $scope.gantt.tasksMap[k[i]].updatePosAndSize();
+                                $scope.gantt.tasksMap[k[i]].checkIfMilestone();
+                                // Add to the next round.
+                                nextRoundTasks.push($scope.gantt.tasksMap[k[i]]);
+                            }
+                        }
+                    }
+                }
+                console.log(nextRoundTasks);
+                return nextRoundTasks;
+            };
+
+            // var shiftToRight = function(task) {
+            //     var i, j, k, l, m, n, o, reject = false, nextRoundTasks = [];
+            //     // Get the task's process and check if is first task.
+            //     var process = $scope.gantt.processesMap[task.process.id];
+            //     var costomSort = function(t1, t2) { return t1.from - t2.from; };
+            //     process.tasks.sort(costomSort);
+
+            //     console.log(task.id);
+
+            //     // Check the task if overlap.
+            //     for (i = 0, k = _.keys($scope.gantt.tasksMap), l = k.length; i < l; ++i) {
+            //         if ($scope.gantt.tasksMap[k[i]] === undefined) continue;
+            //         // Find the previous tasks if overlap.
+            //         if ($scope.gantt.tasksMap[k[i]].to >= task.parallelFrom) {
+            //             if ($scope.gantt.tasksMap[k[i]].isFinished === true ||
+            //                 $scope.gantt.tasksMap[k[i]].id === task.id) continue;
+            //             // Overlap.
+            //             if ((task.from >= $scope.gantt.tasksMap[k[i]].from &&
+            //                 task.from < $scope.gantt.tasksMap[k[i]].to) ||
+            //                 (task.to >= $scope.gantt.tasksMap[k[i]].from &&
+            //                 task.to < $scope.gantt.tasksMap[k[i]].to)) {
+            //                 // In the same row
+            //                 if ($scope.gantt.tasksMap[k[i]].row.id === task.row.id) {
+            //                     // If is pin or in processing, reject all.
+            //                     if ($scope.gantt.tasksMap[k[i]].isPin === true ||
+            //                         $scope.gantt.tasksMap[k[i]].inProcessing === true) {
+            //                         reject = 1;
+            //                         break;
+            //                     } else {
+            //                         $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(task.to, df.clone($scope.gantt.tasksMap[k[i]].to) - df.clone($scope.gantt.tasksMap[k[i]].from), true);
+            //                         if ($scope.gantt.tasksMap[k[i]].isParallel === true) {
+            //                             $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(task.to, df.clone($scope.gantt.tasksMap[k[i]].parallelFrom) - df.clone($scope.gantt.tasksMap[k[i]].from), true);
+            //                         } else {
+            //                             $scope.gantt.tasksMap[k[i]].parallelFrom = $scope.gantt.tasksMap[k[i]].to;
+            //                         }
+            //                         $scope.gantt.tasksMap[k[i]].from = task.to;
+            //                     }
+            //                 // Different rows.
+            //                 } else {
+            //                     // If the process of task is the previous process of this task.
+            //                     if ($scope.gantt.processesMap[$scope.gantt.tasksMap[k[i]].process.id] !== undefined &&
+            //                         $scope.gantt.processesMap[$scope.gantt.tasksMap[k[i]].process.id].previous.indexOf(task.process.id) >= 0) {
+            //                         $scope.gantt.tasksMap[k[i]].to = df.addMilliseconds(task.to, df.clone($scope.gantt.tasksMap[k[i]].to) - df.clone($scope.gantt.tasksMap[k[i]].from), true);
+            //                         if ($scope.gantt.tasksMap[k[i]].isParallel === true) {
+            //                             $scope.gantt.tasksMap[k[i]].parallelFrom = df.addMilliseconds(task.to, df.clone($scope.gantt.tasksMap[k[i]].parallelFrom) - df.clone($scope.gantt.tasksMap[k[i]].from), true);
+            //                         } else {
+            //                             $scope.gantt.tasksMap[k[i]].parallelFrom = $scope.gantt.tasksMap[k[i]].to;
+            //                         }
+            //                         $scope.gantt.tasksMap[k[i]].from = task.to;
+            //                     } else {
+            //                         // All green, good to go.
+            //                         // DO NOTHING.
+            //                     }
+            //                 }
+            //                 // Move the task and push to next round.
+            //                 $scope.gantt.tasksMap[k[i]].row.setMinMaxDateByTask($scope.gantt.tasksMap[k[i]]);
+            //                 $scope.gantt.tasksMap[k[i]].updatePosAndSize();
+            //                 $scope.gantt.tasksMap[k[i]].checkIfMilestone();
+
+            //                 nextRoundTasks.push($scope.gantt.tasksMap[k[i]]);
+            //             // Not overlap.
+            //             } else {
+            //                 // All green, good to go.
+            //                 // DO NOTHING.
+            //             }
+            //         }
+            //     }
+
+            //     if (reject !== false) {
+            //         task.rejectMoving();
+            //         return reject;
+            //     } else {
+            //         if (nextRoundTasks.length > 0) {
+            //             for (i = 0, l = nextRoundTasks.length; i < l; i++) {
+            //                 if ((reject = shiftToRight(nextRoundTasks[i])) !== false) {
+            //                     nextRoundTasks[i].rejectMoving();
+            //                 }
+            //             }
+            //         }
+            //     }
+
+            //     return reject;
+            // };
+
+            // var shiftToLeft = function(shift) {
+            //     var i, j, k, l, m, n, o, isPin = false, reject = false,
+            //         task = $scope.task,
+            //         Gantt = $scope.gantt,
+            //         job = Gantt.jobsMap[task.job.id],
+            //         tasks = job.tasks,
+            //         process = Gantt.processesMap[task.process.id],
+            //         rowTasks = Gantt.rowsMap[task.row.id].tasks;
+
+            //     if (shift.left < 0) {
+            //         // Check the same row overlap.
+            //         for (i = 0, l = rowTasks.length; i < l; ++i) {
+            //             if (task.to > rowTasks[i].from) {
+            //                 if (rowTasks[i].isFinished === true) continue;
+            //                 if ((rowTasks[i].nextOperations.indexOf(task.id) >= 0 &&
+            //                     task.from < rowTasks[i].from)) {
+            //                     task.rejectMoving();
+            //                     reject = true;
+            //                     break;
+            //                 }
+            //                 if (rowTasks[i].id !== task.id) {
+            //                     if ((task.from <= rowTasks[i].from && rowTasks[i].from < task.to) ||
+            //                         (task.from < rowTasks[i].to && task.to >= rowTasks[i].to)) {
+            //                         task.from = df.clone(rowTasks[i].to);
+            //                         if (shift.right === 0) {
+            //                             task.to = df.clone(shift.to);
+            //                         } else {
+            //                             task.to = df.addMilliseconds(task.from, shift.size, true);
+            //                         }
+            //                         if (task.isParallel === true) {
+            //                             task.parallelFrom = df.addMilliseconds(task.from, df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime), true);
+            //                             task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins);
+            //                         } else {
+            //                             task.parallelFrom = task.to;
+            //                         }
+            //                         task.row.setMinMaxDateByTask(task);
+            //                         task.updatePosAndSize();
+            //                         task.checkIfMilestone();
+
+            //                         task.updateMoving();
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //         if (reject === false) {
+            //             // Check all the same process operations.
+            //             if (task.previousOperation !== '' &&
+            //                 task.previousOperation in Gantt.tasksMap &&
+            //                 Gantt.tasksMap[task.previousOperation].row.id !== task.row.id &&
+            //                 Gantt.tasksMap[task.previousOperation].isFinished === false &&
+            //                 Gantt.tasksMap[task.previousOperation].parallelFrom > task.from) {
+            //                     task.from = df.clone(Gantt.tasksMap[task.previousOperation].parallelFrom);
+            //                     if (shift.right === 0) {
+            //                         task.to = df.clone(shift.to);
+            //                     } else {
+            //                         task.to = df.addMilliseconds(task.from, shift.size, true);
+            //                     }
+            //                     if (task.isParallel === true) {
+            //                         task.parallelFrom = df.addMilliseconds(task.from, df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime), true);
+            //                         task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins);
+            //                     } else {
+            //                         task.parallelFrom = task.to;
+            //                     }
+            //                     task.row.setMinMaxDateByTask(task);
+            //                     task.updatePosAndSize();
+            //                     task.checkIfMilestone();
+
+            //                     task.updateMoving();
+            //             } else {
+            //                 // Check if previous processes exists.
+            //                 if (task.process.previousProcesses.length > 0) {
+            //                     var previousProcessLastTask = [];
+            //                     for (i = 0, l = task.process.previousProcesses.length; i < l; ++i) {
+            //                         if (task.process.previousProcesses[i] in Gantt.processesMap) {
+            //                             if (Gantt.processesMap[task.process.previousProcesses[i]].tasks.length > 0) {
+            //                                 previousProcessLastTask.push(
+            //                                     Gantt.processesMap[task.process.previousProcesses[i]].tasks[
+            //                                         (Gantt.processesMap[task.process.previousProcesses[i]].tasks.length - 1)
+            //                                     ]
+            //                                 );
+            //                             }
+            //                         }
+            //                     }
+            //                     if (previousProcessLastTask.length > 0) {
+            //                         previousProcessLastTask.sort(function(t1, t2) { return t1.to - t2.to; });
+            //                         if (task.id !== previousProcessLastTask[previousProcessLastTask.length - 1].id &&
+            //                             task.from < previousProcessLastTask[previousProcessLastTask.length - 1].to) {
+            //                             task.from = df.clone(previousProcessLastTask[previousProcessLastTask.length - 1].to);
+            //                             if (shift.right === 0) {
+            //                                 task.to = df.clone(shift.to);
+            //                             } else {
+            //                                 task.to = df.addMilliseconds(task.from, shift.size, true);
+            //                             }
+            //                             if (task.isParallel === true) {
+            //                                 task.parallelFrom = df.addMilliseconds(task.from, df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime), true);
+            //                                 task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins);
+            //                             } else {
+            //                                 task.parallelFrom = task.to;
+            //                             }
+            //                             task.row.setMinMaxDateByTask(task);
+            //                             task.updatePosAndSize();
+            //                             task.checkIfMilestone();
+
+            //                             task.updateMoving();
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     // Just shorten the task to datetime.
+            //     } else {
+            //         // DO NOTHING.
+            //     }
+            //     return reject;
+            // };
+
+            // var shiftToRight = function(task) {
+            //     // Just move the task or extend the task to datetime.
+            //     var i, j, k, l, m, n, o, isPin = false, reject = false,
+            //         Gantt = $scope.gantt,
+            //         job = Gantt.jobsMap[task.job.id],
+            //         tasks = job.tasks,
+            //         process = Gantt.processesMap[task.process.id],
+            //         rowTasks = Gantt.rowsMap[task.row.id].tasks;
+
+            //     var shift = {
+            //         id: task.id,
+            //         process: task.process.id,
+            //         left: task.from - df.clone(task.data.expectedStartTime),
+            //         right: task.to - df.clone(task.data.expectedFinishTime),
+            //         from: df.clone(task.from),
+            //         to: df.clone(task.to),
+            //         size: df.clone(task.to) - df.clone(task.from),
+            //         prevOperations: task.process.operations.slice(0, task.process.operations.indexOf(task.previousOperation) + 1),
+            //         nextOperations: task.process.operations.slice(task.process.operations.indexOf(task.id) + 1, task.process.operations.length - 1),
+            //         today: new Date()
+            //     };
+
+            //     if (shift.right > 0) {
+            //         // Check the same row overlap.
+            //         var sameRowRightShiftTasks = [task];
+
+            //         for (i = 0, l = rowTasks.length; i < l; ++i) {
+            //             if (rowTasks[i].id !== task.id && task.to > rowTasks[i].from) {
+            //                 if (rowTasks[i].isFinished === true) continue;
+            //                 if (rowTasks[i].isPin === true &&
+            //                     rowTasks[i].from < task.to &&
+            //                     rowTasks[i].to >= task.to) {
+            //                     reject = true;
+            //                     break;
+            //                 }
+            //                 if ((task.from <= rowTasks[i].from && rowTasks[i].from < task.to) ||
+            //                     (task.from < rowTasks[i].to && task.to >= rowTasks[i].to) ||
+            //                     (task.nextOperations.indexOf(rowTasks[i].id) >= 0 &&
+            //                     rowTasks[i].previousOperation === task.id &&
+            //                     task.from > rowTasks[i].from)) {
+
+            //                     rowTasks[i].to = df.addMilliseconds(task.to, (df.clone(rowTasks[i].to) - df.clone(rowTasks[i].from)), true);
+            //                     rowTasks[i].from = df.clone(task.to);
+            //                     if (rowTasks[i].isParallel === true) {
+            //                         rowTasks[i].parallelFrom = df.addMilliseconds(rowTasks[i].from, df.clone(rowTasks[i].data.expectedSetupFinishTime) - df.clone(rowTasks[i].data.expectedStartTime), true);
+            //                         rowTasks[i].parallelFrom = df.addMinutes(rowTasks[i].parallelFrom, rowTasks[i].data.s2sMins);
+            //                     } else {
+            //                         rowTasks[i].parallelFrom = rowTasks[i].to;
+            //                     }
+            //                     rowTasks[i].row.setMinMaxDateByTask(rowTasks[i]);
+            //                     rowTasks[i].updatePosAndSize();
+            //                     rowTasks[i].checkIfMilestone();
+
+            //                     task = rowTasks[i];
+            //                     sameRowRightShiftTasks.push(task);
+            //                 }
+            //             }
+            //         }
+            //         if (reject === false) {
+            //             // Check all moved task in process and processes who depend on.
+            //             task = sameRowRightShiftTasks[0];
+            //             // Check if pin exists in processes.
+            //             for (i = 0, l = shift.nextOperations.length; i < l; ++i) {
+            //                 if (shift.nextOperations[i] in Gantt.tasksMap) {
+            //                     if (Gantt.tasksMap[shift.nextOperations[i]].isFinished) continue;
+            //                     if (Gantt.tasksMap[shift.nextOperations[i]].isPin === true) {
+            //                         task.rejectMoving();
+            //                         reject = true;
+            //                         break;
+            //                     }
+            //                 }
+            //             }
+            //             if (reject === false) {
+            //                 var otherTask;
+            //                 // In the same process tasks.
+            //                 for (i = 0, l = shift.nextOperations.length; i < l; ++i) {
+            //                     otherTask = Gantt.tasksMap[shift.nextOperations[i]];
+            //                     if (otherTask !== undefined && otherTask.previousOperation in Gantt.tasksMap) {
+            //                         task = Gantt.tasksMap[otherTask.previousOperation];
+            //                         if (otherTask.isFinished) continue;
+            //                         if (otherTask.from < task.parallelFrom) {
+            //                             otherTask.to = df.addMilliseconds(task.parallelFrom, df.clone(otherTask.to) - df.clone(otherTask.from), true);
+            //                             otherTask.from = task.parallelFrom;
+            //                             if (otherTask.isParallel === true) {
+            //                                 otherTask.parallelFrom = df.addMilliseconds(otherTask.from, df.clone(otherTask.data.expectedSetupFinishTime) - df.clone(otherTask.data.expectedStartTime), true);
+            //                                 otherTask.parallelFrom = df.addMinutes(otherTask.parallelFrom, otherTask.data.s2sMins);
+            //                             } else {
+            //                                 otherTask.parallelFrom = otherTask.to;
+            //                             }
+            //                             otherTask.row.setMinMaxDateByTask(otherTask);
+            //                             otherTask.updatePosAndSize();
+            //                             otherTask.checkIfMilestone();
+            //                         }
+            //                     }
+            //                 }
+            //                 task = sameRowRightShiftTasks[0];
+            //                 Gantt.processesMap[task.process.id].tasks.sort(function(t1, t2) { return t1.to - t2.to; });
+            //                 // Check all the task in the next processes.
+            //                 if (Gantt.processesMap[task.process.id].tasks[Gantt.processesMap[task.process.id].tasks.length - 1].to !== df.clone(Gantt.processesMap[task.process.id].tasks[Gantt.processesMap[task.process.id].tasks.length - 1].data.expectedFinishTime)) {
+            //                     var nextProcesses = combineNextProcesses(Gantt.processesMap[task.process.id]);
+            //                     for (i = 0, l = nextProcesses.length; i < l; ++i) {
+            //                         tasks = Gantt.processesMap[nextProcesses[i]].tasks;
+            //                         for (j = 0, k = tasks.length; j < k; ++j) {
+            //                             if (tasks[j].isPin === true) {
+            //                                 reject = true;
+            //                                 break;
+            //                             } else {
+            //                                 // In the next processes, watch all other the task if overlap when task is pined.
+            //                                 for (m = 0, o = _.keys(Gantt.tasksMap), n = o.length; m < n; ++m) {
+            //                                     if (Gantt.tasksMap[o[m]].isFinished === true) continue;
+            //                                     if (Gantt.tasksMap[o[m]].isPin === true &&
+            //                                         tasks[j].to > Gantt.tasksMap[o[m]].from &&
+            //                                         tasks[j].from < Gantt.tasksMap[o[m]].to) {
+            //                                         reject = true;
+            //                                         break;
+            //                                     }
+            //                                 }
+            //                                 if (reject === true) break;
+            //                             }
+            //                         }
+            //                         if (reject === true) break;
+            //                     }
+
+            //                     // Next processes is good to go.
+            //                     task = Gantt.processesMap[task.process.id].tasks[Gantt.processesMap[task.process.id].tasks.length - 1];
+            //                     if (reject === false) {
+            //                         var nextRoundTasks = [], processOverlap = 0;
+            //                         for (i = 0, l = nextProcesses.length; i < l; ++i) {
+            //                             tasks = Gantt.processesMap[nextProcesses[i]].tasks;
+            //                             if (tasks.length > 0) {
+            //                                 processOverlap = Math.abs(tasks[0].from - task.to);
+            //                                 for (j = 0, k = tasks.length; j < k; ++j) {
+            //                                     tasks[j].from = df.addMilliseconds(tasks[j].from, processOverlap);
+            //                                     tasks[j].to = df.addMilliseconds(tasks[j].to, processOverlap);
+            //                                     if (tasks[j].isParallel === true) {
+            //                                         tasks[j].parallelFrom = df.addMilliseconds(tasks[j].parallelFrom, processOverlap);
+            //                                     } else {
+            //                                         tasks[j].parallelFrom = tasks[j].to;
+            //                                     }
+            //                                     tasks[j].row.setMinMaxDateByTask(tasks[j]);
+            //                                     tasks[j].updatePosAndSize();
+            //                                     tasks[j].checkIfMilestone();
+
+            //                                     for (m = 0, n = Gantt.rowsMap[tasks[j].row.id].tasks, o = Gantt.rowsMap[tasks[j].row.id].tasks.length; m < n; ++m) {
+            //                                         if (n[m].isFinished === true) continue;
+            //                                         if (n[m].from < tasks[j].to &&
+            //                                             n[m].to >= tasks[j].to) {
+            //                                             n[m].from = tasks[j].to;
+            //                                             n[m].to = df.addMilliseconds(n[m].from, df.clone(n[m].data.expectedStartTime) - df.clone(n[m].data.expectedFinishedTime), true);
+            //                                             if (n[m].isParallel === true) {
+            //                                                 n[m].parallelFrom = df.addMilliseconds(n[m].from, df.clone(n[m].data.expectedSetupFinishTime) - df.clone(n[m].data.expectedStartTime), true);
+            //                                                 n[m].parallelFrom = df.addMinutes(n[m].parallelFrom, n[m].data.s2sMins);
+            //                                             } else {
+            //                                                 n[m].parallelFrom = n[m].to;
+            //                                             }
+            //                                             n[m].row.setMinMaxDateByTask(n[m]);
+            //                                             n[m].updatePosAndSize();
+            //                                             n[m].checkIfMilestone();
+            //                                             nextRoundTasks.push(n[m]);
+            //                                         }
+            //                                     }
+            //                                 }
+            //                             }
+            //                         }
+            //                         // Do the next round to shift the task to the right.
+            //                         if (nextRoundTasks.length > 0) {
+            //                             for (i = 0, l = nextRoundTasks.length; i < l; ++i) {
+            //                                 // If next is reject.
+            //                                 if (shiftToRight(nextRoundTasks[i]) === true) {
+            //                                     rejcet = true;
+            //                                     break;
+            //                                 }
+            //                             }
+            //                         // No next round.
+            //                         } else {
+            //                             for (i = 0, l = shift.nextOperations.length; i < l; ++i) {
+            //                                 otherTask = Gantt.tasksMap[shift.nextOperations[i]];
+            //                                 if (otherTask !== undefined) {
+            //                                     if (otherTask.previousOperation in Gantt.tasksMap && reject === false) {
+            //                                         otherTask.updateMoving();
+            //                                     } else {
+            //                                         otherTask.rejectMoving();
+            //                                     }
+            //                                 }
+            //                             }
+
+            //                             for (i = 0, l = nextProcesses.length; i < l; ++i) {
+            //                                 tasks = Gantt.processesMap[nextProcesses[i]].tasks;
+            //                                 for (j = 0, k = tasks.length; j < k; ++j) {
+            //                                     if (reject === false) {
+            //                                         tasks[j].updateMoving();
+            //                                     } else {
+            //                                         tasks[j].rejectMoving();
+            //                                     }
+            //                                     for (m = 0, n = Gantt.rowsMap[tasks[j].row.id].tasks, o = Gantt.rowsMap[tasks[j].row.id].tasks.length; m < n; ++m) {
+            //                                         if (n[m].isFinished === true) continue;
+            //                                         if (reject === false) {
+            //                                             n[m].updateMoving();
+            //                                         } else {
+            //                                             n[m].rejectMoving();
+            //                                         }
+            //                                     }
+            //                                 }
+            //                             }
+            //                         }
+            //                     // Restore all the modified task in this process.
+            //                     } else {
+            //                         for (i = 0, k = sameRowRightShiftTasks, l = k.length; i < l; ++i) {
+            //                             k[i].rejectMoving();
+            //                         }
+            //                         for (i = 0, l = shift.nextOperations.length; i < l; ++i) {
+            //                             Gantt.tasksMap[Gantt.tasksMap[shift.nextOperations[i]].previousOperation].rejectMoving();
+            //                         }
+            //                     }
+            //                 } else {
+            //                     // Do the same row task next round.
+            //                     if (sameRowRightShiftTasks.length > 1) {
+            //                         for (i = 1, l = sameRowRightShiftTasks.length; i < l; ++i) {
+            //                             // If next is reject.
+            //                             shiftToRight(sameRowRightShiftTasks[i]);
+            //                         }
+            //                     // Apply all the tasks change if next processes does not exists.
+            //                     } else {
+            //                         for (i = 0, l = shift.nextOperations.length; i < l; ++i) {
+            //                             otherTask = Gantt.tasksMap[shift.nextOperations[i]];
+            //                             if (otherTask !== undefined) {
+            //                                 if (otherTask.previousOperation in Gantt.tasksMap && reject === false) {
+            //                                     otherTask.updateMoving();
+            //                                 } else {
+            //                                     otherTask.rejectMoving();
+            //                                 }
+            //                             }
+            //                         }
+            //                     }
+            //                 }
+            //             } else {
+            //                 // Reset all tasks in itself operations.
+            //                 for (i = 0, l = task.nextOperations.length; i < l; ++i) {
+            //                     if (task.nextOperations[i].isFinished) continue;
+            //                     task.nextOperations[i].rejectMoving();
+            //                 }
+            //             }
+            //         } else {
+            //             // The same row has pined Task, resotre all the change.
+            //             for (i = 0, k = sameRowRightShiftTasks, l = k.length; i < l; ++i) {
+            //                 k[i].rejectMoving();
+            //             }
+            //         }
+            //     // Just shorten the task from datetime.
+            //     } else {
+            //         // DO NOTHING.
+            //     }
+            //     return reject;
+            // };
+
+            var checkTaskOverlap = function() {
+                var i, j, k, l, m, n, o, isPin = false, reject = false,
+                    task = $scope.task,
+                    Gantt = $scope.gantt,
+                    job = Gantt.jobsMap[task.job.id],
+                    tasks = job.tasks,
+                    process = Gantt.processesMap[task.process.id],
+                    rowTasks = Gantt.rowsMap[task.row.id].tasks,
+                    nextRoundTasks = [];
+
+                for (i in Gantt.jobsMap) {
+                    for (j in $scope.gantt.jobsMap[i].tasks) {
+                        Gantt.jobsMap[i].tasks[j].isHighlight = false;
+                    }
+                }
+
+                var shift = {
+                    id: task.id,
+                    process: task.process.id,
+                    left: task.from - df.clone(task.data.expectedStartTime),
+                    right: task.to - df.clone(task.data.expectedFinishTime),
+                    from: df.clone(task.from),
+                    to: df.clone(task.to),
+                    size: df.clone(task.to) - df.clone(task.from),
+                    prevOperations: task.process.operations.slice(0, task.process.operations.indexOf(task.previousOperation) + 1),
+                    nextOperations: task.process.operations.slice(task.process.operations.indexOf(task.id) + 1, task.process.operations.length - 1),
+                    today: new Date()
+                };
+
+                if (task.isParallel === true) {
+                    task.parallelFrom = df.addMilliseconds(task.from, df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime), true);
+                    task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins);
+                } else {
+                    task.parallelFrom = task.to;
+                }
+
+                if (task.from < shift.today ||
+                    df.clone(process.tasks[0].from.getTime() + shift.left) < shift.today) {
+                    //$scope.task.rejectMoving();
+                    //reject = true;
+                }
+                var timestamp = df.clone(task.data.expectedFinishTime);
+                shiftToLeft(task, timestamp);
+                timestamp = df.clone(task.data.expectedStartTime);
+                nextRoundTasks = shiftToRight(task, timestamp);
+                i = 0;
+                while (nextRoundTasks.length > 0 && rejectTaskMoving === false && i < 5000) {
+                    var tmpTasks = shiftToRight(nextRoundTasks[0], timestamp);
+                    nextRoundTasks.splice(0, 1);
+                    nextRoundTasks = _.union(nextRoundTasks, tmpTasks);
+                    i++;
+                }
+
+                if (rejectTaskMoving === false) {
+                    // Update the tasks.
+                }
+
+                job.tasks.sort(function(t1, t2) { return t1.left - t2.left; });
+            };
+
+            // In case the task has been moved to another row a new controller is is created by angular.
+            // Enable the move mode again if this was the case.
+            if ($scope.task.isMoving) {
+                enableMoveMode("M", $scope.task.mouseOffsetX);
+            }
+        }]
+    };
+}]);

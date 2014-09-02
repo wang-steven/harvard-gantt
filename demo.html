@@ -1,0 +1,129 @@
+<!doctype html>
+<html ng-app="ganttApp">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="assets/css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+<link rel="stylesheet" href="assets/angular-ui-tree.min.css">
+<link rel="stylesheet" href="assets/plugins/chardinjs/chardinjs.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/gantt.css">
+<title>Gantt</title>
+</head>
+<body style="padding: 10px">
+  <div id="wrap">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-10" ng-controller="ganttController">
+          <h1>Gantt</h1>
+
+          <form role="form" class="form-inline" id="form-box">
+            <div class="form-group">
+              <span class="help-block">View scale</span> <select class="form-control" style="width: 12em;" ng-model="scale"
+                ng-options="s.key as s.name for s in [{key: 'minute', name: 'per one minute'}, {key: 'hour', name: 'per one hour'}, {key: 'threehours', name: 'per 3 hours'}, {key: 'sixhours', name: 'per 6 hours'}, {key: 'eighthours', name: 'per 8 hours'}, {key: 'twevelhours', name: 'per 12 hours'}, {key: 'day', name: 'per a day'}, {key: 'week', name: 'per one week'}, {key: 'month', name: 'per one month'}]"></select>
+            </div>
+            <div class="form-group">
+              <span class="help-block">Sort order</span> <select class="form-control" style="width: 12em;" ng-model="mode"
+                ng-options="m.key as m.name for m in [{key: 'name', name: 'Machine Name'}, {key: 'date', name: 'Task Datetime'}, {key: 'dept', name: 'Department ID'}, {key: 'custom', name: 'User Defined'}]"></select>
+            </div>
+            <div class="form-group text-center">
+              <span class="help-block">Max height</span>
+              <div ng-show="maxHeight > 0">
+                <button class="btn btn-default" ng-click="triggerMaxHeight()">Deactivate</button>
+              </div>
+              <div ng-show="maxHeight === 0">
+                <button class="btn btn-default" ng-click="triggerMaxHeight()">Activate</button>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <span class="help-block">Additional options</span>
+              <div class="btn-group">
+                <button ng-show="showWeekends" class="btn btn-default" ng-click="showWeekends = false">Hide weekends</button>
+                <button ng-show="showWeekends == false" class="btn btn-default" ng-click="showWeekends = true">Show weekends</button>
+                <!--
+                        <button ng-show="showNonWorkHours == false" class="btn btn-default" ng-click="showNonWorkHours = true; subScale = 6">Show non working hours</button>
+                        <button ng-show="showNonWorkHours" class="btn btn-default" ng-click="showNonWorkHours = false; subScale = 8">Hide non working hours</button>
+                        -->
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="help-block">Action</span>
+              <div class="btn-group">
+                <button class="btn btn-default" ng-click="addSamples2()">Load data</button>
+                <button class="btn btn-default" ng-click="removeSomeSamples()">Remove some</button>
+                <button class="btn btn-default" ng-click="removeSamples()">Remove all</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="help-block">Jumo To</span>
+              <div class="btn-group">
+                <button class="btn btn-default" ng-click="jumpToDate()">Today</button>
+              </div>
+              <div class="input-group">
+                <input type="date" class="form-control" ng-model="jumpToDateTime" value="{{ jumpToDateTime }}">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" ng-click="jumpToDate(jumpToDateTime)">Jump</button>
+                </span>
+              </div>
+            </div>
+          </form>
+          <hr>
+          <gantt first-day-of-week="1" load-data="loadData = fn" remove-data="removeData = fn" clear-data="clearData = fn" sort-mode="mode"
+            view-scale="scale" center-date="centerDate = fn"
+            column-width="scale === 'month' && 24 || scale === 'week' && 12 || scale === 'hour' && 4 || scale === 'minute' && 2 || 8"
+            column-sub-scale="scale === 'week' && 7 || scale === 'minute' && 1 || 6" work-hours="[6,7,8,9,10,11,12,13,14,15,16,17,18]"
+            show-non-work-hours="showNonWorkHours" weekend-days="[0,6]" show-weekends="showWeekends"
+            max-height="maxHeight" auto-expand="true" allow-row-sorting="false" allow-task-resizing="false" allow-task-row-switching="true"
+            server-config="loadServerConfiguration({serverLocation: '', jsLocationPrefix: '/'})"
+            disable="false"
+            template-url="/gantt/template/gantt.tmpl.html"
+            on-gantt-ready="addSamples()" on-row-added="rowAddEvent(event)" on-row-clicked="rowClickEvent(event)" on-row-updated="rowUpdateEvent(event)"
+            on-scroll="scrollEvent(event)" on-task-clicked="taskEvent(event)" on-task-updated="taskUpdate(event)"></gantt>
+        </div>
+        <div class="col-md-1">&nbsp;</div>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+
+
+<script src="assets/d3.v3.min.js" defer></script>
+<script src="assets/graphlib.min.js" defer></script>
+<script src="assets/dagre-d3.min.js" defer></script>
+<!--
+<script src="assets/plugins/chardinjs/chardinjs.min.js" defer></script>
+<script src="assets/plugins/json/form2js.js" defer></script>
+<script src="assets/plugins/bootstrap-paginator.min.js" defer></script>
+<script src="assets/plugins/jquery.number.min.js" defer></script>
+<script src="assets/plugins/jquery.cookie.js" defer></script>
+<script src="assets/plugins/softleader/jquery.softleader.js" defer></script>
+<script src="assets/plugins/softleader/jquery.softleader.grid.js" defer></script>
+<script src="assets/plugins/softleader/jquery.softleader.cookie.js" defer></script>
+<script src="assets/plugins/jquery-dateFormat-master/dist/jquery-dateFormat.min.js" defer></script>
+<script src="assets/plugins/blockui-master/jquery.blockUI.js" defer></script>
+<script src="assets/plugins/jquery.inputmask.js" defer></script>
+<script src="assets/plugins/jquery.inputmask.extensions.js" defer></script>
+<script src="assets/plugins/jquery.inputmask.numeric.extensions.js" defer></script>
+<script src="assets/plugins/jquery.inputmask.date.extensions.js" defer></script>
+-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="assets/angular.min.js"></script>
+<script src="assets/underscore.min.js"></script>
+<script src="assets/moment.min.js"></script>
+<script src="demo_sample_data/4types.js"></script>
+<script src="assets/demo_sample_data.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/angular-gantt.js"></script>
+<script src="assets/angular-ui-tree.js"></script>
+
+</body>
+</html>
