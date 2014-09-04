@@ -80,35 +80,33 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                 beforeDrag: function(source) {
                     $scope.gantt.tooltipTaskOnMachine = undefined;
                     if ($scope.gantt.disable === true) return false;
-                    var sourceTask = source.task;
-                    previousProcesses = findPreviousProcessNode($scope.gantt.processesMap[sourceTask.process.id]);
-
-                    // $timeout(function() {
-                    //     for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
-                    //         angular.element(tr[i]).unbind('mousedown');
-                    //         angular.element(tr[i]).unbind('contextmenu');
-                    //     }
-                    // }, 10);
-
                     return true;
-                },
-                accept: function(source, dest, destIndex) {
-                    var sourceTask = source.task, accept = true;
-                    for (i = 0, k = dest.machine.tasks; i <= destIndex; i++) {
-                        if (sourceTask.nextOperations.indexOf(k[i].id) >= 0 ||
-                        k[i].process.previousProcesses.indexOf(sourceTask.process.id) >= 0 ||
-                        (previousProcesses.length > 0 && previousProcesses.indexOf(k[i].process.id) >= 0)) {
-                            accept = false;
-                            break;
-                        }
-                    }
-                    return accept;
                 },
                 dropped: function(event) {
                     var source = event.source,
                         task = source.nodeScope.task,
                         dest = event.dest;
 
+                    console.log(source.index, dest.index, $scope.machine);
+
+                    if (dest.index - 1 >= 0 && dest.index !== source.index) {
+                        $scope.gantt.showOnProcessing = true;
+
+                        var prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)],
+                            currentTask = $scope.gantt.tasksOnMachine.tasks[source.index];
+                        currentTask.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.to - currentTask.from), true);
+                        currentTask.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
+                        currentTask.from = df.addMinutes(prevTask.to, 1, true);
+
+                        worker.run(currentTask, $scope.gantt, function(reject) {
+                          if (reject === false) {
+                            console.log(reject);
+                          }
+
+                          $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
+                          angular.element('#hiddenProcessing').trigger('click');
+                        });
+                    }
                     // $timeout(function() {
                     //     for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
                     //         angular.element(tr[i]).bind('mousedown', $element, disableContextMenuHandler);
@@ -117,29 +115,30 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                     // }, 10);
 
 
-                    if (dest.index - 1 >= 0 && dest.index !== source.index) {
-                        $scope.gantt.showOnProcessing = true;
-                        var prevTask;
-                        if (dest.index > 0) {
-                            prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)];
-                            task.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.to - task.from), true);
-                            task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.parallelFrom - task.from), true);
-                            task.from = df.addMinutes(prevTask.to, 1, true);
-                        } else {
-                            prevTask = $scope.gantt.tasksOnMachine.tasks[1];
-                            task.from = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.to), true);
-                            task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.parallelFrom), true);
-                            task.to = df.addMinutes(prevTask.from, -1, true);
-                        }
+                    // if (dest.index - 1 >= 0 && dest.index !== source.index) {
+                    //     $scope.gantt.showOnProcessing = true;
+                    //     var prevTask;
+                    //     if (dest.index > 0) {
+                    //         prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)];
+                    //         task.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.to - task.from), true);
+                    //         task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.parallelFrom - task.from), true);
+                    //         task.from = df.addMinutes(prevTask.to, 1, true);
+                    //     } else {
+                    //         prevTask = $scope.gantt.tasksOnMachine.tasks[1];
+                    //         task.from = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.to), true);
+                    //         task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.parallelFrom), true);
+                    //         task.to = df.addMinutes(prevTask.from, -1, true);
+                    //     }
 
-                        worker.run(task, $scope.gantt, function(reject) {
-                            if (reject === false) {
-                            }
+                    //     worker.run(task, $scope.gantt, function(reject) {
+                    //         console.log(reject);
+                    //         if (reject === false) {
+                    //         }
 
-                            // Hidden the processing lightbox
-                            angular.element('#hiddenProcessing').trigger('click');
-                        });
-                    }
+                    //         // Hidden the processing lightbox
+                    //         angular.element('#hiddenProcessing').trigger('click');
+                    //     });
+                    // }
                 },
             };
         }]
