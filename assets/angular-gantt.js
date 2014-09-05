@@ -503,7 +503,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             };
 
             $scope.exportGanttData = function() {
-                var dateFormat = 'YYYY-MM-DDThh:mm:ss';
+                var dateFormat = 'YYYY-MM-DDTHH:mm:ss';
                 // Export data
                 var rawData = [];
                 for (var i = 0, k = $scope.gantt.rows, l = k.length; i < l; i++) {
@@ -4641,6 +4641,11 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                 i, j, k, l, m, n;
 
             $scope.machine = $scope.gantt.tasksOnMachine;
+            for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
+              k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
+              k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
+              k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+            }
             $scope.extentionTh = $scope.machine.data.title.split('|');
             $scope.css = function(color) {
                 return {
@@ -4685,6 +4690,23 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                 }
             }, 10);
 
+            var processTask = function(task) {
+              worker.run(task, $scope.gantt, function(reject) {
+                if (reject === false) {
+                  console.log(reject);
+                }
+
+                $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
+
+                for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
+                  k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
+                  k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
+                  k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+                }
+                angular.element('#hiddenProcessing').trigger('click');
+              });
+            };
+
             var previousProcesses = [];
             var findPreviousProcessNode = function(process) {
                 if (process === undefined) return [];
@@ -4699,39 +4721,82 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                 return previousProcesses;
             };
 
+            $scope.changeTaskFrom = function(id, from, to, datetime) {
+              var during = to - from;
+              datetime = df.clone(datetime + ':00.000');
+
+              if (datetime - df.setSecondsZero(from, true) !== 0) {
+                $scope.gantt.showOnProcessing = true;
+
+                $scope.machine.tasksMap[id].to = df.addMilliseconds(datetime, during, true);
+                $scope.machine.tasksMap[id].parallelFrom = df.addMilliseconds(datetime, ($scope.gantt.tasksMap[id].parallelFrom - $scope.gantt.tasksMap[id].from), true);
+                $scope.machine.tasksMap[id].from = datetime;
+
+                $scope.machine.tasksMap[id].editorTo = moment($scope.machine.tasksMap[id].to).format('YYYY-MM-DDTHH:mm');
+                $scope.machine.tasksMap[id].editorDuring = ($scope.machine.tasksMap[id].to - datetime) / 60000;
+
+                processTask($scope.machine.tasksMap[id]);
+              }
+            };
+            $scope.changeTaskTo = function(id, from, to, datetime) {
+              var during = to - from;
+              datetime = df.clone(datetime + ':00.000');
+
+              if (datetime - df.setSecondsZero(to, true) !== 0) {
+                $scope.gantt.showOnProcessing = true;
+
+                $scope.machine.tasksMap[id].from = df.addMilliseconds(datetime, during * -1, true);
+                $scope.machine.tasksMap[id].parallelFrom = df.addMilliseconds(datetime, ($scope.gantt.tasksMap[id].parallelFrom - $scope.gantt.tasksMap[id].to), true);
+                $scope.machine.tasksMap[id].to = datetime;
+
+                $scope.machine.tasksMap[id].editorFrom = moment($scope.machine.tasksMap[id].from).format('YYYY-MM-DDTHH:mm');
+                $scope.machine.tasksMap[id].editorDuring = (datetime - $scope.machine.tasksMap[id].from) / 60000;
+
+                processTask($scope.machine.tasksMap[id]);
+              }
+            };
+            $scope.changeTaskDuring = function(id, from, to, datetime) {
+              var during = (to - from) / 60000;
+
+              if (datetime !== during) {
+                $scope.gantt.showOnProcessing = true;
+
+                $scope.machine.tasksMap[id].from = df.addMinutes($scope.machine.tasksMap[id].from, (datetime - during), true);
+                $scope.machine.tasksMap[id].parallelFrom = df.addMinutes($scope.machine.tasksMap[id].parallelFrom, (datetime - during), true);
+                $scope.machine.tasksMap[id].to = df.addMinutes($scope.machine.tasksMap[id].to, (datetime - during), true);
+
+                $scope.machine.tasksMap[id].editorFrom = moment($scope.machine.tasksMap[id].from).format('YYYY-MM-DDTHH:mm');
+                $scope.machine.tasksMap[id].editorTo = moment($scope.machine.tasksMap[id].to).format('YYYY-MM-DDTHH:mm');
+
+                processTask($scope.machine.tasksMap[id]);
+              }
+            };
+            $scope.changeTaskPin = function(id) {
+              $scope.machine.tasksMap[id].isPin = !$scope.machine.tasksMap[id].isPin;
+            };
+
             $scope.treeOptions = {
                 beforeDrag: function(source) {
                     $scope.gantt.tooltipTaskOnMachine = undefined;
                     if ($scope.gantt.disable === true) return false;
-                    var sourceTask = source.task;
-                    previousProcesses = findPreviousProcessNode($scope.gantt.processesMap[sourceTask.process.id]);
-
-                    // $timeout(function() {
-                    //     for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
-                    //         angular.element(tr[i]).unbind('mousedown');
-                    //         angular.element(tr[i]).unbind('contextmenu');
-                    //     }
-                    // }, 10);
-
                     return true;
-                },
-                accept: function(source, dest, destIndex) {
-                    var sourceTask = source.task, accept = true;
-                    for (i = 0, k = dest.machine.tasks; i <= destIndex; i++) {
-                        if (sourceTask.nextOperations.indexOf(k[i].id) >= 0 ||
-                        k[i].process.previousProcesses.indexOf(sourceTask.process.id) >= 0 ||
-                        (previousProcesses.length > 0 && previousProcesses.indexOf(k[i].process.id) >= 0)) {
-                            accept = false;
-                            break;
-                        }
-                    }
-                    return accept;
                 },
                 dropped: function(event) {
                     var source = event.source,
                         task = source.nodeScope.task,
                         dest = event.dest;
 
+                    if (dest.index - 1 >= 0 && dest.index !== source.index) {
+                        $scope.gantt.showOnProcessing = true;
+
+                        var prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)],
+                            currentTask = $scope.gantt.tasksOnMachine.tasks[source.index];
+                        currentTask.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.to - currentTask.from), true);
+                        currentTask.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
+                        currentTask.from = df.addMinutes(prevTask.to, 1, true);
+
+                        processTask(currentTask);
+                    }
                     // $timeout(function() {
                     //     for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
                     //         angular.element(tr[i]).bind('mousedown', $element, disableContextMenuHandler);
@@ -4740,29 +4805,30 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     // }, 10);
 
 
-                    if (dest.index - 1 >= 0 && dest.index !== source.index) {
-                        $scope.gantt.showOnProcessing = true;
-                        var prevTask;
-                        if (dest.index > 0) {
-                            prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)];
-                            task.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.to - task.from), true);
-                            task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.parallelFrom - task.from), true);
-                            task.from = df.addMinutes(prevTask.to, 1, true);
-                        } else {
-                            prevTask = $scope.gantt.tasksOnMachine.tasks[1];
-                            task.from = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.to), true);
-                            task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.parallelFrom), true);
-                            task.to = df.addMinutes(prevTask.from, -1, true);
-                        }
+                    // if (dest.index - 1 >= 0 && dest.index !== source.index) {
+                    //     $scope.gantt.showOnProcessing = true;
+                    //     var prevTask;
+                    //     if (dest.index > 0) {
+                    //         prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)];
+                    //         task.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.to - task.from), true);
+                    //         task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (task.parallelFrom - task.from), true);
+                    //         task.from = df.addMinutes(prevTask.to, 1, true);
+                    //     } else {
+                    //         prevTask = $scope.gantt.tasksOnMachine.tasks[1];
+                    //         task.from = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.to), true);
+                    //         task.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.from, -1, true), (task.from - task.parallelFrom), true);
+                    //         task.to = df.addMinutes(prevTask.from, -1, true);
+                    //     }
 
-                        worker.run(task, $scope.gantt, function(reject) {
-                            if (reject === false) {
-                            }
+                    //     worker.run(task, $scope.gantt, function(reject) {
+                    //         console.log(reject);
+                    //         if (reject === false) {
+                    //         }
 
-                            // Hidden the processing lightbox
-                            angular.element('#hiddenProcessing').trigger('click');
-                        });
-                    }
+                    //         // Hidden the processing lightbox
+                    //         angular.element('#hiddenProcessing').trigger('click');
+                    //     });
+                    // }
                 },
             };
         }]
@@ -5377,13 +5443,13 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     parallelCode: $scope.task.data.parallelCode,
                     s2sMins: $scope.task.data.s2sMins || -1,
                     timeclockEmployeeId: $scope.task.data.timeclockEmployeeId,
-                    expectedStartTime: moment($scope.task.from).format('YYYY-MM-DDThh:mm'),
-                    expectedSetupFinishTime: moment(df.addMilliseconds(df.clone($scope.task.data.expectedSetupFinishTime), $scope.task.to - $scope.task.from, true)).format('YYYY-MM-DDThh:mm'),
-                    expectedFinishTime: moment($scope.task.to).format('YYYY-MM-DDThh:mm'),
+                    expectedStartTime: moment($scope.task.from).format('YYYY-MM-DDTHH:mm'),
+                    expectedSetupFinishTime: moment(df.addMilliseconds(df.clone($scope.task.data.expectedSetupFinishTime), $scope.task.to - $scope.task.from, true)).format('YYYY-MM-DDTHH:mm'),
+                    expectedFinishTime: moment($scope.task.to).format('YYYY-MM-DDTHH:mm'),
                     runOnMachineId: $scope.task.row.id,
-                    actualStartTime: $scope.task.data.actualStartTime === null || $scope.task.data.actualStartTime === '' ? '' : moment(df.clone($scope.task.data.actualStartTime)).format('YYYY-MM-DDThh:mm'),
-                    actualSetupFinishTime: $scope.task.data.actualSetupFinishTime === null || $scope.task.data.actualSetupFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualSetupFinishTime)).format('YYYY-MM-DDThh:mm'),
-                    actualFinishTime: $scope.task.data.actualFinishTime === null || $scope.task.data.actualFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualFinishTime)).format('YYYY-MM-DDThh:mm'),
+                    actualStartTime: $scope.task.data.actualStartTime === null || $scope.task.data.actualStartTime === '' ? '' : moment(df.clone($scope.task.data.actualStartTime)).format('YYYY-MM-DDTHH:mm'),
+                    actualSetupFinishTime: $scope.task.data.actualSetupFinishTime === null || $scope.task.data.actualSetupFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualSetupFinishTime)).format('YYYY-MM-DDTHH:mm'),
+                    actualFinishTime: $scope.task.data.actualFinishTime === null || $scope.task.data.actualFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualFinishTime)).format('YYYY-MM-DDTHH:mm'),
                     actualQuantity: $scope.task.data.actualQuantity,
                     actualRunOnMachineId: $scope.task.row.id
                 };
