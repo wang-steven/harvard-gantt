@@ -148,6 +148,9 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                 processTask($scope.machine.tasksMap[id]);
               }
             };
+            $scope.changeTaskPin = function(id) {
+              $scope.machine.tasksMap[id].isPin = !$scope.machine.tasksMap[id].isPin;
+            };
 
             $scope.treeOptions = {
                 beforeDrag: function(source) {
