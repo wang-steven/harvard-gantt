@@ -503,7 +503,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             };
 
             $scope.exportGanttData = function() {
-                var dateFormat = 'YYYY-MM-DDThh:mm:ss';
+                var dateFormat = 'YYYY-MM-DDTHH:mm:ss';
                 // Export data
                 var rawData = [];
                 for (var i = 0, k = $scope.gantt.rows, l = k.length; i < l; i++) {
