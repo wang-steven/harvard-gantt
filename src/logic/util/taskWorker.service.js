@@ -89,51 +89,79 @@ gantt.service('taskWorker', [ 'dateFunctions', function (df) {
 
             worker.onmessage = function(event) {
                 rejectTaskMoving = event.data.rejectTaskMoving;
-                var originSetupFinishTime;
+                var originSetupFinishTime, dateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
-                if (event.data.debug === true) {
-                    console.log(event.data);
-                } else {
-                    if (rejectTaskMoving === false) {
-                        for (i = 0, j = event.data.tasksOnMark, l = j.length; i < l; ++i) {
-                            gantt.tasksMap[j[i].id].from = j[i].from;
-                            gantt.tasksMap[j[i].id].to = j[i].to;
-                            gantt.tasksMap[j[i].id].parallelFrom = j[i].parallelFrom;
-
-                            originSetupFinishTime = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime) - df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
-                            originSetupFinishTime = df.addMilliseconds(j[i].from, originSetupFinishTime, true);
-
-                            gantt.tasksMap[j[i].id].data.expectedStartTime = j[i].from.toISOString();
-                            gantt.tasksMap[j[i].id].data.expectedFinishTime = j[i].to.toISOString();
-                            gantt.tasksMap[j[i].id].data.expectedSetupFinishTime = originSetupFinishTime.toISOString();
-                            if (gantt.tasksMap[j[i].id].isParallel === true) {
-                                gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(originSetupFinishTime, gantt.tasksMap[j[i].id].data.s2sMins, true);
-                            } else {
-                                gantt.tasksMap[j[i].id].parallelFrom = gantt.tasksMap[j[i].id].to;
-                            }
-                            gantt.tasksMap[j[i].id].row.setMinMaxDateByTask(gantt.tasksMap[j[i].id]);
-                            gantt.tasksMap[j[i].id].updatePosAndSize();
-                            gantt.tasksMap[j[i].id].checkIfMilestone();
+                if (rejectTaskMoving === true) {
+                    for (i = 0, j = event.data.tasksOnMark, l = j.length; i < l; ++i) {
+                        if (gantt.tasksMap[j[i].id].rowHasBeenChanged === true &&
+                            gantt.tasksMap[j[i].id].preventRowId !== gantt.tasksMap[j[i].id].row.id) {
+                            gantt.tasksMap[j[i].id].row.removeTask(j[i].id);
+                            gantt.rowsMap[j[i].preventRowId].tasksMap[j[i].id] = gantt.tasksMap[j[i].id];
+                            gantt.rowsMap[j[i].preventRowId].tasks.push(gantt.tasksMap[j[i].id]);
+                            gantt.rowsMap[j[i].preventRowId].setTasksMinMaxDate();
+                            gantt.tasksMap[j[i].id].row = gantt.rowsMap[j[i].preventRowId];
+                            gantt.tasksMap[j[i].id].rowHasBeenChanged = false;
                         }
-                    } else {
-                        if (task.rowHasBeenChanged === true &&
-                            task.preventRowId !== task.row.id) {
-                            task.row.removeTask(task.id);
-                            gantt.rowsMap[task.preventRowId].tasksMap[task.id] = task;
-                            gantt.rowsMap[task.preventRowId].tasks.push(task);
-                            gantt.rowsMap[task.preventRowId].setTasksMinMaxDate();
-                            task.row = gantt.rowsMap[task.preventRowId];
-                            task.rowHasBeenChanged = false;
-                        }
-                        task.from = task.data.expectedStartTime;
-                        task.to = task.data.expectedStartTime;
-                        task.parallelFrom = df.clone(task.data.expectedSetupFinishTime);
-                        task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins, true);
+                        gantt.tasksMap[j[i].id].from = df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
+                        gantt.tasksMap[j[i].id].to = df.clone(gantt.tasksMap[j[i].id].data.expectedFinishTime);
+                        gantt.tasksMap[j[i].id].parallelFrom = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime);
+                        gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(gantt.tasksMap[j[i].id].parallelFrom, gantt.tasksMap[j[i].id].data.s2sMins, true);
+
+                        gantt.tasksMap[j[i].id].row.setMinMaxDateByTask(gantt.tasksMap[j[i].id]);
+                        gantt.tasksMap[j[i].id].updatePosAndSize();
+                        gantt.tasksMap[j[i].id].checkIfMilestone();
                     }
-                    task.row.setMinMaxDateByTask(task);
-                    task.updatePosAndSize();
-                    task.checkIfMilestone();
+                    if (task.rowHasBeenChanged === true &&
+                        task.preventRowId !== task.row.id) {
+                        task.row.removeTask(task.id);
+                        gantt.rowsMap[task.preventRowId].tasksMap[task.id] = task;
+                        gantt.rowsMap[task.preventRowId].tasks.push(task);
+                        gantt.rowsMap[task.preventRowId].setTasksMinMaxDate();
+                        task.row = gantt.rowsMap[task.preventRowId];
+                        task.rowHasBeenChanged = false;
+                    }
+                    task.from = df.clone(task.data.expectedStartTime);
+                    task.to = df.clone(task.data.expectedFinishTime);
+                    task.parallelFrom = df.clone(task.data.expectedSetupFinishTime);
+                    task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins, true);
+                } else {
+                    for (i = 0, j = event.data.tasksOnMark, l = j.length; i < l; ++i) {
+                        gantt.tasksMap[j[i].id].from = j[i].from;
+                        gantt.tasksMap[j[i].id].to = j[i].to;
+                        gantt.tasksMap[j[i].id].parallelFrom = j[i].parallelFrom;
+
+                        originSetupFinishTime = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime) - df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
+                        originSetupFinishTime = df.addMilliseconds(j[i].from, originSetupFinishTime, true);
+
+                        gantt.tasksMap[j[i].id].data.expectedStartTime = moment(j[i].from).format(dateFormat);
+                        gantt.tasksMap[j[i].id].data.expectedFinishTime = moment(j[i].to).format(dateFormat);
+                        gantt.tasksMap[j[i].id].data.expectedSetupFinishTime = moment(originSetupFinishTime).format(dateFormat);
+                        if (gantt.tasksMap[j[i].id].isParallel === true) {
+                            gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(originSetupFinishTime, gantt.tasksMap[j[i].id].data.s2sMins, true);
+                        } else {
+                            gantt.tasksMap[j[i].id].parallelFrom = gantt.tasksMap[j[i].id].to;
+                        }
+                        gantt.tasksMap[j[i].id].row.setMinMaxDateByTask(gantt.tasksMap[j[i].id]);
+                        gantt.tasksMap[j[i].id].updatePosAndSize();
+                        gantt.tasksMap[j[i].id].checkIfMilestone();
+                    }
+
+                    originSetupFinishTime = df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime);
+                    originSetupFinishTime = df.addMilliseconds(task.from, originSetupFinishTime, true);
+
+                    task.data.expectedStartTime = moment(task.from).format(dateFormat);
+                    task.data.expectedFinishTime = moment(task.to).format(dateFormat);
+                    task.data.expectedSetupFinishTime = moment(originSetupFinishTime).format(dateFormat);
+                    if (task.isParallel === true) {
+                        task.parallelFrom = df.addMinutes(originSetupFinishTime, task.data.s2sMins, true);
+                    } else {
+                        task.parallelFrom = task.to;
+                    }
                 }
+                task.row.setMinMaxDateByTask(task);
+                task.updatePosAndSize();
+                task.checkIfMilestone();
+
                 if (typeof callback === 'function') {
                     setTimeout(function() {
                         callback.call(this, rejectTaskMoving, 'ok', event.data);
