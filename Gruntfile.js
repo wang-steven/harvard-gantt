@@ -36,15 +36,15 @@ module.exports = function(grunt) {
         // grunt server with live reload
         connect: {
             options: {
-                port: 80,
+                port: 8000,
                 hostname: 'localhost',
                 index: 'demo.html',
                 livereload: 35729
             },
             all: {
-                options: {
-                    open: true
-                }
+                // options: {
+                //     open: true
+                // }
             }
         },
         watch: {
@@ -55,6 +55,11 @@ module.exports = function(grunt) {
                 files: ['<%= jshint.files %>', 'demo.html', 'template/**/*.html'],
                 tasks: ['jshint', 'concat']
             }
+        },
+        open: {
+            all: {
+                path: 'http://localhost:<%= connect.options.port%>/<%= connect.options.index %>'
+            }
         }
     });
 
@@ -63,8 +68,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-open');
 
-    grunt.registerTask('serve', ['connect:all', 'watch']);
+    grunt.registerTask('serve', ['connect:all', 'open', 'watch']);
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
 
 };
