@@ -221,10 +221,10 @@
       <td ui-tree-handle class="task-jobtype">{{ task.data.processingType }}</td>
       <td ui-tree-handle class="task-quantity">{{ task.data.quantity }}</td>
       <td ui-tree-handle  class="task-code"  ng-repeat="(i, th) in extentionTh">{{ task.tooltips.ui[i] }}</td>
-      <td class="task-from"><input type="datetime-local" ng-model="task.editorFrom" ng-blur="changeTaskFrom(task.id, task.from, task.to, task.editorFrom)"></td>
-      <td class="task-to"><input type="datetime-local" ng-model="task.editorTo" ng-blur="changeTaskTo(task.id, task.from, task.to, task.editorTo)"></td>
-      <td class="task-minutes"><input type="number" ng-model="task.editorDuring" size="4" ng-blur="changeTaskDuring(task.id, task.from, task.to, task.editorDuring)"></td>
-      <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" value="pin" ng-blur="changeTaskPin(task.id)"></td>
+      <td class="task-from"><input type="datetime-local" ng-model="task.editorFrom" ng-readonly="true"></td>
+      <td class="task-to"><input type="datetime-local" ng-model="task.editorTo" ng-readonly="true"></td>
+      <td class="task-minutes"><input type="number" ng-model="task.editorDuring" size="4" ng-readonly="true"></td>
+      <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" ng-readonly="true"></td>
     </script>
     <script type="text/ng-template" id="gantt.tooltiponmachine.tmpl.html">
       <div class="tooltip-on-task-machine" ng-style="css">

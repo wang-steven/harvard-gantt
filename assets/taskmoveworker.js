@@ -155,7 +155,7 @@ var df = new dateFunction();
 var nextRoundTasks = [];
 var rejectTaskMoving = false;
 var tasksOnMark = [];
-var debug = [];
+var debug = true;
 
 function shiftToRight(task, processesMap, tasksMap, timestamp) {
     var i, j, k, l, m, n, o, w, nextRoundTasks = [];
@@ -171,19 +171,42 @@ function shiftToRight(task, processesMap, tasksMap, timestamp) {
             if ((task.from >= tasksMap[k[i]].from &&
                 task.from < tasksMap[k[i]].to) ||
                 (task.to >= tasksMap[k[i]].from &&
-                task.to < tasksMap[k[i]].to)) {
+                task.from < tasksMap[k[i]].from)) {
+                if (debug) {
+                    postMessage({
+                        task: task.id,
+                        from: task.from,
+                        to: task.to,
+                        parallelFrom: task.parallelFrom,
+                        overlaptask: tasksMap[k[i]].id,
+                        isPin: tasksMap[k[i]].isPin,
+                        debug: debug,
+                    });
+                }
+
                 // If task is pin or processing, reject the move.
                 if (tasksMap[k[i]].inProcessing === true) {
                     rejectTaskMoving = true;
                     return nextRoundTasks;
                 }
+
                 if (tasksMap[k[i]].isPin === true) {
                     w = task.to - task.from;
                     task.from = df.addMinutes(tasksMap[k[i]].to, 1, true);
                     task.to = df.addMilliseconds(task.from, w, true);
                     task.parallelFrom = df.addMilliseconds(task.parallelFrom, w, true);
 
-                    continue;
+                    if (debug) {
+                        postMessage({
+                            task: task.id,
+                            from: task.from,
+                            to: task.to,
+                            parallelFrom: task.parallelFrom,
+                            overlaptask: tasksMap[k[i]].id,
+                            isPin: tasksMap[k[i]].isPin,
+                            debug: debug,
+                        });
+                    }
                 }
 
                 // If the same row, or self process is in the task's previous processes.
@@ -229,8 +252,6 @@ function shiftToRight(task, processesMap, tasksMap, timestamp) {
                         task.from = df.addMinutes(tasksMap[k[i]].to, 1, true);
                         task.to = df.addMilliseconds(task.from, w, true);
                         task.parallelFrom = df.addMilliseconds(task.parallelFrom, w, true);
-
-                        continue;
                     }
 
                     if (tasksMap[k[i]].isParallel === true && task.row.id !== tasksMap[k[i]].row.id) {
@@ -262,7 +283,6 @@ onmessage = function(event) {
         nextRoundTasks.splice(0, 1);
         nextRoundTasks = _.union(nextRoundTasks, tmpTasks);
         tasksOnMark = _.union(tasksOnMark, tmpTasks);
-        debug.push(new Date());
         i++;
     }
 

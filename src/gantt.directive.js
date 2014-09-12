@@ -590,6 +590,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             // and do other things
                             // console.log(response.data.data);
                             $scope.loadData(response.data.data);
+                            // Disable the gantt all operations, change to readonly.
+                            $scope.gantt.disable = true;
                         } else {
                             // TODO: bootstrap model
                             // Add button on the top to show the model dialog

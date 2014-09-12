@@ -60,6 +60,31 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', functio
                                     target.dirty = true;
                                     target.isDeleted = true;
                                     target.isManual = true;
+
+                                    var process = target.gantt.processesMap[target.process.id];
+                                    var _operations = [];
+                                    _.each(process.operations, function(operation) {
+                                        if (operation !== target.id) {
+                                            _operations.push(operation);
+                                        }
+                                    });
+                                    process.operations = _operations;
+
+                                    var _previousOperation = null;
+                                    if (target.previousOperation !== null && target.gantt.tasksMap[target.previousOperation] !== undefined) {
+                                        _previousOperation = target.gantt.tasksMap[target.previousOperation].id;
+                                    }
+                                    if (target.nextOperations.length > 0) {
+                                        _.each(target.nextOperations, function(task_id) {
+                                            var task = target.gantt.tasksMap[task_id];
+
+                                            if (parseInt(task.previousOperation, 10) === parseInt(target.id, 10)) {
+                                                task.previousOperation = _previousOperation;
+                                            }
+                                        });
+                                    }
+
+
                                     $element.remove();
                                 }
                             break;

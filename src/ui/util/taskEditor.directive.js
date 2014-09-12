@@ -106,11 +106,11 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
 
                 data.rowId = data.rowId === undefined ? 0 : data.rowId;
                 data.taskId = data.taskId === undefined || data.taskId === 0 ? Object.keys($scope.$parent.gantt.tasksMap).length + 1000000 : data.taskId;
-                data.poNo = data.poNo === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[2] : null) : data.poNo;
-                data.comboId = data.comboId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[1] : null) : data.comboId;
-                data.operationCode = data.operationCode === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[0] : null) : data.operationCode;
+                data.poNo = data.poNo === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.job.poNo : null) : data.poNo;
+                data.comboId = data.comboId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.job.comboId : null) : data.comboId;
+                data.operationCode = data.operationCode === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.operationCode : null) : data.operationCode;
                 data.processId = data.processId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.processId : 0) : data.processId;
-                data.productId = data.productId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? [] : 0) : data.productId;
+                data.productId = data.productId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.process.productId : 0) : data.productId;
                 data.processingType = data.processingType === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.processingType : null) : data.processingType;
                 data.previousTask = data.previousTask === undefined ? null : data.previousTask;
                 data.nextTask = data.nextTask === undefined ? [] : [data.nextTask];
@@ -156,7 +156,7 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 // 1. Parallel = N
                 // 2. Start to Start Minutes = -1
 
-                if (data.poNo === null || data.comboId === null || data.productId === null || data.processId === null || data.processingType === null ||
+                if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
                     data.quantity === null || data.priority === null || data.expectedStartTime === null ||
                     data.expectedSetupFinishTime === null || data.expectedFinishTime === null) {
                     data_checking = false;
@@ -187,7 +187,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     error_message = '5';
                 }
 
-                console.log(data, data_checking);
 
                 if (data_checking === false || data.rowId === 0) {
                     alert('Data check failed!');
@@ -265,7 +264,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     row.setMinMaxDateByTask(task);
                     task.updatePosAndSize();
                     task.checkIfMilestone();
-                    console.log(task);
 
                     // Run the task worker to test the new or modified task.
 
@@ -332,7 +330,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                             for (i = 0, k = _.keys($scope.$parent.gantt.jobsMap), l = k.length; i < l; ++i) {
                                 if ($scope.$parent.gantt.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
                                     $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                    console.log($scope.editTask.job);
                                 }
                             }
                         break;
@@ -384,7 +381,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                                         value: $scope.$parent.gantt.jobsMap[k[i]].comboId
                                     });
                                     $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                    console.log($scope.editTask.job);
                                 }
                             }
                         break;
@@ -442,7 +438,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                                     value: $scope.$parent.gantt.jobsMap[k[i]].comboId
                                 });
                                 $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                console.log($scope.editTask.job);
                             }
                         }
                     break;

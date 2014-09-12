@@ -53,77 +53,81 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                     }
                 }
 
-                var label = [];
-                var blankLine = "                        ";
-                /*
-                 * Job Flow UI
-                 * 每一個工序上顯示
-                 * 1.  PO# => operation.job.poNo
-                 * 2.  PO QTY (Gang的QTY 跟 Card Qty 依照不同工序需求顯示)
-                 * PO QTY => operation.job.comboQuantity
-                 * Gang QTY, Card Qty => operation.quantity
-                 * 3.  Gang# 跟 Job#
-                 * Gang# => operation.operation_code
-                 * Job# => operation.operation_code
-                 * 4.  Job Style  => operation.processingType
-                 * 5.  Machine Name => from screen
-                 * 6.  Start Time and End time => from screen
-                 * 7.  Duration(每個工序所需的工作時間) => from screen
-                 * 8.  工序名稱: ex: PT or Mid-Mag, Mid-Lam…等(若無也可) => machine.factoryOperation.displayNames
-                 * 9.  目前完成狀態，已完成，執行中跟未開始等 若有Pin也顯示出icon => from screen
-                 */
-                label.push('process id: ' + j[i].process.id);
-                label.push('task id: ' + j[i].data.id);
-                label.push('previous task id: ' + j[i].data.previousOperation);
-                label.push('next tasks: ' + j[i].data.nextOperations);
-                label.push("========================");
+                if (j[i].isDeleted === true) {
+                    // DO NOTHING
+                } else {
+                    var label = [];
+                    var blankLine = "                        ";
+                    /*
+                     * Job Flow UI
+                     * 每一個工序上顯示
+                     * 1.  PO# => operation.job.poNo
+                     * 2.  PO QTY (Gang的QTY 跟 Card Qty 依照不同工序需求顯示)
+                     * PO QTY => operation.job.comboQuantity
+                     * Gang QTY, Card Qty => operation.quantity
+                     * 3.  Gang# 跟 Job#
+                     * Gang# => operation.operation_code
+                     * Job# => operation.operation_code
+                     * 4.  Job Style  => operation.processingType
+                     * 5.  Machine Name => from screen
+                     * 6.  Start Time and End time => from screen
+                     * 7.  Duration(每個工序所需的工作時間) => from screen
+                     * 8.  工序名稱: ex: PT or Mid-Mag, Mid-Lam…等(若無也可) => machine.factoryOperation.displayNames
+                     * 9.  目前完成狀態，已完成，執行中跟未開始等 若有Pin也顯示出icon => from screen
+                     */
+                    label.push('process id: ' + j[i].process.id);
+                    label.push('task id: ' + j[i].data.id);
+                    label.push('previous task id: ' + j[i].data.previousOperation);
+                    label.push('next tasks: ' + j[i].data.nextOperations);
+                    label.push("========================");
 
-                label.push('PO#: ' + j[i].job.poNo);
-                label.push('PO QTY: ' + j[i].job.comboQuantity);
-                label.push(blankLine);
+                    label.push('PO#: ' + j[i].job.poNo);
+                    label.push('PO QTY: ' + j[i].job.comboQuantity);
+                    label.push(blankLine);
 
-                var jobStyle = j[i].data.processingType;
-                var operationCodeTitle = '', quantityTitle = '';
-                if (jobStyle === 'GANG') {
-                    operationCodeTitle = 'Gang#: ';
-                    quantityTitle = 'Gang QTY: ';
-                } else if (jobStyle === 'JOB') {
-                    operationCodeTitle = 'Job#: ';
-                    quantityTitle = 'Job QTY: ';
-                } else if (jobStyle === 'JOB_FILE') {
-                    operationCodeTitle = 'Job file#: ';
-                    quantityTitle = 'Job file QTY: ';
+                    var jobStyle = j[i].data.processingType;
+                    var operationCodeTitle = '', quantityTitle = '';
+                    if (jobStyle === 'GANG') {
+                        operationCodeTitle = 'Gang#: ';
+                        quantityTitle = 'Gang QTY: ';
+                    } else if (jobStyle === 'JOB') {
+                        operationCodeTitle = 'Job#: ';
+                        quantityTitle = 'Job QTY: ';
+                    } else if (jobStyle === 'JOB_FILE') {
+                        operationCodeTitle = 'Job file#: ';
+                        quantityTitle = 'Job file QTY: ';
+                    }
+                    label.push('Job Style: ' + j[i].data.processingType);
+                    label.push(operationCodeTitle + j[i].data.operationCode);
+                    label.push(quantityTitle + j[i].data.quantity);
+                    label.push(blankLine);
+
+                    label.push('Run on Machine: ' + j[i].row.description);
+                    label.push(blankLine);
+
+                    label.push('Start time: ' + moment(j[i].from).format('YYYY-MM-DD hh:mm'));
+                    label.push('Finish time: ' + moment(j[i].to).format('YYYY-MM-DD hh:mm'));
+                    label.push('Duration: ' + ((j[i].to - j[i].from) / 1000 / 60 / 60).toFixed(2) + ' (hrs)');
+                    label.push(blankLine);
+
+                    label.push('Finished: ' + (j[i].isFinished === true ? 'Y' : 'N'));
+                    label.push('Pin: ' + (j[i].isPin === true ? 'Y' : 'N'));
+                    label.push('In Processing: ' + (j[i].inProcessing === true ? 'Y' : 'N'));
+                    label.push(blankLine);
+
+                    label = label.join("\n");
+
+                    g.addNode(j[i].id.toString(), { label: label, color: j[i].data.color2.replace('0x', '#') });
+
+                    processTasksMap[j[i].process.id].push({
+                        id: j[i].id.toString(),
+                        previous: j[i].previousOperation,
+                        next: j[i].nextOperations,
+                        foo: j[i].data.factoryOperation.priority * 1,
+                        processId: j[i].process.id * 1,
+                        order: j[i].to.getTime()
+                    });
                 }
-                label.push('Job Style: ' + j[i].data.processingType);
-                label.push(operationCodeTitle + j[i].data.operationCode);
-                label.push(quantityTitle + j[i].data.quantity);
-                label.push(blankLine);
-
-                label.push('Run on Machine: ' + j[i].row.description);
-                label.push(blankLine);
-
-                label.push('Start time: ' + moment(j[i].from).format('YYYY-MM-DD hh:mm'));
-                label.push('Finish time: ' + moment(j[i].to).format('YYYY-MM-DD hh:mm'));
-                label.push('Duration: ' + ((j[i].to - j[i].from) / 1000 / 60 / 60).toFixed(2) + ' (hrs)');
-                label.push(blankLine);
-
-                label.push('Finished: ' + (j[i].isFinished === true ? 'Y' : 'N'));
-                label.push('Pin: ' + (j[i].isPin === true ? 'Y' : 'N'));
-                label.push('In Processing: ' + (j[i].inProcessing === true ? 'Y' : 'N'));
-                label.push(blankLine);
-
-                label = label.join("\n");
-
-                g.addNode(j[i].id.toString(), { label: label, color: j[i].data.color2.replace('0x', '#') });
-
-                processTasksMap[j[i].process.id].push({
-                    id: j[i].id.toString(),
-                    previous: j[i].previousOperation,
-                    next: j[i].nextOperations,
-                    foo: j[i].data.factoryOperation.priority * 1,
-                    processId: j[i].process.id * 1,
-                    order: j[i].to.getTime()
-                });
             }
 
             for (i = 0, j = test/*$scope.job.tasks*/, l = j.length; i < l; ++i) {
