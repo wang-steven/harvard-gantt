@@ -20,7 +20,7 @@ gantt.service('coloured', [function() {
 			var V = R *  0.500000 + G * -0.418688 + B * -0.081312 + 128;  // determines the chroma of the color
 			// console.log(Y, U, V);
 
-			return Y < 127;
+			return Y <= 192;
 		}
 	};
 }]);
