@@ -7,6 +7,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	$scope.maxHeight = 0;
 	$scope.showWeekends = true;
 	$scope.showNonWorkHours = true;
+	$scope.jumpToDateTime = moment(new Date()).format('YYYY-MM-DD');
 
 	$scope.loadServerConfiguration = function(config) {
 		var configuration = {
@@ -95,15 +96,16 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 		});
 	};
 
-	$scope.jumpToToday = function() {
-        var today = new Date();
-        $scope.jumpToDate(today);
-    };
+	$scope.jumpToDate = function(date) {
+		console.log(date);
+		var date = date === undefined ? new Date() : new Date(date);
+		$scope.centerDate(date);
+	};
 
 	$scope.triggerMaxHeight = function() {
 		if ($scope.maxHeight === 0) {
 			$scope.maxHeight = 320;// ;(window.outerHeight - (document.getElementById('form-box').offsetTop +
-			// document.getElementById('form-box').offsetHeight)) - 150;
+									// document.getElementById('form-box').offsetHeight)) - 150;
 		} else {
 			$scope.maxHeight = 0;
 		}
