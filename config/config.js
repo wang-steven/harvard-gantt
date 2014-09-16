@@ -71,16 +71,21 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	};
 
 	$scope.addMachines = function() {
-		// get machine json from server
-		$http({
-			method: 'GET',
-			url: $location.absUrl() + '/machines'
-		}).success(function(response, status, headers, config) {
-			$scope.loadData(response);
-		}).error(function() {
-			// load data from sample
-			$scope.loadData(getSampleData().data);
-		});
+		if (getSampleMachineData().data.length) {
+			console.log('have sample data, use it.');
+			$scope.loadData(getSampleMachineData().data);
+		} else {
+			// get machine json from server
+			$http({
+				method: 'GET',
+				url: $location.absUrl() + '/machines'
+			}).success(function(response, status, headers, config) {
+				$scope.loadData(response);
+			}).error(function() {
+				// load data from sample
+				$scope.loadData(getSampleData().data);
+			});
+		}
 	};
 
 	$scope.addMolds = function() {
@@ -105,7 +110,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	$scope.triggerMaxHeight = function() {
 		if ($scope.maxHeight === 0) {
 			$scope.maxHeight = 320;// ;(window.outerHeight - (document.getElementById('form-box').offsetTop +
-									// document.getElementById('form-box').offsetHeight)) - 150;
+			// document.getElementById('form-box').offsetHeight)) - 150;
 		} else {
 			$scope.maxHeight = 0;
 		}
