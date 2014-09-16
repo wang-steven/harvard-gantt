@@ -2,7 +2,7 @@ gantt.directive('ganttDepartment', ['$timeout', '$document', 'debounce', 'smartE
     var templateLocation = '', department;
 
     function sortDepartment(department) {
-        var tempArray = [], tempSubArray = [], sortFunction = function(a, b) { return a.sort - b.sort; };
+        var tempArray = [], tempSubArray = [], sortFunction = function(a, b) { return a.sortBy - b.sortBy; };
         for (var i = 0, k = _.keys(department), l = k.length; i < l; i++) {
             if (department[k[i]] !== undefined) {
                 tempSubArray = [];
@@ -10,7 +10,7 @@ gantt.directive('ganttDepartment', ['$timeout', '$document', 'debounce', 'smartE
                     for (var j = 0, m = _.keys(department[k[i]].sub), n = m.length; j < n; j++) {
                         tempSubArray.push({
                             name: m[j],
-                            sort: department[k[i]].sub[m[j]].sort,
+                            sortBy: department[k[i]].sub[m[j]].sortBy,
                             rows: department[k[i]].sub[m[j]].rows
                         });
                     }
@@ -18,7 +18,7 @@ gantt.directive('ganttDepartment', ['$timeout', '$document', 'debounce', 'smartE
                 }
                 tempArray.push({
                     name: k[i],
-                    sort: department[k[i]].sort,
+                    sortBy: department[k[i]].sortBy,
                     sub: tempSubArray,
                     rows: department[k[i]].rows
                 });

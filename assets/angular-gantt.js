@@ -590,6 +590,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             // and do other things
                             // console.log(response.data.data);
                             $scope.loadData(response.data.data);
+                            // Disable the gantt all operations, change to readonly.
+                            $scope.gantt.disable = true;
                         } else {
                             // TODO: bootstrap model
                             // Add button on the top to show the model dialog
@@ -2717,7 +2719,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 			var V = R *  0.500000 + G * -0.418688 + B * -0.081312 + 128;  // determines the chroma of the color
 			// console.log(Y, U, V);
 
-			return Y < 127;
+			return Y <= 192;
 		}
 	};
 }]);
@@ -2962,29 +2964,28 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
             worker.onmessage = function(event) {
                 rejectTaskMoving = event.data.rejectTaskMoving;
-                var originSetupFinishTime;
-                if (rejectTaskMoving === false) {
+                var originSetupFinishTime, dateFormat = 'YYYY-MM-DDTHH:mm:ss';
+
+                if (rejectTaskMoving === true) {
                     for (i = 0, j = event.data.tasksOnMark, l = j.length; i < l; ++i) {
-                        gantt.tasksMap[j[i].id].from = j[i].from;
-                        gantt.tasksMap[j[i].id].to = j[i].to;
-                        gantt.tasksMap[j[i].id].parallelFrom = j[i].parallelFrom;
-
-                        originSetupFinishTime = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime) - df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
-                        originSetupFinishTime = df.addMilliseconds(j[i].from, originSetupFinishTime, true);
-
-                        gantt.tasksMap[j[i].id].data.expectedStartTime = j[i].from.toISOString();
-                        gantt.tasksMap[j[i].id].data.expectedFinishTime = j[i].to.toISOString();
-                        gantt.tasksMap[j[i].id].data.expectedSetupFinishTime = originSetupFinishTime.toISOString();
-                        if (gantt.tasksMap[j[i].id].isParallel === true) {
-                            gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(originSetupFinishTime, gantt.tasksMap[j[i].id].data.s2sMins, true);
-                        } else {
-                            gantt.tasksMap[j[i].id].parallelFrom = gantt.tasksMap[j[i].id].to;
+                        if (gantt.tasksMap[j[i].id].rowHasBeenChanged === true &&
+                            gantt.tasksMap[j[i].id].preventRowId !== gantt.tasksMap[j[i].id].row.id) {
+                            gantt.tasksMap[j[i].id].row.removeTask(j[i].id);
+                            gantt.rowsMap[j[i].preventRowId].tasksMap[j[i].id] = gantt.tasksMap[j[i].id];
+                            gantt.rowsMap[j[i].preventRowId].tasks.push(gantt.tasksMap[j[i].id]);
+                            gantt.rowsMap[j[i].preventRowId].setTasksMinMaxDate();
+                            gantt.tasksMap[j[i].id].row = gantt.rowsMap[j[i].preventRowId];
+                            gantt.tasksMap[j[i].id].rowHasBeenChanged = false;
                         }
+                        gantt.tasksMap[j[i].id].from = df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
+                        gantt.tasksMap[j[i].id].to = df.clone(gantt.tasksMap[j[i].id].data.expectedFinishTime);
+                        gantt.tasksMap[j[i].id].parallelFrom = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime);
+                        gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(gantt.tasksMap[j[i].id].parallelFrom, gantt.tasksMap[j[i].id].data.s2sMins, true);
+
                         gantt.tasksMap[j[i].id].row.setMinMaxDateByTask(gantt.tasksMap[j[i].id]);
                         gantt.tasksMap[j[i].id].updatePosAndSize();
                         gantt.tasksMap[j[i].id].checkIfMilestone();
                     }
-                } else {
                     if (task.rowHasBeenChanged === true &&
                         task.preventRowId !== task.row.id) {
                         task.row.removeTask(task.id);
@@ -2994,10 +2995,43 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         task.row = gantt.rowsMap[task.preventRowId];
                         task.rowHasBeenChanged = false;
                     }
-                    task.from = task.data.expectedStartTime;
-                    task.to = task.data.expectedStartTime;
+                    task.from = df.clone(task.data.expectedStartTime);
+                    task.to = df.clone(task.data.expectedFinishTime);
                     task.parallelFrom = df.clone(task.data.expectedSetupFinishTime);
                     task.parallelFrom = df.addMinutes(task.parallelFrom, task.data.s2sMins, true);
+                } else {
+                    for (i = 0, j = event.data.tasksOnMark, l = j.length; i < l; ++i) {
+                        gantt.tasksMap[j[i].id].from = j[i].from;
+                        gantt.tasksMap[j[i].id].to = j[i].to;
+                        gantt.tasksMap[j[i].id].parallelFrom = j[i].parallelFrom;
+
+                        originSetupFinishTime = df.clone(gantt.tasksMap[j[i].id].data.expectedSetupFinishTime) - df.clone(gantt.tasksMap[j[i].id].data.expectedStartTime);
+                        originSetupFinishTime = df.addMilliseconds(j[i].from, originSetupFinishTime, true);
+
+                        gantt.tasksMap[j[i].id].data.expectedStartTime = moment(j[i].from).format(dateFormat);
+                        gantt.tasksMap[j[i].id].data.expectedFinishTime = moment(j[i].to).format(dateFormat);
+                        gantt.tasksMap[j[i].id].data.expectedSetupFinishTime = moment(originSetupFinishTime).format(dateFormat);
+                        if (gantt.tasksMap[j[i].id].isParallel === true) {
+                            gantt.tasksMap[j[i].id].parallelFrom = df.addMinutes(originSetupFinishTime, gantt.tasksMap[j[i].id].data.s2sMins, true);
+                        } else {
+                            gantt.tasksMap[j[i].id].parallelFrom = gantt.tasksMap[j[i].id].to;
+                        }
+                        gantt.tasksMap[j[i].id].row.setMinMaxDateByTask(gantt.tasksMap[j[i].id]);
+                        gantt.tasksMap[j[i].id].updatePosAndSize();
+                        gantt.tasksMap[j[i].id].checkIfMilestone();
+                    }
+
+                    originSetupFinishTime = df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime);
+                    originSetupFinishTime = df.addMilliseconds(task.from, originSetupFinishTime, true);
+
+                    task.data.expectedStartTime = moment(task.from).format(dateFormat);
+                    task.data.expectedFinishTime = moment(task.to).format(dateFormat);
+                    task.data.expectedSetupFinishTime = moment(originSetupFinishTime).format(dateFormat);
+                    if (task.isParallel === true) {
+                        task.parallelFrom = df.addMinutes(originSetupFinishTime, task.data.s2sMins, true);
+                    } else {
+                        task.parallelFrom = task.to;
+                    }
                 }
                 task.row.setMinMaxDateByTask(task);
                 task.updatePosAndSize();
@@ -3838,20 +3872,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
             };
         }]
     };
-}]);;gantt.service('color', [function() {
-	return {
-
-		/**
-		 *
-		 * @param  {[type]}  colorHexCode
-		 * @return {Boolean} true: dark coloured, false: light coloured
-		 */
-		isDarkColoured: function(colorHexCode) {
-
-		}
-	};
-}]);
-;gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', function ($window, $document, $timeout) {
+}]);;gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', function ($window, $document, $timeout) {
     var templateLocation = '';
     return {
         restrict: "E",
@@ -3913,6 +3934,31 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                                     target.dirty = true;
                                     target.isDeleted = true;
                                     target.isManual = true;
+
+                                    var process = target.gantt.processesMap[target.process.id];
+                                    var _operations = [];
+                                    _.each(process.operations, function(operation) {
+                                        if (operation !== target.id) {
+                                            _operations.push(operation);
+                                        }
+                                    });
+                                    process.operations = _operations;
+
+                                    var _previousOperation = null;
+                                    if (target.previousOperation !== null && target.gantt.tasksMap[target.previousOperation] !== undefined) {
+                                        _previousOperation = target.gantt.tasksMap[target.previousOperation].id;
+                                    }
+                                    if (target.nextOperations.length > 0) {
+                                        _.each(target.nextOperations, function(task_id) {
+                                            var task = target.gantt.tasksMap[task_id];
+
+                                            if (parseInt(task.previousOperation, 10) === parseInt(target.id, 10)) {
+                                                task.previousOperation = _previousOperation;
+                                            }
+                                        });
+                                    }
+
+
                                     $element.remove();
                                 }
                             break;
@@ -3993,7 +4039,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
     var templateLocation = '', department;
 
     function sortDepartment(department) {
-        var tempArray = [], tempSubArray = [], sortFunction = function(a, b) { return a.sort - b.sort; };
+        var tempArray = [], tempSubArray = [], sortFunction = function(a, b) { return a.sortBy - b.sortBy; };
         for (var i = 0, k = _.keys(department), l = k.length; i < l; i++) {
             if (department[k[i]] !== undefined) {
                 tempSubArray = [];
@@ -4001,7 +4047,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     for (var j = 0, m = _.keys(department[k[i]].sub), n = m.length; j < n; j++) {
                         tempSubArray.push({
                             name: m[j],
-                            sort: department[k[i]].sub[m[j]].sort,
+                            sortBy: department[k[i]].sub[m[j]].sortBy,
                             rows: department[k[i]].sub[m[j]].rows
                         });
                     }
@@ -4009,7 +4055,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                 }
                 tempArray.push({
                     name: k[i],
-                    sort: department[k[i]].sort,
+                    sortBy: department[k[i]].sortBy,
                     sub: tempSubArray,
                     rows: department[k[i]].rows
                 });
@@ -4242,77 +4288,81 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     }
                 }
 
-                var label = [];
-                var blankLine = "                        ";
-                /*
-                 * Job Flow UI
-                 * 每一個工序上顯示
-                 * 1.  PO# => operation.job.poNo
-                 * 2.  PO QTY (Gang的QTY 跟 Card Qty 依照不同工序需求顯示)
-                 * PO QTY => operation.job.comboQuantity
-                 * Gang QTY, Card Qty => operation.quantity
-                 * 3.  Gang# 跟 Job#
-                 * Gang# => operation.operation_code
-                 * Job# => operation.operation_code
-                 * 4.  Job Style  => operation.processingType
-                 * 5.  Machine Name => from screen
-                 * 6.  Start Time and End time => from screen
-                 * 7.  Duration(每個工序所需的工作時間) => from screen
-                 * 8.  工序名稱: ex: PT or Mid-Mag, Mid-Lam…等(若無也可) => machine.factoryOperation.displayNames
-                 * 9.  目前完成狀態，已完成，執行中跟未開始等 若有Pin也顯示出icon => from screen
-                 */
-                label.push('process id: ' + j[i].process.id);
-                label.push('task id: ' + j[i].data.id);
-                label.push('previous task id: ' + j[i].data.previousOperation);
-                label.push('next tasks: ' + j[i].data.nextOperations);
-                label.push("========================");
+                if (j[i].isDeleted === true) {
+                    // DO NOTHING
+                } else {
+                    var label = [];
+                    var blankLine = "                        ";
+                    /*
+                     * Job Flow UI
+                     * 每一個工序上顯示
+                     * 1.  PO# => operation.job.poNo
+                     * 2.  PO QTY (Gang的QTY 跟 Card Qty 依照不同工序需求顯示)
+                     * PO QTY => operation.job.comboQuantity
+                     * Gang QTY, Card Qty => operation.quantity
+                     * 3.  Gang# 跟 Job#
+                     * Gang# => operation.operation_code
+                     * Job# => operation.operation_code
+                     * 4.  Job Style  => operation.processingType
+                     * 5.  Machine Name => from screen
+                     * 6.  Start Time and End time => from screen
+                     * 7.  Duration(每個工序所需的工作時間) => from screen
+                     * 8.  工序名稱: ex: PT or Mid-Mag, Mid-Lam…等(若無也可) => machine.factoryOperation.displayNames
+                     * 9.  目前完成狀態，已完成，執行中跟未開始等 若有Pin也顯示出icon => from screen
+                     */
+                    label.push('process id: ' + j[i].process.id);
+                    label.push('task id: ' + j[i].data.id);
+                    label.push('previous task id: ' + j[i].data.previousOperation);
+                    label.push('next tasks: ' + j[i].data.nextOperations);
+                    label.push("========================");
 
-                label.push('PO#: ' + j[i].job.poNo);
-                label.push('PO QTY: ' + j[i].job.comboQuantity);
-                label.push(blankLine);
+                    label.push('PO#: ' + j[i].job.poNo);
+                    label.push('PO QTY: ' + j[i].job.comboQuantity);
+                    label.push(blankLine);
 
-                var jobStyle = j[i].data.processingType;
-                var operationCodeTitle = '', quantityTitle = '';
-                if (jobStyle === 'GANG') {
-                    operationCodeTitle = 'Gang#: ';
-                    quantityTitle = 'Gang QTY: ';
-                } else if (jobStyle === 'JOB') {
-                    operationCodeTitle = 'Job#: ';
-                    quantityTitle = 'Job QTY: ';
-                } else if (jobStyle === 'JOB_FILE') {
-                    operationCodeTitle = 'Job file#: ';
-                    quantityTitle = 'Job file QTY: ';
+                    var jobStyle = j[i].data.processingType;
+                    var operationCodeTitle = '', quantityTitle = '';
+                    if (jobStyle === 'GANG') {
+                        operationCodeTitle = 'Gang#: ';
+                        quantityTitle = 'Gang QTY: ';
+                    } else if (jobStyle === 'JOB') {
+                        operationCodeTitle = 'Job#: ';
+                        quantityTitle = 'Job QTY: ';
+                    } else if (jobStyle === 'JOB_FILE') {
+                        operationCodeTitle = 'Job file#: ';
+                        quantityTitle = 'Job file QTY: ';
+                    }
+                    label.push('Job Style: ' + j[i].data.processingType);
+                    label.push(operationCodeTitle + j[i].data.operationCode);
+                    label.push(quantityTitle + j[i].data.quantity);
+                    label.push(blankLine);
+
+                    label.push('Run on Machine: ' + j[i].row.description);
+                    label.push(blankLine);
+
+                    label.push('Start time: ' + moment(j[i].from).format('YYYY-MM-DD hh:mm'));
+                    label.push('Finish time: ' + moment(j[i].to).format('YYYY-MM-DD hh:mm'));
+                    label.push('Duration: ' + ((j[i].to - j[i].from) / 1000 / 60 / 60).toFixed(2) + ' (hrs)');
+                    label.push(blankLine);
+
+                    label.push('Finished: ' + (j[i].isFinished === true ? 'Y' : 'N'));
+                    label.push('Pin: ' + (j[i].isPin === true ? 'Y' : 'N'));
+                    label.push('In Processing: ' + (j[i].inProcessing === true ? 'Y' : 'N'));
+                    label.push(blankLine);
+
+                    label = label.join("\n");
+
+                    g.addNode(j[i].id.toString(), { label: label, color: j[i].data.color2.replace('0x', '#') });
+
+                    processTasksMap[j[i].process.id].push({
+                        id: j[i].id.toString(),
+                        previous: j[i].previousOperation,
+                        next: j[i].nextOperations,
+                        foo: j[i].data.factoryOperation.priority * 1,
+                        processId: j[i].process.id * 1,
+                        order: j[i].to.getTime()
+                    });
                 }
-                label.push('Job Style: ' + j[i].data.processingType);
-                label.push(operationCodeTitle + j[i].data.operationCode);
-                label.push(quantityTitle + j[i].data.quantity);
-                label.push(blankLine);
-
-                label.push('Run on Machine: ' + j[i].row.description);
-                label.push(blankLine);
-
-                label.push('Start time: ' + moment(j[i].from).format('YYYY-MM-DD hh:mm'));
-                label.push('Finish time: ' + moment(j[i].to).format('YYYY-MM-DD hh:mm'));
-                label.push('Duration: ' + ((j[i].to - j[i].from) / 1000 / 60 / 60).toFixed(2) + ' (hrs)');
-                label.push(blankLine);
-
-                label.push('Finished: ' + (j[i].isFinished === true ? 'Y' : 'N'));
-                label.push('Pin: ' + (j[i].isPin === true ? 'Y' : 'N'));
-                label.push('In Processing: ' + (j[i].inProcessing === true ? 'Y' : 'N'));
-                label.push(blankLine);
-
-                label = label.join("\n");
-
-                g.addNode(j[i].id.toString(), { label: label, color: j[i].data.color2.replace('0x', '#') });
-
-                processTasksMap[j[i].process.id].push({
-                    id: j[i].id.toString(),
-                    previous: j[i].previousOperation,
-                    next: j[i].nextOperations,
-                    foo: j[i].data.factoryOperation.priority * 1,
-                    processId: j[i].process.id * 1,
-                    order: j[i].to.getTime()
-                });
             }
 
             for (i = 0, j = test/*$scope.job.tasks*/, l = j.length; i < l; ++i) {
@@ -4996,11 +5046,11 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
 
                 data.rowId = data.rowId === undefined ? 0 : data.rowId;
                 data.taskId = data.taskId === undefined || data.taskId === 0 ? Object.keys($scope.$parent.gantt.tasksMap).length + 1000000 : data.taskId;
-                data.poNo = data.poNo === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[2] : null) : data.poNo;
-                data.comboId = data.comboId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[1] : null) : data.comboId;
-                data.operationCode = data.operationCode === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.tooltip2.split('|')[0] : null) : data.operationCode;
+                data.poNo = data.poNo === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.job.poNo : null) : data.poNo;
+                data.comboId = data.comboId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.job.comboId : null) : data.comboId;
+                data.operationCode = data.operationCode === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.operationCode : null) : data.operationCode;
                 data.processId = data.processId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.processId : 0) : data.processId;
-                data.productId = data.productId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? [] : 0) : data.productId;
+                data.productId = data.productId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.process.productId : 0) : data.productId;
                 data.processingType = data.processingType === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.processingType : null) : data.processingType;
                 data.previousTask = data.previousTask === undefined ? null : data.previousTask;
                 data.nextTask = data.nextTask === undefined ? [] : [data.nextTask];
@@ -5046,7 +5096,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                 // 1. Parallel = N
                 // 2. Start to Start Minutes = -1
 
-                if (data.poNo === null || data.comboId === null || data.productId === null || data.processId === null || data.processingType === null ||
+                if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
                     data.quantity === null || data.priority === null || data.expectedStartTime === null ||
                     data.expectedSetupFinishTime === null || data.expectedFinishTime === null) {
                     data_checking = false;
@@ -5077,7 +5127,6 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     error_message = '5';
                 }
 
-                console.log(data, data_checking);
 
                 if (data_checking === false || data.rowId === 0) {
                     alert('Data check failed!');
@@ -5155,7 +5204,6 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     row.setMinMaxDateByTask(task);
                     task.updatePosAndSize();
                     task.checkIfMilestone();
-                    console.log(task);
 
                     // Run the task worker to test the new or modified task.
 
@@ -5222,7 +5270,6 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                             for (i = 0, k = _.keys($scope.$parent.gantt.jobsMap), l = k.length; i < l; ++i) {
                                 if ($scope.$parent.gantt.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
                                     $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                    console.log($scope.editTask.job);
                                 }
                             }
                         break;
@@ -5274,7 +5321,6 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                                         value: $scope.$parent.gantt.jobsMap[k[i]].comboId
                                     });
                                     $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                    console.log($scope.editTask.job);
                                 }
                             }
                         break;
@@ -5332,7 +5378,6 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                                     value: $scope.$parent.gantt.jobsMap[k[i]].comboId
                                 });
                                 $scope.editTask.job = $scope.$parent.gantt.jobsMap[k[i]];
-                                console.log($scope.editTask.job);
                             }
                         }
                     break;
