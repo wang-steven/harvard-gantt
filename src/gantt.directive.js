@@ -458,7 +458,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                                         departmentMap[department.name].sub[department.subDept].rows.push(r[k[i]]);
                                     } else {
                                         departmentMap[department.name].sub[department.subDept] = {
-                                            sort: department.sort || 0,
+                                            sortBy: department.sortBy || 0,
                                             rows: [r[k[i]]]
                                         };
                                     }
@@ -468,11 +468,11 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                                 departmentMap[department.name] = {
                                     sub: {},
                                     rows: [],
-                                    sort: department.sort || 0
+                                    sortBy: department.sortBy || 0
                                 };
                                 if (department.subDept !== undefined && department.subDept !== '') {
                                     departmentMap[department.name].sub[department.subDept] = {
-                                        sort: department.sort || 0,
+                                        sortBy: department.sortBy || 0,
                                         rows: [r[k[i]]]
                                     };
                                 }
