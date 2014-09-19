@@ -141,6 +141,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             // All those changes need a recalculation of the header columns
             $scope.$watch('viewScale+columnWidth+columnSubScale+fromDate+toDate+firstDayOfWeek+weekendDays+showWeekends+workHours+showNonWorkHours', function(newValue, oldValue) {
                 if (!angular.equals(newValue, oldValue)) {
+                    console.log($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     $scope.gantt.setViewScale($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     if (!$scope.gantt.reGenerateColumns()) {
                         // Re-generate failed, e.g. because there was no previous date-range. Try to apply the default range.
@@ -244,8 +245,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     //     default:
                     //         from = df.addMonths(date, -expand, true);
                     // }
-                    from = date;
-                    to = date;
+                    // $scope.gantt.expandDefaultDateRange(from, to);
                 } else {
                     from = date;
                     switch($scope.viewScale) {
@@ -265,9 +265,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         default:
                             to = df.addMonths(date, expand, true);
                     }
+                    $scope.gantt.expandDefaultDateRange(from, to);
                 }
-
-                $scope.gantt.expandDefaultDateRange(from, to);
             });
 
             $scope.raiseLabelsResized = function(width) {
@@ -437,14 +436,14 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
                 $timeout(function() {
                     $scope.$apply(function() {
-                        var columnOffset = $scope.gantt.getLastColumn().getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor();
-                        console.log(columnOffset, $scope.ganttScroll[0].scrollWidth, $scope.gantt.defaultDateRange);
-                        if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
-                            var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor()));
-                            $scope.autoExpandColumns($scope.ganttScroll[0], $scope.gantt.getLastColumn().date, 'right', addColumns);
+                        // var columnOffset = $scope.gantt.getLastColumn().getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor();
+                        // if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
+                        //     var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor()));
+                        //     console.log(addColumns);
+                        //     $scope.autoExpandColumns($scope.ganttScroll[0], $scope.gantt.getLastColumn().date, 'right', addColumns);
 
-                            $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.getLastColumn().date);
-                        }
+                        //     $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.getLastColumn().date);
+                        // }
 
                         $scope.gantt.departmentMap = {};
                         var departmentMap = {};
@@ -977,7 +976,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i < 60; i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), i, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+(date.getHours() < 10 ? '0'+date.getHours() : date.getHours())+':'+(i < 10 ? '0'+i : i)+':00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, cDate.getHours());
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {
@@ -1041,7 +1041,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i<24; i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i, 0, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+(i < 10 ? '0'+i : i)+':00:00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, i);
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {
@@ -1105,7 +1106,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i<(24 / hoursDivide); i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i*hoursDivide, 0, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+((i*hoursDivide) < 10 ? '0'+(i*hoursDivide) : i*hoursDivide)+':00:00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, i*hoursDivide);
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {
@@ -2727,14 +2729,15 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
     // Date calculations from: http://www.datejs.com/ | MIT License
     return {
         isNumber: function(n) { return !isNaN(parseFloat(n)) && isFinite(n); },
-        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o.constructor === String);},
+        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o.constructor === String); },
+        isDate: function(d) { return typeof d == "object" && d.constructor === Date; },
         clone: function(date) {
             if (this.isString(date)) {
-                return moment(date, 'YYYY-MM-DDTHH:mm:ss').toDate();
-            } else if (this.isNumber(date)) {
-                return new Date(date);
+                return moment(date, 'YYYY-MM-DDTHH:mm:ss').clone().toDate();
+            } else if (this.isDate(date) || this.isNumber(date)) {
+                return moment(date).clone().toDate();
             } else {
-                return new Date(date.getTime());
+                return moment(Date.now()).clone().toDate();
             }
         },
         setSecondsZero: function(date, clone) {
@@ -2758,14 +2761,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             return res;
         },
         setTimeComponent: function(date, milliseconds) {
-            return new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-                0,
-                0,
-                0,
-                milliseconds);
+            return moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T00:00:00.'+milliseconds).toDate();
         },
         setToFirstDayOfMonth: function(date, clone) {
             var res = clone === true ? this.clone(date) : date;
@@ -2828,7 +2825,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             return date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0 && date.getMilliseconds() === 0;
         },
         getDaysInMonth: function(date) {
-            return new Date(date.getYear(), date.getMonth()+1, 0).getDate();
+            return moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+'-01T00:00:00').daysInMonth();
         },
         getWeek: function(date) {
             /* Returns the number of the week. The number is calculated according to ISO 8106 */
@@ -3754,7 +3751,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                     process: task.process.id,
                     left: task.from - df.clone(task.data.expectedStartTime),
                     right: task.to - df.clone(task.data.expectedFinishTime),
-                    today: new Date()
+                    today: moment(Date.now()).toDate()
                 };
 
                 if (task.isParallel === true) {
@@ -4413,7 +4410,7 @@ gantt.filter('ganttColumnPaginationLimit', [ '_', function(_) {
                                     if (link_last) g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
                                 }
                             }
-                        } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous === false)) &&
+                        } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
                             g.hasNode(k[i] + '_first')) {
                             g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
                         }
