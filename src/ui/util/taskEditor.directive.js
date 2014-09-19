@@ -265,6 +265,36 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     task.updatePosAndSize();
                     task.checkIfMilestone();
 
+                    if (task.process.id in $scope.$parent.gantt.processesMap) {
+                        process = $scope.$parent.gantt.processesMap[task.process.id];
+                        process.addTask(task);
+                        process.addPrevious(task.process.previousProcesses);
+                    } else {
+                        process = new Processes(task.process, $scope.$parent.gantt);
+                        process.addTask(task);
+                        process.addPrevious(task.process.previousProcesses);
+                        $scope.$parent.gantt.processesMap[task.process.id] = process;
+                    }
+
+                    var job;
+                    if (task.job.id in $scope.$parent.gantt.jobsMap) {
+                        job = $scope.$parent.gantt.jobsMap[task.job.id];
+                        job.addTask($scope.$parent.gantt.rowKey, task);
+                    } else {
+                        job = new Jobs(task.job, $scope.$parent.gantt);
+                        job.addTask($scope.$parent.gantt.rowKey, task);
+
+                        $scope.$parent.gantt.jobsMap[task.job.id] = job;
+                    }
+
+                    for (i = 0, l = _.keys($scope.$parent.gantt.processesMap); i < l.length; ++i) {
+                        for (j = 0, k = $scope.$parent.gantt.processesMap[l[i]].previous; j < k.length; ++j) {
+                            if ($scope.$parent.gantt.processesMap[k[j]] !== undefined) {
+                                $scope.$parent.gantt.processesMap[k[j]].addNext([$scope.$parent.gantt.processesMap[l[i]].id]);
+                            }
+                        }
+                    }
+
                     // Run the task worker to test the new or modified task.
 
                     $scope.$parent.gantt.showOnProcessing = true; // Lightbox
