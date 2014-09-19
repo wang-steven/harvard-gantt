@@ -1,17 +1,19 @@
 importScripts('underscore.min.js');
+importScripts('moment.min.js');
 
 var dateFunction = function () {
     // Date calculations from: http://www.datejs.com/ | MIT License
     return {
         isNumber: function(n) { return !isNaN(parseFloat(n)) && isFinite(n); },
-        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o.constructor === String);},
+        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o.constructor === String); },
+        isDate: function(d) { return typeof d == "object" && d.constructor === Date; },
         clone: function(date) {
             if (this.isString(date)) {
-                return new Date(Date.parse(date));
-            } else if (this.isNumber(date)) {
-                return new Date(date);
+                return moment(date, 'YYYY-MM-DDTHH:mm:ss').clone().toDate();
+            } else if (this.isDate(date) || this.isNumber(date)) {
+                return moment(date).clone().toDate();
             } else {
-                return new Date(date.getTime());
+                return moment(Date.now()).clone().toDate();
             }
         },
         setSecondsZero: function(date, clone) {
@@ -35,14 +37,8 @@ var dateFunction = function () {
             return res;
         },
         setTimeComponent: function(date, milliseconds) {
-            return new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-                0,
-                0,
-                0,
-                milliseconds);
+            return moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T00:00:00.'+milliseconds).toDate();
         },
         setToFirstDayOfMonth: function(date, clone) {
             var res = clone === true ? this.clone(date) : date;
@@ -105,7 +101,7 @@ var dateFunction = function () {
             return date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0 && date.getMilliseconds() === 0;
         },
         getDaysInMonth: function(date) {
-            return new Date(date.getYear(), date.getMonth()+1, 0).getDate();
+            return moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+'-01T00:00:00').daysInMonth();
         },
         getWeek: function(date) {
             /* Returns the number of the week. The number is calculated according to ISO 8106 */

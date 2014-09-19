@@ -141,6 +141,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             // All those changes need a recalculation of the header columns
             $scope.$watch('viewScale+columnWidth+columnSubScale+fromDate+toDate+firstDayOfWeek+weekendDays+showWeekends+workHours+showNonWorkHours', function(newValue, oldValue) {
                 if (!angular.equals(newValue, oldValue)) {
+                    console.log($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     $scope.gantt.setViewScale($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     if (!$scope.gantt.reGenerateColumns()) {
                         // Re-generate failed, e.g. because there was no previous date-range. Try to apply the default range.
@@ -244,8 +245,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     //     default:
                     //         from = df.addMonths(date, -expand, true);
                     // }
-                    from = date;
-                    to = date;
+                    // $scope.gantt.expandDefaultDateRange(from, to);
                 } else {
                     from = date;
                     switch($scope.viewScale) {
@@ -265,9 +265,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         default:
                             to = df.addMonths(date, expand, true);
                     }
+                    $scope.gantt.expandDefaultDateRange(from, to);
                 }
-
-                $scope.gantt.expandDefaultDateRange(from, to);
             });
 
             $scope.raiseLabelsResized = function(width) {
@@ -437,14 +436,14 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
                 $timeout(function() {
                     $scope.$apply(function() {
-                        var columnOffset = $scope.gantt.getLastColumn().getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor();
-                        console.log(columnOffset, $scope.ganttScroll[0].scrollWidth, $scope.gantt.defaultDateRange);
-                        if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
-                            var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor()));
-                            $scope.autoExpandColumns($scope.ganttScroll[0], $scope.gantt.getLastColumn().date, 'right', addColumns);
+                        // var columnOffset = $scope.gantt.getLastColumn().getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor();
+                        // if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
+                        //     var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor()));
+                        //     console.log(addColumns);
+                        //     $scope.autoExpandColumns($scope.ganttScroll[0], $scope.gantt.getLastColumn().date, 'right', addColumns);
 
-                            $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.getLastColumn().date);
-                        }
+                        //     $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.getLastColumn().date);
+                        // }
 
                         $scope.gantt.departmentMap = {};
                         var departmentMap = {};

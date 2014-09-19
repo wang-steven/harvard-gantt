@@ -49,7 +49,8 @@ gantt.factory('ColumnGenerator', [ 'Column', 'dateFunctions', function (Column, 
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i < 60; i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), i, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+(date.getHours() < 10 ? '0'+date.getHours() : date.getHours())+':'+(i < 10 ? '0'+i : i)+':00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, cDate.getHours());
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {
@@ -113,7 +114,8 @@ gantt.factory('ColumnGenerator', [ 'Column', 'dateFunctions', function (Column, 
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i<24; i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i, 0, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+(i < 10 ? '0'+i : i)+':00:00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, i);
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {
@@ -177,7 +179,8 @@ gantt.factory('ColumnGenerator', [ 'Column', 'dateFunctions', function (Column, 
                 var isWeekend = checkIsWeekend(weekendDaysMap, date.getDay());
 
                 for (var i = 0; i<(24 / hoursDivide); i++) {
-                    var cDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i*hoursDivide, 0, 0);
+                    var cDate = moment(date.getFullYear()+'-'+((date.getMonth() + 1) < 10 ? '0'+(date.getMonth() + 1) : (date.getMonth() + 1))+
+                        '-'+(date.getDate() < 10 ? '0'+date.getDate() : date.getDate())+'T'+((i*hoursDivide) < 10 ? '0'+(i*hoursDivide) : i*hoursDivide)+':00:00').toDate();
                     var isWorkHour = checkIsWorkHour(workHoursMap, i*hoursDivide);
 
                     if ((isWeekend && showWeekends || !isWeekend) && (!isWorkHour && showNonWorkHours || isWorkHour)) {

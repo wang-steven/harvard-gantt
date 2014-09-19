@@ -178,7 +178,7 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                                     if (link_last) g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
                                 }
                             }
-                        } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous === false)) &&
+                        } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
                             g.hasNode(k[i] + '_first')) {
                             g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
                         }

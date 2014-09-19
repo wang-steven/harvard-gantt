@@ -339,7 +339,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     process: task.process.id,
                     left: task.from - df.clone(task.data.expectedStartTime),
                     right: task.to - df.clone(task.data.expectedFinishTime),
-                    today: new Date()
+                    today: moment(Date.now()).toDate()
                 };
 
                 if (task.isParallel === true) {
