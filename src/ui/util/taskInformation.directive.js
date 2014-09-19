@@ -19,9 +19,10 @@ gantt.directive('ganttTaskInformation', ['$window', '$document', '$timeout', 'da
         controller: ['$scope', '$element', function ($scope, $element) {
             var url = $scope.$parent.gantt.ajaxUrl.serverLocation + $scope.$parent.gantt.ajaxUrl.getMoreInformationPage.replace('#operationIds#', $scope.task.id);
 
-            $scope.checkUrl = '';
+            $scope.checkUrl = url;
             $scope.gantt = $scope.$parent.gantt;
 
+            // TODO: URL Check
             // $http({
             //     method: 'get',
             //     url: url,
