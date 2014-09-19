@@ -6,3 +6,5 @@ bower_components
 *.sublime-*
 *.swp
 HtmlGantt.iml
+assets/angular-gantt.js
+assets/angular-gantt.min.js

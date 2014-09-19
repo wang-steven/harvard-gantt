@@ -79,7 +79,7 @@
             max-height="maxHeight" auto-expand="true" allow-row-sorting="false" allow-task-resizing="false" allow-task-row-switching="true"
             server-config="loadServerConfiguration({serverLocation: '', jsLocationPrefix: '/'})"
             disable="false"
-            template-url="/template/gantt.tmpl.html"
+            template-url="template/gantt.tmpl.html"
             on-gantt-ready="addSamples()" on-row-added="rowAddEvent(event)" on-row-clicked="rowClickEvent(event)" on-row-updated="rowUpdateEvent(event)"
             on-scroll="scrollEvent(event)" on-task-clicked="taskEvent(event)" on-task-updated="taskUpdate(event)"></gantt>
         </div>
@@ -96,31 +96,14 @@
 <script src="assets/d3.v3.min.js" defer></script>
 <script src="assets/graphlib.min.js" defer></script>
 <script src="assets/dagre-d3.min.js" defer></script>
-<!--
-<script src="assets/plugins/chardinjs/chardinjs.min.js" defer></script>
-<script src="assets/plugins/json/form2js.js" defer></script>
-<script src="assets/plugins/bootstrap-paginator.min.js" defer></script>
-<script src="assets/plugins/jquery.number.min.js" defer></script>
-<script src="assets/plugins/jquery.cookie.js" defer></script>
-<script src="assets/plugins/softleader/jquery.softleader.js" defer></script>
-<script src="assets/plugins/softleader/jquery.softleader.grid.js" defer></script>
-<script src="assets/plugins/softleader/jquery.softleader.cookie.js" defer></script>
-<script src="assets/plugins/jquery-dateFormat-master/dist/jquery-dateFormat.min.js" defer></script>
-<script src="assets/plugins/blockui-master/jquery.blockUI.js" defer></script>
-<script src="assets/plugins/jquery.inputmask.js" defer></script>
-<script src="assets/plugins/jquery.inputmask.extensions.js" defer></script>
-<script src="assets/plugins/jquery.inputmask.numeric.extensions.js" defer></script>
-<script src="assets/plugins/jquery.inputmask.date.extensions.js" defer></script>
--->
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="assets/angular.min.js"></script>
+<script src="assets/angular.js"></script>
 <script src="assets/underscore.min.js"></script>
 <script src="assets/moment.min.js"></script>
-<script src="demo_sample_data/4types.js"></script>
-<script src="assets/demo_sample_data.js"></script>
+<script src="demo_sample_data/large.js"></script>
 <script src="assets/demo.js"></script>
 <script src="assets/angular-gantt.js"></script>
 <script src="assets/angular-ui-tree.js"></script>

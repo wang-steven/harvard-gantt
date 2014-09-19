@@ -11,7 +11,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 
     $scope.loadServerConfiguration = function(config) {
         var configuration = {
-            serverLocation: (config.serverLocation || '/gantt'),
+            serverLocation: (config.serverLocation || ''),
             jsLocationPrefix: (config.jsLocationPrefix || '/'),
             saveGanttUrl: (config.saveGanttUrl || '/save')//,
             //getPoUrl: (config.getPoUrl || '/get-po'),
