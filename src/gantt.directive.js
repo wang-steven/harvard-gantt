@@ -141,12 +141,22 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             // All those changes need a recalculation of the header columns
             $scope.$watch('viewScale+columnWidth+columnSubScale+fromDate+toDate+firstDayOfWeek+weekendDays+showWeekends+workHours+showNonWorkHours', function(newValue, oldValue) {
                 if (!angular.equals(newValue, oldValue)) {
-                    console.log($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     $scope.gantt.setViewScale($scope.viewScale, $scope.columnWidth, $scope.columnSubScale, $scope.firstDayOfWeek, $scope.weekendDays, $scope.showWeekends, $scope.workHours, $scope.showNonWorkHours);
                     if (!$scope.gantt.reGenerateColumns()) {
                         // Re-generate failed, e.g. because there was no previous date-range. Try to apply the default range.
                         $scope.gantt.expandDefaultDateRange($scope.fromDate, $scope.toDate);
                     }
+
+                    $timeout(function() {
+                        $scope.$apply(function() {
+                            var taskRange = $scope.gantt.getTasksDateRange();
+                            var columnOffset = $scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor();
+                            if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
+                                var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
+                                $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.from, 'right', addColumns);
+                            }
+                        });
+                    }, 10);
                 }
             });
 
@@ -225,6 +235,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
                 var from, to;
                 expand = expand === undefined ? 1 : parseInt(expand, 10);
+
+                console.log(expand);
 
                 // Disable left expand
                 if (direction === "left") {
@@ -436,14 +448,12 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
                 $timeout(function() {
                     $scope.$apply(function() {
-                        // var columnOffset = $scope.gantt.getLastColumn().getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor();
-                        // if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
-                        //     var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate($scope.gantt.getLastColumn().date) * $scope.getPxToEmFactor()));
-                        //     console.log(addColumns);
-                        //     $scope.autoExpandColumns($scope.ganttScroll[0], $scope.gantt.getLastColumn().date, 'right', addColumns);
-
-                        //     $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.getLastColumn().date);
-                        // }
+                        var taskRange = $scope.gantt.getTasksDateRange();
+                        var columnOffset = $scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor();
+                        if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
+                            var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
+                            $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.from, 'right', addColumns);
+                        }
 
                         $scope.gantt.departmentMap = {};
                         var departmentMap = {};

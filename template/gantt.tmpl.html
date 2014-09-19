@@ -303,7 +303,7 @@
     <!-- Task Information -->
     <script type="text/ng-template" id="gantt.information.tmpl.html">
       <div class="task-information">
-        <iframe ng-src="checkUrl()" width="100%" height="90%"></iframe>
+        <iframe ng-src="{{ checkUrl }}" width="100%" height="90%"></iframe>
         <button class="btn btn-default" type="button" ng-click="gantt.showTaskInformation = undefined">Close</button>
       </div>
     </script>

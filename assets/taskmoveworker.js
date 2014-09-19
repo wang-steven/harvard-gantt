@@ -210,7 +210,11 @@ function shiftToRight(task, processesMap, tasksMap, timestamp) {
                 }
             // Not really overlap.
             } else {
-                if (task.from > tasksMap[k[i]].to &&
+                if (task.from < tasksMap[k[i]].from &&
+                    processesMap[tasksMap[k[i]].process.id].next.indexOf(task.process.id) >= 0) {
+                    rejectTaskMoving = true;
+                    return nextRoundTasks;
+                } else if (task.from > tasksMap[k[i]].to &&
                     (processesMap[tasksMap[k[i]].process.id].previous.indexOf(task.process.id) >= 0 ||
                     task.id === tasksMap[k[i]].perviousOperation ||
                     task.nextOperations.indexOf(tasksMap[k[i]].id) >= 0)) {
