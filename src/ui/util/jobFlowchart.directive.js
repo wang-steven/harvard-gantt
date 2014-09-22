@@ -112,6 +112,7 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                         next: j[i].nextOperations,
                         foo: j[i].data.factoryOperation.priority * 1,
                         processId: j[i].process.id * 1,
+                        parallel: j[i].isParallel,
                         order: j[i].to.getTime()
                     });
                 }
@@ -154,40 +155,52 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                 }
             }
             for (i = 0, k = _.keys(processTasksMap), l = k.length; i < l; ++i) {
-                for (m = 0, n = processTasksMap[k[i]], o = n.length; m < o; ++m) {
-                    if (foo[k[i]].length === 1) {
-                        if (g.hasNode(k[i] + '_last')) {
-                            g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
-                        }
-                        if (g.hasNode(k[i] + '_first') && n[m].foo === n[0].foo) {
-                            g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
-                        }
-                    } else {
-                        if (g.hasNode(n[m].id.toString()) && g.hasNode(n[m].previous)) {
-                            g.addEdge(null, n[m].previous, n[m].id.toString(), {});
-                            if (n[m].foo === n[o - 1].foo &&
-                                g.hasNode(k[i] + '_last')) {
-                                if (n[m].next.length > 0) {
-                                    for(p = 0, q = n[m].next; p < q.length; ++p) {
-                                        if (g.hasNode(q[p].toString())) continue;
-                                        g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
-                                    }
-                                } else {
-                                    var link_last = true;
-                                    for(p = 0, q = processTasksMap[n[m].processId]; p < q.length; ++p) {
-                                        if (g.hasNode(q[p].id) &&
-                                            q[p].previous === n[m].id.toString()
-                                            ) {
-                                            link_last = false;
-                                            break;
-                                        }
-                                    }
-                                    if (link_last) g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
+                if (processTasksMap[k[i]].length > 0) {
+                    for (m = 0, n = processTasksMap[k[i]], o = n.length; m < o; ++m) {
+                        var checkPriority = false;
+
+                        if (foo[k[i]].length === 1 && processTasksMap[k[i]].length > 1) {
+                            for (r = 0, p = processTasksMap[k[i]], q = p.length; r < q; ++r) {
+                                if (p.parallel === true) {
+                                    checkPriority = true;
+                                    break;
                                 }
                             }
-                        } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
-                            g.hasNode(k[i] + '_first')) {
-                            g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
+                        }
+                        if (checkPriority === true && foo[k[i]].length === 1) {
+                            if (g.hasNode(k[i] + '_last')) {
+                                g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
+                            }
+                            if (g.hasNode(k[i] + '_first') && n[m].foo === n[0].foo) {
+                                g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
+                            }
+                        } else {
+                            if (g.hasNode(n[m].id.toString()) && g.hasNode(n[m].previous)) {
+                                g.addEdge(null, n[m].previous, n[m].id.toString(), {});
+                                if (n[m].foo === n[o - 1].foo &&
+                                    g.hasNode(k[i] + '_last')) {
+                                    if (n[m].next.length > 0) {
+                                        for(p = 0, q = n[m].next; p < q.length; ++p) {
+                                            if (g.hasNode(q[p].toString())) continue;
+                                            g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
+                                        }
+                                    } else {
+                                        var link_last = true;
+                                        for(p = 0, q = processTasksMap[n[m].processId]; p < q.length; ++p) {
+                                            if (g.hasNode(q[p].id) &&
+                                                q[p].previous === n[m].id.toString()
+                                                ) {
+                                                link_last = false;
+                                                break;
+                                            }
+                                        }
+                                        if (link_last) g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
+                                    }
+                                }
+                            } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
+                                g.hasNode(k[i] + '_first')) {
+                                g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
+                            }
                         }
                     }
                 }
