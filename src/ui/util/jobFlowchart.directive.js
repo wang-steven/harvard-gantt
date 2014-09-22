@@ -38,19 +38,6 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                     // DO NOTHING
                 } else {
                     processTasksMap[j[i].process.id] = [];
-                    g.addNode(j[i].process.id.toString(), { label: 'Process ' + j[i].process.id.toString() });
-
-                    if (process_id !== j[i].process.id) {
-                        if (process_id !== undefined && g.hasNode(process_id + '_last') === false) {
-                            g.addNode(process_id + '_last', { label: '' });
-                            g.parent(process_id + '_last', process_id.toString());
-                        }
-                        if (g.hasNode(j[i].process.id + '_first') === false) {
-                            g.addNode(j[i].process.id + '_first', { label: '' });
-                            g.parent(j[i].process.id + '_first', j[i].process.id.toString());
-                            process_id = j[i].process.id;
-                        }
-                    }
                 }
 
                 if (j[i].isDeleted === true) {
@@ -130,6 +117,24 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                 }
             }
 
+            for (i = 0, k = _.keys(processTasksMap), l = k.length; i < l; ++i) {
+                if (processTasksMap[k[i]].length > 0) {
+                    g.addNode(k[i].toString(), { label: 'Process ' + k[i].toString() });
+
+                    if (process_id !== k[i]) {
+                        if (process_id !== undefined && g.hasNode(process_id + '_last') === false) {
+                            g.addNode(process_id + '_last', { label: '' });
+                            g.parent(process_id + '_last', process_id.toString());
+                        }
+                        if (g.hasNode(k[i].toString() + '_first') === false) {
+                            g.addNode(k[i].toString() + '_first', { label: '' });
+                            g.parent(k[i].toString() + '_first', k[i].toString());
+                            process_id = k[i];
+                        }
+                    }
+                }
+            }
+
             for (i = 0, j = test/*$scope.job.tasks*/, l = j.length; i < l; ++i) {
                 if (g.hasNode(j[i].id.toString()) && g.hasNode(j[i].process.id.toString())) {
                     g.parent(j[i].id.toString(), j[i].process.id.toString());
@@ -137,12 +142,14 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
             }
 
             for (i = 0, k = _.keys(processTasksMap), l = k.length; i < l; ++i) {
-                processTasksMap[k[i]].sort(processTaskSortable);
-                for (m = 0, n = processTasksMap[k[i]], o = n.length; m < o; ++m) {
-                    if (k[i] in foo) {
-                        foo[k[i]] = _.union(foo[k[i]], [n[m].foo]);
-                    } else {
-                        foo[k[i]] = [n[m].foo];
+                if (processTasksMap[k[i]].length > 0) {
+                    processTasksMap[k[i]].sort(processTaskSortable);
+                    for (m = 0, n = processTasksMap[k[i]], o = n.length; m < o; ++m) {
+                        if (k[i] in foo) {
+                            foo[k[i]] = _.union(foo[k[i]], [n[m].foo]);
+                        } else {
+                            foo[k[i]] = [n[m].foo];
+                        }
                     }
                 }
             }
