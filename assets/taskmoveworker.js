@@ -210,10 +210,11 @@ function shiftToRight(task, processesMap, tasksMap, timestamp) {
                 }
             // Not really overlap.
             } else {
-                if ((tasksMap[k[i]].from >= task.from &&
+                if (df.clone(task.data.expectedStartTime) >= task.from &&
+                    ((tasksMap[k[i]].from >= task.from &&
                     processesMap[tasksMap[k[i]].process.id].previous.indexOf(task.process.id) >= 0) ||
                     (task.from >= tasksMap[k[i]].from &&
-                    processesMap[task.process.id].next.indexOf(tasksMap[k[i]].process.id) >= 0)) {
+                    processesMap[task.process.id].next.indexOf(tasksMap[k[i]].process.id) >= 0))) {
                     rejectTaskMoving = true;
                     return nextRoundTasks;
                 } else if (task.from > tasksMap[k[i]].to &&

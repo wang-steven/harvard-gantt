@@ -32,9 +32,7 @@ gantt.service('taskWorker', [ 'dateFunctions', function (df) {
                     isParallel: gantt.tasksMap[k[i]].isParallel,
                     parallelFrom: gantt.tasksMap[k[i]].parallelFrom,
                     nextOperations: gantt.tasksMap[k[i]].nextOperations,
-                    process: {
-                        id: gantt.tasksMap[k[i]].process.id
-                    },
+                    process: gantt.tasksMap[k[i]].process,
                     row: {
                         id: gantt.tasksMap[k[i]].row.id
                     }
