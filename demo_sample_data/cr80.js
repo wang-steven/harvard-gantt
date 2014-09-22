@@ -18,7 +18,7 @@ return {
         "code" : "Printing Dept_",
         "name" : "Printing Dept",
         "subDept" : "",
-        "sort" : 7
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 90,
@@ -35,34 +35,34 @@ return {
       "descript" : "PT",
       "displayNames" : "PT",
       "needMachine" : true,
-      "priority" : 2
+      "priority" : 200
     },
-    "title" : "Data Format|Data Approval|Material|Sheet Size|Combo Type",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Material|Sheet Size|Combo Type",
     "currentTimeWorks" : 0,
     "online" : true
   },
   "operationQueue" : [ {
-    "id" : "83532",
-    "oid" : "83532",
+    "id" : "104257",
+    "oid" : "104257",
     "part" : 0,
-    "operationCode" : "1480020-GB",
-    "priority" : 200,
+    "operationCode" : "007844F",
+    "priority" : 190,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11076,
+      "id" : 16530,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
+      "operations" : [ "104256", "104257", "104258" ],
       "previousProcesses" : [ ],
-      "productId" : null
+      "productId" : 2208
     },
-    "previousOperation" : null,
-    "nextOperations" : [ "83533" ],
+    "previousOperation" : "104256",
+    "nextOperations" : [ "104258" ],
     "runOnMachineId" : 1,
     "actualRunOnMachineId" : null,
     "quantity" : 13020,
@@ -74,20 +74,21 @@ return {
       "descript" : "PT",
       "displayNames" : "PT",
       "needMachine" : true,
-      "priority" : 2
+      "priority" : 200
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
     "setupTime" : 90,
-    "productionTime" : 20,
+    "productionTime" : 21,
     "productionCapacity" : 31,
     "s2sMins" : -1,
     "up" : 90,
     "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T14:45:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T16:15:00.000",
-    "expectedFinishTime" : "2014-08-19T16:35:00.000",
+    "face" : "F",
+    "expectedStartTime" : "2014-09-20T14:45:00.000",
+    "expectedSetupFinishTime" : "2014-09-20T16:15:00.000",
+    "expectedFinishTime" : "2014-09-20T16:36:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -97,38 +98,38 @@ return {
     "parallel" : false,
     "parallelCode" : "",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020-GB|794|223791",
-    "tooltip2" : "N|N|||CR80_STY",
-    "tooltip3" : "1480020-GB|794|223791",
+    "tooltip1" : "007844F|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|SHT_QTY|N|N||625|CR80_STY",
+    "tooltip3" : "007844F|794|223791",
     "color1" : "#0000ff",
     "color2" : "#b38600",
     "timeclockEmployeeId" : null,
     "new" : false
   }, {
-    "id" : "83533",
-    "oid" : "83533",
+    "id" : "104258",
+    "oid" : "104258",
     "part" : 0,
-    "operationCode" : "1480020-GF",
+    "operationCode" : "007844B",
     "priority" : 200,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11076,
+      "id" : 16530,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
+      "operations" : [ "104256", "104257", "104258" ],
       "previousProcesses" : [ ],
-      "productId" : null
+      "productId" : 2208
     },
-    "previousOperation" : "83532",
-    "nextOperations" : [ "83534" ],
+    "previousOperation" : "104257",
+    "nextOperations" : [ ],
     "runOnMachineId" : 1,
     "actualRunOnMachineId" : null,
-    "quantity" : 9579,
+    "quantity" : 9548,
     "actualQuantity" : 0,
     "processingType" : "GANG",
     "factoryOperation" : {
@@ -137,20 +138,21 @@ return {
       "descript" : "PT",
       "displayNames" : "PT",
       "needMachine" : true,
-      "priority" : 2
+      "priority" : 200
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
     "setupTime" : 90,
-    "productionTime" : 20,
+    "productionTime" : 21,
     "productionCapacity" : 31,
     "s2sMins" : 65,
     "up" : 90,
     "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T16:36:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T18:06:00.000",
-    "expectedFinishTime" : "2014-08-19T18:26:00.000",
+    "face" : "B",
+    "expectedStartTime" : "2014-09-20T16:37:00.000",
+    "expectedSetupFinishTime" : "2014-09-20T18:07:00.000",
+    "expectedFinishTime" : "2014-09-20T18:28:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -160,9 +162,9 @@ return {
     "parallel" : false,
     "parallelCode" : "",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020-GF|794|223791",
-    "tooltip2" : "N|N|||CR80_STY",
-    "tooltip3" : "1480020-GF|794|223791",
+    "tooltip1" : "007844B|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|SHT_QTY|N|N||625|CR80_STY",
+    "tooltip3" : "007844B|794|223791",
     "color1" : "#0000ff",
     "color2" : "#b38600",
     "timeclockEmployeeId" : null,
@@ -185,7 +187,7 @@ return {
         "code" : "Mid Dept_Hot Stamp",
         "name" : "Mid Dept",
         "subDept" : "Hot Stamp",
-        "sort" : 9
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 180,
@@ -202,9 +204,9 @@ return {
       "descript" : "MID_HOT_STAMP",
       "displayNames" : "Mid Hot Stamp",
       "needMachine" : true,
-      "priority" : 14
+      "priority" : 1400
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -226,7 +228,7 @@ return {
         "code" : "Mid Dept_Hot Stamp",
         "name" : "Mid Dept",
         "subDept" : "Hot Stamp",
-        "sort" : 9
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 180,
@@ -243,9 +245,9 @@ return {
       "descript" : "MID_HOT_STAMP",
       "displayNames" : "Mid Hot Stamp",
       "needMachine" : true,
-      "priority" : 14
+      "priority" : 1400
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -267,7 +269,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 0,
@@ -284,9 +286,9 @@ return {
       "descript" : "MID_LAM_SYSCO",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 6
+      "priority" : 600
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -308,7 +310,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 0,
@@ -325,9 +327,9 @@ return {
       "descript" : "MID_LAM_SYSCO",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 6
+      "priority" : 600
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -349,7 +351,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -366,9 +368,9 @@ return {
       "descript" : "MID_LAM_COLLATE",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 7
+      "priority" : 700
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -390,7 +392,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -407,9 +409,9 @@ return {
       "descript" : "MID_LAM_COLLATE",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 7
+      "priority" : 700
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -431,7 +433,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -448,9 +450,9 @@ return {
       "descript" : "MID_LAM_COLLATE",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 7
+      "priority" : 700
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -472,7 +474,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 240,
@@ -489,9 +491,9 @@ return {
       "descript" : "MID_LAM_OASYS",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 8
+      "priority" : 800
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -513,7 +515,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 240,
@@ -530,9 +532,9 @@ return {
       "descript" : "MID_LAM_OASYS",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 8
+      "priority" : 800
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -554,7 +556,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -571,265 +573,13 @@ return {
       "descript" : "MID_DIE_CAR25",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 9
+      "priority" : 900
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
-  "operationQueue" : [ {
-    "id" : "83534",
-    "oid" : "83534",
-    "part" : 0,
-    "operationCode" : "1480020-G",
-    "priority" : 900,
-    "job" : {
-      "id" : 2494,
-      "comboType" : "1",
-      "comboId" : 794,
-      "poNo" : "223791",
-      "comboQuantity" : 54000
-    },
-    "process" : {
-      "id" : 11076,
-      "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
-      "previousProcesses" : [ ],
-      "productId" : null
-    },
-    "previousOperation" : "83533",
-    "nextOperations" : [ "83535" ],
-    "runOnMachineId" : 19,
-    "actualRunOnMachineId" : null,
-    "quantity" : 1365,
-    "actualQuantity" : 0,
-    "processingType" : "GANG",
-    "factoryOperation" : {
-      "id" : 9,
-      "code" : "MID_DIE_CAR25",
-      "descript" : "MID_DIE_CAR25",
-      "displayNames" : "Mid Die Cut",
-      "needMachine" : true,
-      "priority" : 9
-    },
-    "jobFile" : null,
-    "manual" : false,
-    "pin" : false,
-    "setupTime" : 15,
-    "productionTime" : 30,
-    "productionCapacity" : 5,
-    "s2sMins" : 65,
-    "up" : 90,
-    "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T18:27:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T18:42:00.000",
-    "expectedFinishTime" : "2014-08-19T19:12:00.000",
-    "actualStartTime" : null,
-    "actualSetupFinishTime" : null,
-    "actualFinishTime" : null,
-    "finished" : false,
-    "inProcessing" : false,
-    "delete" : false,
-    "parallel" : false,
-    "parallelCode" : "1",
-    "expectedMoldId" : 408,
-    "tooltip1" : "1480020-G|794|223791",
-    "tooltip2" : "N|N||||||||",
-    "tooltip3" : "1480020-G|794|223791",
-    "color1" : "#0000ff",
-    "color2" : "#00b3b3",
-    "timeclockEmployeeId" : null,
-    "new" : false
-  }, {
-    "id" : "83535",
-    "oid" : "83535",
-    "part" : 0,
-    "operationCode" : "1480020-G",
-    "priority" : 900,
-    "job" : {
-      "id" : 2494,
-      "comboType" : "1",
-      "comboId" : 794,
-      "poNo" : "223791",
-      "comboQuantity" : 54000
-    },
-    "process" : {
-      "id" : 11076,
-      "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
-      "previousProcesses" : [ ],
-      "productId" : null
-    },
-    "previousOperation" : "83534",
-    "nextOperations" : [ "83536" ],
-    "runOnMachineId" : 19,
-    "actualRunOnMachineId" : null,
-    "quantity" : 1135,
-    "actualQuantity" : 0,
-    "processingType" : "GANG",
-    "factoryOperation" : {
-      "id" : 9,
-      "code" : "MID_DIE_CAR25",
-      "descript" : "MID_DIE_CAR25",
-      "displayNames" : "Mid Die Cut",
-      "needMachine" : true,
-      "priority" : 9
-    },
-    "jobFile" : null,
-    "manual" : false,
-    "pin" : false,
-    "setupTime" : 15,
-    "productionTime" : 30,
-    "productionCapacity" : 5,
-    "s2sMins" : 400,
-    "up" : 90,
-    "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T19:13:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T19:28:00.000",
-    "expectedFinishTime" : "2014-08-19T19:58:00.000",
-    "actualStartTime" : null,
-    "actualSetupFinishTime" : null,
-    "actualFinishTime" : null,
-    "finished" : false,
-    "inProcessing" : false,
-    "delete" : false,
-    "parallel" : false,
-    "parallelCode" : "2",
-    "expectedMoldId" : 408,
-    "tooltip1" : "1480020-G|794|223791",
-    "tooltip2" : "N|N||||||||",
-    "tooltip3" : "1480020-G|794|223791",
-    "color1" : "#0000ff",
-    "color2" : "#00b3b3",
-    "timeclockEmployeeId" : null,
-    "new" : false
-  }, {
-    "id" : "83536",
-    "oid" : "83536",
-    "part" : 0,
-    "operationCode" : "1480020-G",
-    "priority" : 900,
-    "job" : {
-      "id" : 2494,
-      "comboType" : "1",
-      "comboId" : 794,
-      "poNo" : "223791",
-      "comboQuantity" : 54000
-    },
-    "process" : {
-      "id" : 11076,
-      "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
-      "previousProcesses" : [ ],
-      "productId" : null
-    },
-    "previousOperation" : "83535",
-    "nextOperations" : [ "83537" ],
-    "runOnMachineId" : 19,
-    "actualRunOnMachineId" : null,
-    "quantity" : 905,
-    "actualQuantity" : 0,
-    "processingType" : "GANG",
-    "factoryOperation" : {
-      "id" : 9,
-      "code" : "MID_DIE_CAR25",
-      "descript" : "MID_DIE_CAR25",
-      "displayNames" : "Mid Die Cut",
-      "needMachine" : true,
-      "priority" : 9
-    },
-    "jobFile" : null,
-    "manual" : false,
-    "pin" : false,
-    "setupTime" : 15,
-    "productionTime" : 30,
-    "productionCapacity" : 5,
-    "s2sMins" : 400,
-    "up" : 90,
-    "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T19:59:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T20:14:00.000",
-    "expectedFinishTime" : "2014-08-19T20:44:00.000",
-    "actualStartTime" : null,
-    "actualSetupFinishTime" : null,
-    "actualFinishTime" : null,
-    "finished" : false,
-    "inProcessing" : false,
-    "delete" : false,
-    "parallel" : false,
-    "parallelCode" : "3",
-    "expectedMoldId" : 408,
-    "tooltip1" : "1480020-G|794|223791",
-    "tooltip2" : "N|N||||||||",
-    "tooltip3" : "1480020-G|794|223791",
-    "color1" : "#0000ff",
-    "color2" : "#00b3b3",
-    "timeclockEmployeeId" : null,
-    "new" : false
-  }, {
-    "id" : "83537",
-    "oid" : "83537",
-    "part" : 0,
-    "operationCode" : "1480020-G",
-    "priority" : 900,
-    "job" : {
-      "id" : 2494,
-      "comboType" : "1",
-      "comboId" : 794,
-      "poNo" : "223791",
-      "comboQuantity" : 54000
-    },
-    "process" : {
-      "id" : 11076,
-      "needWaitPrevProcess" : true,
-      "operations" : [ "83532", "83533", "83534", "83535", "83536", "83537" ],
-      "previousProcesses" : [ ],
-      "productId" : null
-    },
-    "previousOperation" : "83536",
-    "nextOperations" : [ ],
-    "runOnMachineId" : 19,
-    "actualRunOnMachineId" : null,
-    "quantity" : 675,
-    "actualQuantity" : 0,
-    "processingType" : "GANG",
-    "factoryOperation" : {
-      "id" : 9,
-      "code" : "MID_DIE_CAR25",
-      "descript" : "MID_DIE_CAR25",
-      "displayNames" : "Mid Die Cut",
-      "needMachine" : true,
-      "priority" : 9
-    },
-    "jobFile" : null,
-    "manual" : false,
-    "pin" : false,
-    "setupTime" : 15,
-    "productionTime" : 30,
-    "productionCapacity" : 5,
-    "s2sMins" : 400,
-    "up" : 90,
-    "sheetUp" : 90,
-    "expectedStartTime" : "2014-08-19T20:45:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T21:00:00.000",
-    "expectedFinishTime" : "2014-08-19T21:30:00.000",
-    "actualStartTime" : null,
-    "actualSetupFinishTime" : null,
-    "actualFinishTime" : null,
-    "finished" : false,
-    "inProcessing" : false,
-    "delete" : false,
-    "parallel" : false,
-    "parallelCode" : "4",
-    "expectedMoldId" : 408,
-    "tooltip1" : "1480020-G|794|223791",
-    "tooltip2" : "N|N||||||||",
-    "tooltip3" : "1480020-G|794|223791",
-    "color1" : "#0000ff",
-    "color2" : "#00b3b3",
-    "timeclockEmployeeId" : null,
-    "new" : false
-  } ]
+  "operationQueue" : [ ]
 }, {
   "machine" : {
     "id" : 2,
@@ -847,7 +597,7 @@ return {
         "code" : "Printing Dept_",
         "name" : "Printing Dept",
         "subDept" : "",
-        "sort" : 7
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 90,
@@ -864,9 +614,9 @@ return {
       "descript" : "PT",
       "displayNames" : "PT",
       "needMachine" : true,
-      "priority" : 2
+      "priority" : 200
     },
-    "title" : "Data Format|Data Approval|Material|Sheet Size|Combo Type",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Material|Sheet Size|Combo Type",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -888,7 +638,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -905,9 +655,9 @@ return {
       "descript" : "MID_DIE_CAR25",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 9
+      "priority" : 900
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -929,7 +679,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -946,9 +696,9 @@ return {
       "descript" : "MID_DIE_CAR25",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 9
+      "priority" : 900
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -970,7 +720,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -987,9 +737,9 @@ return {
       "descript" : "MID_DIE_CAR25",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 9
+      "priority" : 900
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1011,7 +761,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -1028,9 +778,9 @@ return {
       "descript" : "MID_DIE_BOBST_106",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 10
+      "priority" : 1000
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1052,7 +802,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -1069,9 +819,9 @@ return {
       "descript" : "MID_DIE_BOBST_104",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 11
+      "priority" : 1100
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1093,7 +843,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 60,
@@ -1110,9 +860,9 @@ return {
       "descript" : "MID_DIE_BLANKER",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 11
+      "priority" : 1100
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1134,7 +884,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -1151,9 +901,9 @@ return {
       "descript" : "MID_DIE_SHEETCUT",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 12
+      "priority" : 1200
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1175,7 +925,7 @@ return {
         "code" : "Mid Dept_Die Cut",
         "name" : "Mid Dept",
         "subDept" : "Die Cut",
-        "sort" : 11
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 15,
@@ -1192,9 +942,9 @@ return {
       "descript" : "MID_DIE_SPARTANIC",
       "displayNames" : "Mid Die Cut",
       "needMachine" : true,
-      "priority" : 13
+      "priority" : 1300
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1216,7 +966,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -1233,9 +983,9 @@ return {
       "descript" : "PZ_INSPECT",
       "displayNames" : "Inspect",
       "needMachine" : true,
-      "priority" : 19
+      "priority" : 1900
     },
-    "title" : "Card Size|Card Name|Material|Data Format Date|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Material|Data Format Date|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1257,7 +1007,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -1274,9 +1024,9 @@ return {
       "descript" : "PZ_INSPECT",
       "displayNames" : "Inspect",
       "needMachine" : true,
-      "priority" : 19
+      "priority" : 1900
     },
-    "title" : "Card Size|Card Name|Material|Data Format Date|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Material|Data Format Date|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1298,7 +1048,7 @@ return {
         "code" : "Printing Dept_",
         "name" : "Printing Dept",
         "subDept" : "",
-        "sort" : 7
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 60,
@@ -1315,9 +1065,9 @@ return {
       "descript" : "PT_SS",
       "displayNames" : "Silk Screen",
       "needMachine" : true,
-      "priority" : 3
+      "priority" : 300
     },
-    "title" : "Data Format|Data Approval|Material|Sheet Size|Combo Type",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Material|Sheet Size|Combo Type",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1339,7 +1089,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1356,37 +1106,37 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
   "operationQueue" : [ {
-    "id" : "83541",
-    "oid" : "83541",
+    "id" : "104262",
+    "oid" : "104262",
     "part" : 0,
-    "operationCode" : "1480020B",
+    "operationCode" : "1470311B",
     "priority" : 2100,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11077,
+      "id" : 16531,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83538", "83539", "83540", "83541", "83542", "83543", "83544", "2474331d" ],
-      "previousProcesses" : [ 11076 ],
-      "productId" : null
+      "operations" : [ "104259", "104260", "104261", "104262", "104263", "104264", "104265", "5796ae15" ],
+      "previousProcesses" : [ 16530 ],
+      "productId" : 2208
     },
-    "previousOperation" : "83540",
-    "nextOperations" : [ "2474331d" ],
+    "previousOperation" : "104261",
+    "nextOperations" : [ "104263" ],
     "runOnMachineId" : 30,
     "actualRunOnMachineId" : null,
-    "quantity" : 18688,
+    "quantity" : 71832,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -1395,20 +1145,21 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
     "setupTime" : 40,
-    "productionTime" : 64,
+    "productionTime" : 172,
     "productionCapacity" : 292,
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-19T21:31:00.000",
-    "expectedSetupFinishTime" : "2014-08-19T22:11:00.000",
-    "expectedFinishTime" : "2014-08-19T23:15:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-20T18:29:00.000",
+    "expectedSetupFinishTime" : "2014-09-20T19:09:00.000",
+    "expectedFinishTime" : "2014-09-20T22:01:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -1418,101 +1169,38 @@ return {
     "parallel" : false,
     "parallelCode" : "B",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020B|794|223791",
-    "tooltip2" : "|Big5Services Merchandise Credit Card(null)||",
-    "tooltip3" : "1480020B|794|223791",
+    "tooltip1" : "1470311B|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|CARD_QTY||Big5Services Merchandise Credit Card(null)||",
+    "tooltip3" : "1470311B|794|223791",
     "color1" : "#0000ff",
     "color2" : "#003278",
     "timeclockEmployeeId" : null,
     "new" : false
   }, {
-    "id" : "2474331d",
-    "oid" : "83541",
-    "part" : 1,
-    "operationCode" : "1480020B",
-    "priority" : 2100,
-    "job" : {
-      "id" : 2494,
-      "comboType" : "1",
-      "comboId" : 794,
-      "poNo" : "223791",
-      "comboQuantity" : 54000
-    },
-    "process" : {
-      "id" : 11077,
-      "needWaitPrevProcess" : true,
-      "operations" : [ "83538", "83539", "83540", "83541", "83542", "83543", "83544", "2474331d" ],
-      "previousProcesses" : [ 11076 ],
-      "productId" : null
-    },
-    "previousOperation" : "83541",
-    "nextOperations" : [ "83542" ],
-    "runOnMachineId" : 30,
-    "actualRunOnMachineId" : null,
-    "quantity" : 137240,
-    "actualQuantity" : 0,
-    "processingType" : "JOB_FILE",
-    "factoryOperation" : {
-      "id" : 19,
-      "code" : "PZ_VERSA",
-      "descript" : "PZ_VERSA",
-      "displayNames" : "PZ",
-      "needMachine" : true,
-      "priority" : 21
-    },
-    "jobFile" : null,
-    "manual" : false,
-    "pin" : false,
-    "setupTime" : 40,
-    "productionTime" : 108,
-    "productionCapacity" : 292,
-    "s2sMins" : -1,
-    "up" : 1,
-    "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-20T05:45:00.000",
-    "expectedSetupFinishTime" : "2014-08-20T06:25:00.000",
-    "expectedFinishTime" : "2014-08-20T08:13:00.000",
-    "actualStartTime" : null,
-    "actualSetupFinishTime" : null,
-    "actualFinishTime" : null,
-    "finished" : false,
-    "inProcessing" : false,
-    "delete" : false,
-    "parallel" : false,
-    "parallelCode" : "B",
-    "expectedMoldId" : null,
-    "tooltip1" : "1480020B|794|223791",
-    "tooltip2" : "|Big5Services Merchandise Credit Card(null)||",
-    "tooltip3" : "1480020B|794|223791",
-    "color1" : "#0000ff",
-    "color2" : "#003278",
-    "timeclockEmployeeId" : null,
-    "new" : true
-  }, {
-    "id" : "83542",
-    "oid" : "83542",
+    "id" : "104263",
+    "oid" : "104263",
     "part" : 0,
-    "operationCode" : "1480020C",
+    "operationCode" : "1470311C",
     "priority" : 2100,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11077,
+      "id" : 16531,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83538", "83539", "83540", "83541", "83542", "83543", "83544", "2474331d" ],
-      "previousProcesses" : [ 11076 ],
-      "productId" : null
+      "operations" : [ "104259", "104260", "104261", "104262", "104263", "104264", "104265", "5796ae15" ],
+      "previousProcesses" : [ 16530 ],
+      "productId" : 2208
     },
-    "previousOperation" : "2474331d",
-    "nextOperations" : [ "83543" ],
+    "previousOperation" : "104262",
+    "nextOperations" : [ "104264" ],
     "runOnMachineId" : 30,
     "actualRunOnMachineId" : null,
-    "quantity" : 93732,
+    "quantity" : 9636,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -1521,7 +1209,7 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
     "jobFile" : null,
     "manual" : false,
@@ -1532,9 +1220,10 @@ return {
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-20T08:14:00.000",
-    "expectedSetupFinishTime" : "2014-08-20T08:54:00.000",
-    "expectedFinishTime" : "2014-08-20T09:08:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-20T22:02:00.000",
+    "expectedSetupFinishTime" : "2014-09-20T22:42:00.000",
+    "expectedFinishTime" : "2014-09-20T22:56:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -1544,9 +1233,9 @@ return {
     "parallel" : false,
     "parallelCode" : "C",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020C|794|223791",
-    "tooltip2" : "|Big5Services Merchandise Credit Card(null)||",
-    "tooltip3" : "1480020C|794|223791",
+    "tooltip1" : "1470311C|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|CARD_QTY||Big5Services Merchandise Credit Card(null)||",
+    "tooltip3" : "1470311C|794|223791",
     "color1" : "#0000ff",
     "color2" : "#003278",
     "timeclockEmployeeId" : null,
@@ -1569,7 +1258,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1586,9 +1275,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1610,7 +1299,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1627,9 +1316,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1651,7 +1340,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1668,9 +1357,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1692,7 +1381,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1709,9 +1398,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1733,7 +1422,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -1750,9 +1439,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1774,7 +1463,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 50,
@@ -1791,9 +1480,9 @@ return {
       "descript" : "PZ_CARLINE",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 20
+      "priority" : 2000
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1815,7 +1504,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -1832,9 +1521,9 @@ return {
       "descript" : "PZ_BENDING",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 18
+      "priority" : 1800
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1856,7 +1545,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -1873,9 +1562,9 @@ return {
       "descript" : "PZ_BENDING",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 18
+      "priority" : 1800
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -1897,7 +1586,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -1914,37 +1603,37 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
     "online" : true
   },
   "operationQueue" : [ {
-    "id" : "83543",
-    "oid" : "83543",
+    "id" : "104264",
+    "oid" : "104264",
     "part" : 0,
-    "operationCode" : "1480020B",
+    "operationCode" : "1470311B",
     "priority" : 2300,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11077,
+      "id" : 16531,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83538", "83539", "83540", "83541", "83542", "83543", "83544", "2474331d" ],
-      "previousProcesses" : [ 11076 ],
-      "productId" : null
+      "operations" : [ "104259", "104260", "104261", "104262", "104263", "104264", "104265", "5796ae15" ],
+      "previousProcesses" : [ 16530 ],
+      "productId" : 2208
     },
-    "previousOperation" : "83542",
-    "nextOperations" : [ "83544" ],
+    "previousOperation" : "104263",
+    "nextOperations" : [ "5796ae15" ],
     "runOnMachineId" : 39,
     "actualRunOnMachineId" : null,
-    "quantity" : 90792,
+    "quantity" : 936,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -1953,20 +1642,21 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
     "setupTime" : 15,
-    "productionTime" : 161,
+    "productionTime" : 3,
     "productionCapacity" : 312,
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-20T09:09:00.000",
-    "expectedSetupFinishTime" : "2014-08-20T09:24:00.000",
-    "expectedFinishTime" : "2014-08-20T12:05:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-20T22:57:00.000",
+    "expectedSetupFinishTime" : "2014-09-20T23:12:00.000",
+    "expectedFinishTime" : "2014-09-20T23:15:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -1976,38 +1666,38 @@ return {
     "parallel" : false,
     "parallelCode" : "B",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020B|794|223791",
+    "tooltip1" : "1470311B|794|223791",
     "tooltip2" : "",
-    "tooltip3" : "1480020B|794|223791",
+    "tooltip3" : "1470311B|794|223791",
     "color1" : "#0000ff",
     "color2" : "#002447",
     "timeclockEmployeeId" : null,
     "new" : false
   }, {
-    "id" : "83544",
-    "oid" : "83544",
-    "part" : 0,
-    "operationCode" : "1480020C",
+    "id" : "5796ae15",
+    "oid" : "104264",
+    "part" : 1,
+    "operationCode" : "1470311B",
     "priority" : 2300,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11077,
+      "id" : 16531,
       "needWaitPrevProcess" : true,
-      "operations" : [ "83538", "83539", "83540", "83541", "83542", "83543", "83544", "2474331d" ],
-      "previousProcesses" : [ 11076 ],
-      "productId" : null
+      "operations" : [ "104259", "104260", "104261", "104262", "104263", "104264", "104265", "5796ae15" ],
+      "previousProcesses" : [ 16530 ],
+      "productId" : 2208
     },
-    "previousOperation" : "83543",
-    "nextOperations" : [ ],
+    "previousOperation" : "104264",
+    "nextOperations" : [ "104265" ],
     "runOnMachineId" : 39,
     "actualRunOnMachineId" : null,
-    "quantity" : 35568,
+    "quantity" : 154440,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -2016,7 +1706,71 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
+    },
+    "jobFile" : null,
+    "manual" : false,
+    "pin" : false,
+    "setupTime" : 15,
+    "productionTime" : 158,
+    "productionCapacity" : 312,
+    "s2sMins" : -1,
+    "up" : 1,
+    "sheetUp" : 1,
+    "face" : null,
+    "expectedStartTime" : "2014-09-21T05:45:00.000",
+    "expectedSetupFinishTime" : "2014-09-21T06:00:00.000",
+    "expectedFinishTime" : "2014-09-21T08:38:00.000",
+    "actualStartTime" : null,
+    "actualSetupFinishTime" : null,
+    "actualFinishTime" : null,
+    "finished" : false,
+    "inProcessing" : false,
+    "delete" : false,
+    "parallel" : false,
+    "parallelCode" : "B",
+    "expectedMoldId" : null,
+    "tooltip1" : "1470311B|794|223791",
+    "tooltip2" : "",
+    "tooltip3" : "1470311B|794|223791",
+    "color1" : "#0000ff",
+    "color2" : "#002447",
+    "timeclockEmployeeId" : null,
+    "new" : true
+  }, {
+    "id" : "104265",
+    "oid" : "104265",
+    "part" : 0,
+    "operationCode" : "1470311C",
+    "priority" : 2300,
+    "job" : {
+      "id" : 3954,
+      "comboType" : "1",
+      "comboId" : 794,
+      "poNo" : "223791",
+      "comboQuantity" : 54000
+    },
+    "process" : {
+      "id" : 16531,
+      "needWaitPrevProcess" : true,
+      "operations" : [ "104259", "104260", "104261", "104262", "104263", "104264", "104265", "5796ae15" ],
+      "previousProcesses" : [ 16530 ],
+      "productId" : 2208
+    },
+    "previousOperation" : "5796ae15",
+    "nextOperations" : [ ],
+    "runOnMachineId" : 39,
+    "actualRunOnMachineId" : null,
+    "quantity" : 100152,
+    "actualQuantity" : 0,
+    "processingType" : "JOB_FILE",
+    "factoryOperation" : {
+      "id" : 23,
+      "code" : "QA",
+      "descript" : "QA",
+      "displayNames" : "QA",
+      "needMachine" : true,
+      "priority" : 2300
     },
     "jobFile" : null,
     "manual" : false,
@@ -2027,9 +1781,10 @@ return {
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-20T12:06:00.000",
-    "expectedSetupFinishTime" : "2014-08-20T12:21:00.000",
-    "expectedFinishTime" : "2014-08-20T12:34:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-21T08:39:00.000",
+    "expectedSetupFinishTime" : "2014-09-21T08:54:00.000",
+    "expectedFinishTime" : "2014-09-21T09:07:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -2039,9 +1794,9 @@ return {
     "parallel" : false,
     "parallelCode" : "C",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020C|794|223791",
+    "tooltip1" : "1470311C|794|223791",
     "tooltip2" : "",
-    "tooltip3" : "1480020C|794|223791",
+    "tooltip3" : "1470311C|794|223791",
     "color1" : "#0000ff",
     "color2" : "#002447",
     "timeclockEmployeeId" : null,
@@ -2064,7 +1819,7 @@ return {
         "code" : "Mid Dept_Magnetic",
         "name" : "Mid Dept",
         "subDept" : "Magnetic",
-        "sort" : 8
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -2081,9 +1836,9 @@ return {
       "descript" : "MID_MAG_MASTER",
       "displayNames" : "Mid Mag",
       "needMachine" : true,
-      "priority" : 4
+      "priority" : 400
     },
-    "title" : "Card Size|Card Name|Material|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Material|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2105,7 +1860,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -2122,7 +1877,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2146,7 +1901,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -2163,7 +1918,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2187,7 +1942,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -2204,7 +1959,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2228,7 +1983,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -2245,7 +2000,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2269,7 +2024,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -2286,7 +2041,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2310,7 +2065,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -2327,7 +2082,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -2351,7 +2106,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2368,9 +2123,9 @@ return {
       "descript" : "MP_HO",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 26
+      "priority" : 2600
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2392,7 +2147,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2409,9 +2164,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2433,7 +2188,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2450,9 +2205,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2474,7 +2229,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2491,9 +2246,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2515,7 +2270,7 @@ return {
         "code" : "Mid Dept_Magnetic",
         "name" : "Mid Dept",
         "subDept" : "Magnetic",
-        "sort" : 8
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -2532,9 +2287,9 @@ return {
       "descript" : "MID_MAG_MASTER",
       "displayNames" : "Mid Mag",
       "needMachine" : true,
-      "priority" : 4
+      "priority" : 400
     },
-    "title" : "Card Size|Card Name|Material|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Material|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2556,7 +2311,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2573,9 +2328,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2597,7 +2352,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2614,9 +2369,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2638,7 +2393,7 @@ return {
         "code" : "Multipack_Multi-Pack",
         "name" : "Multipack",
         "subDept" : "Multi-Pack",
-        "sort" : 14
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 120,
@@ -2655,9 +2410,9 @@ return {
       "descript" : "MP_HH",
       "displayNames" : "MP",
       "needMachine" : true,
-      "priority" : 27
+      "priority" : 2700
     },
-    "title" : "MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|First Case|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2679,7 +2434,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 30,
@@ -2696,9 +2451,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2720,7 +2475,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 30,
@@ -2737,9 +2492,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2761,7 +2516,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 30,
@@ -2778,9 +2533,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2802,7 +2557,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 30,
@@ -2819,9 +2574,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2843,7 +2598,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 0,
@@ -2860,9 +2615,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2884,7 +2639,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 0,
@@ -2901,9 +2656,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2925,7 +2680,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 0,
@@ -2942,9 +2697,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -2966,7 +2721,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -2983,9 +2738,9 @@ return {
       "descript" : "PZ_MAG_MASTER",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 22
+      "priority" : 2200
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3007,7 +2762,7 @@ return {
         "code" : "Multipack_Heat Seal",
         "name" : "Multipack",
         "subDept" : "Heat Seal",
-        "sort" : 15
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 0,
@@ -3024,9 +2779,9 @@ return {
       "descript" : "HS",
       "displayNames" : "HS",
       "needMachine" : true,
-      "priority" : 28
+      "priority" : 2800
     },
-    "title" : "MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|MP Style|Pack|Card Name|Client Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3048,7 +2803,7 @@ return {
         "code" : "Packing Dept_Tipping",
         "name" : "Packing Dept",
         "subDept" : "Tipping",
-        "sort" : 16
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 60,
@@ -3065,9 +2820,9 @@ return {
       "descript" : "TP",
       "displayNames" : "TP",
       "needMachine" : true,
-      "priority" : 25
+      "priority" : 2500
     },
-    "title" : "TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3089,7 +2844,7 @@ return {
         "code" : "Packing Dept_Tipping",
         "name" : "Packing Dept",
         "subDept" : "Tipping",
-        "sort" : 16
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 60,
@@ -3106,9 +2861,9 @@ return {
       "descript" : "TP",
       "displayNames" : "TP",
       "needMachine" : true,
-      "priority" : 25
+      "priority" : 2500
     },
-    "title" : "TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3130,7 +2885,7 @@ return {
         "code" : "Packing Dept_Tipping",
         "name" : "Packing Dept",
         "subDept" : "Tipping",
-        "sort" : 16
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 60,
@@ -3147,9 +2902,9 @@ return {
       "descript" : "TP",
       "displayNames" : "TP",
       "needMachine" : true,
-      "priority" : 25
+      "priority" : 2500
     },
-    "title" : "TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3171,7 +2926,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -3188,37 +2943,37 @@ return {
       "descript" : "PK_MANUAL",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 31
+      "priority" : 3100
     },
-    "title" : "Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
   "operationQueue" : [ {
-    "id" : "83547",
-    "oid" : "83547",
+    "id" : "104268",
+    "oid" : "104268",
     "part" : 0,
-    "operationCode" : "1480020B",
+    "operationCode" : "1470311B",
     "priority" : 3100,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11078,
+      "id" : 16532,
       "needWaitPrevProcess" : false,
-      "operations" : [ "83545", "83546", "83547", "83548", "5a75bad4" ],
-      "previousProcesses" : [ 11077 ],
-      "productId" : null
+      "operations" : [ "104266", "104267", "104268", "104269", "37846cc2" ],
+      "previousProcesses" : [ 16531 ],
+      "productId" : 2209
     },
-    "previousOperation" : "83546",
-    "nextOperations" : [ "5a75bad4" ],
+    "previousOperation" : "104267",
+    "nextOperations" : [ "37846cc2" ],
     "runOnMachineId" : 64,
     "actualRunOnMachineId" : null,
-    "quantity" : 36935,
+    "quantity" : 9296,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -3227,20 +2982,21 @@ return {
       "descript" : "PK_MANUAL",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 31
+      "priority" : 3100
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
     "setupTime" : 15,
-    "productionTime" : 445,
+    "productionTime" : 112,
     "productionCapacity" : 83,
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-20T15:35:00.000",
-    "expectedSetupFinishTime" : "2014-08-20T15:50:00.000",
-    "expectedFinishTime" : "2014-08-20T23:15:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-21T12:08:00.000",
+    "expectedSetupFinishTime" : "2014-09-21T12:23:00.000",
+    "expectedFinishTime" : "2014-09-21T14:15:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -3250,38 +3006,38 @@ return {
     "parallel" : false,
     "parallelCode" : "B",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020B|794|223791",
-    "tooltip2" : "||CARD_STYLE|Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
-    "tooltip3" : "1480020B|794|223791",
+    "tooltip1" : "1470311B|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|CARD_QTY||||Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
+    "tooltip3" : "1470311B|794|223791",
     "color1" : "#0000ff",
     "color2" : "#005a5a",
     "timeclockEmployeeId" : null,
     "new" : false
   }, {
-    "id" : "5a75bad4",
-    "oid" : "83547",
+    "id" : "37846cc2",
+    "oid" : "104268",
     "part" : 1,
-    "operationCode" : "1480020B",
+    "operationCode" : "1470311B",
     "priority" : 3100,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11078,
+      "id" : 16532,
       "needWaitPrevProcess" : false,
-      "operations" : [ "83545", "83546", "83547", "83548", "5a75bad4" ],
-      "previousProcesses" : [ 11077 ],
-      "productId" : null
+      "operations" : [ "104266", "104267", "104268", "104269", "37846cc2" ],
+      "previousProcesses" : [ 16531 ],
+      "productId" : 2209
     },
-    "previousOperation" : "83547",
-    "nextOperations" : [ "83548" ],
+    "previousOperation" : "104268",
+    "nextOperations" : [ "104269" ],
     "runOnMachineId" : 64,
     "actualRunOnMachineId" : null,
-    "quantity" : 42330,
+    "quantity" : 41085,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -3290,20 +3046,21 @@ return {
       "descript" : "PK_MANUAL",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 31
+      "priority" : 3100
     },
     "jobFile" : null,
     "manual" : false,
     "pin" : false,
-    "setupTime" : 0,
-    "productionTime" : 158,
+    "setupTime" : 15,
+    "productionTime" : 491,
     "productionCapacity" : 83,
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-21T05:45:00.000",
-    "expectedSetupFinishTime" : "2014-08-21T05:45:00.000",
-    "expectedFinishTime" : "2014-08-21T08:23:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-21T14:45:00.000",
+    "expectedSetupFinishTime" : "2014-09-21T15:00:00.000",
+    "expectedFinishTime" : "2014-09-21T23:11:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -3313,38 +3070,38 @@ return {
     "parallel" : false,
     "parallelCode" : "B",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020B|794|223791",
-    "tooltip2" : "||CARD_STYLE|Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
-    "tooltip3" : "1480020B|794|223791",
+    "tooltip1" : "1470311B|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|CARD_QTY||||Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
+    "tooltip3" : "1470311B|794|223791",
     "color1" : "#0000ff",
     "color2" : "#005a5a",
     "timeclockEmployeeId" : null,
     "new" : true
   }, {
-    "id" : "83548",
-    "oid" : "83548",
+    "id" : "104269",
+    "oid" : "104269",
     "part" : 0,
-    "operationCode" : "1480020C",
+    "operationCode" : "1470311C",
     "priority" : 3100,
     "job" : {
-      "id" : 2494,
+      "id" : 3954,
       "comboType" : "1",
       "comboId" : 794,
       "poNo" : "223791",
       "comboQuantity" : 54000
     },
     "process" : {
-      "id" : 11078,
+      "id" : 16532,
       "needWaitPrevProcess" : false,
-      "operations" : [ "83545", "83546", "83547", "83548", "5a75bad4" ],
-      "previousProcesses" : [ 11077 ],
-      "productId" : null
+      "operations" : [ "104266", "104267", "104268", "104269", "37846cc2" ],
+      "previousProcesses" : [ 16531 ],
+      "productId" : 2209
     },
-    "previousOperation" : "5a75bad4",
+    "previousOperation" : "37846cc2",
     "nextOperations" : [ ],
     "runOnMachineId" : 64,
     "actualRunOnMachineId" : null,
-    "quantity" : 27888,
+    "quantity" : 3999,
     "actualQuantity" : 0,
     "processingType" : "JOB_FILE",
     "factoryOperation" : {
@@ -3353,7 +3110,7 @@ return {
       "descript" : "PK_MANUAL",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 31
+      "priority" : 3100
     },
     "jobFile" : null,
     "manual" : false,
@@ -3364,9 +3121,10 @@ return {
     "s2sMins" : -1,
     "up" : 1,
     "sheetUp" : 1,
-    "expectedStartTime" : "2014-08-21T08:24:00.000",
-    "expectedSetupFinishTime" : "2014-08-21T08:39:00.000",
-    "expectedFinishTime" : "2014-08-21T09:28:00.000",
+    "face" : null,
+    "expectedStartTime" : "2014-09-21T23:12:00.000",
+    "expectedSetupFinishTime" : "2014-09-21T23:27:00.000",
+    "expectedFinishTime" : "2014-09-22T00:16:00.000",
     "actualStartTime" : null,
     "actualSetupFinishTime" : null,
     "actualFinishTime" : null,
@@ -3376,9 +3134,9 @@ return {
     "parallel" : false,
     "parallelCode" : "C",
     "expectedMoldId" : null,
-    "tooltip1" : "1480020C|794|223791",
-    "tooltip2" : "||CARD_STYLE|Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
-    "tooltip3" : "1480020C|794|223791",
+    "tooltip1" : "1470311C|794|223791",
+    "tooltip2" : "PO_NO|OPERATION_CODE|S_E_TIME|CARD_QTY||||Big5Services Merchandise Credit Card(null)|2.125\"x3.375\"   CR-80|",
+    "tooltip3" : "1470311C|794|223791",
     "color1" : "#0000ff",
     "color2" : "#005a5a",
     "timeclockEmployeeId" : null,
@@ -3401,7 +3159,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 15,
@@ -3418,9 +3176,9 @@ return {
       "descript" : "PK_MANUAL",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 31
+      "priority" : 3100
     },
-    "title" : "Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3442,7 +3200,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 120,
@@ -3459,9 +3217,9 @@ return {
       "descript" : "PK_AUTO",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 30
+      "priority" : 3000
     },
-    "title" : "Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3483,7 +3241,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 120,
@@ -3500,9 +3258,9 @@ return {
       "descript" : "PK_AUTO",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 30
+      "priority" : 3000
     },
-    "title" : "Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3524,7 +3282,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 10,
@@ -3541,9 +3299,9 @@ return {
       "descript" : "PK_TP",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 34
+      "priority" : 3400
     },
-    "title" : "Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|Card Style|Card Name|Card Size|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3565,7 +3323,7 @@ return {
         "code" : "Mid Dept_Magnetic",
         "name" : "Mid Dept",
         "subDept" : "Magnetic",
-        "sort" : 8
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -3582,9 +3340,9 @@ return {
       "descript" : "MID_MAG_MTL",
       "displayNames" : "Mid Mag",
       "needMachine" : true,
-      "priority" : 5
+      "priority" : 500
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3606,7 +3364,7 @@ return {
         "code" : "Packing Dept_Shrink Wrap Packing",
         "name" : "Packing Dept",
         "subDept" : "Shrink Wrap Packing",
-        "sort" : 17
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 30,
@@ -3623,9 +3381,9 @@ return {
       "descript" : "PK_MP",
       "displayNames" : "Packing",
       "needMachine" : true,
-      "priority" : 33
+      "priority" : 3300
     },
-    "title" : "Bundle Pack|Inner Pack|MP Style|Pack|Card Name|Multipack-Carrier|Multipack-# of Clam Shells",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Bundle Pack|Inner Pack|MP Style|Pack|Card Name|Multipack-Carrier|Multipack-# of Clam Shells",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3647,7 +3405,7 @@ return {
         "code" : "WIP_WIP",
         "name" : "WIP",
         "subDept" : "WIP",
-        "sort" : 18
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 0,
@@ -3664,7 +3422,7 @@ return {
       "descript" : "WIP",
       "displayNames" : "WIP",
       "needMachine" : true,
-      "priority" : 15
+      "priority" : 1500
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -3688,7 +3446,7 @@ return {
         "code" : "Mid Dept_Hot Stamp",
         "name" : "Mid Dept",
         "subDept" : "Hot Stamp",
-        "sort" : 9
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 180,
@@ -3705,9 +3463,9 @@ return {
       "descript" : "MID_HOT_STAMP",
       "displayNames" : "Mid Hot Stamp",
       "needMachine" : true,
-      "priority" : 14
+      "priority" : 1400
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3729,7 +3487,7 @@ return {
         "code" : "Mid Dept_Magnetic",
         "name" : "Mid Dept",
         "subDept" : "Magnetic",
-        "sort" : 8
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -3746,9 +3504,9 @@ return {
       "descript" : "MID_MAG_MTL",
       "displayNames" : "Mid Mag",
       "needMachine" : true,
-      "priority" : 5
+      "priority" : 500
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3770,7 +3528,7 @@ return {
         "code" : "Mid Dept_Hot Stamp",
         "name" : "Mid Dept",
         "subDept" : "Hot Stamp",
-        "sort" : 9
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 180,
@@ -3787,9 +3545,9 @@ return {
       "descript" : "MID_HOT_STAMP",
       "displayNames" : "Mid Hot Stamp",
       "needMachine" : true,
-      "priority" : 14
+      "priority" : 1400
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3811,7 +3569,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -3828,9 +3586,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3852,7 +3610,7 @@ return {
         "code" : "PZ Dept_",
         "name" : "PZ Dept",
         "subDept" : "",
-        "sort" : 12
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 40,
@@ -3869,9 +3627,9 @@ return {
       "descript" : "PZ_VERSA",
       "displayNames" : "PZ",
       "needMachine" : true,
-      "priority" : 21
+      "priority" : 2100
     },
-    "title" : "Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|Card Size|Card Name|Sol/Hot Stamp|Data Approval Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3893,7 +3651,7 @@ return {
         "code" : "QA Dept_",
         "name" : "QA Dept",
         "subDept" : "",
-        "sort" : 13
+        "sortBy" : 0
       },
       "unit" : "CARD",
       "basicSetupTime" : 30,
@@ -3910,7 +3668,7 @@ return {
       "descript" : "QA",
       "displayNames" : "QA",
       "needMachine" : true,
-      "priority" : 23
+      "priority" : 2300
     },
     "title" : "",
     "currentTimeWorks" : 0,
@@ -3934,7 +3692,7 @@ return {
         "code" : "Packing Dept_Tipping",
         "name" : "Packing Dept",
         "subDept" : "Tipping",
-        "sort" : 16
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 60,
@@ -3951,9 +3709,9 @@ return {
       "descript" : "TP",
       "displayNames" : "TP",
       "needMachine" : true,
-      "priority" : 25
+      "priority" : 2500
     },
-    "title" : "TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -3975,7 +3733,7 @@ return {
         "code" : "Packing Dept_Tipping",
         "name" : "Packing Dept",
         "subDept" : "Tipping",
-        "sort" : 16
+        "sortBy" : 0
       },
       "unit" : "PACK",
       "basicSetupTime" : 60,
@@ -3992,9 +3750,9 @@ return {
       "descript" : "TP",
       "displayNames" : "TP",
       "needMachine" : true,
-      "priority" : 25
+      "priority" : 2500
     },
-    "title" : "TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Card qty-No job file|TP Style|Data Approval Date|Card Name|First Case|Shipping Date",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -4016,7 +3774,7 @@ return {
         "code" : "Mid Dept_Lamination",
         "name" : "Mid Dept",
         "subDept" : "Lamination",
-        "sort" : 10
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 60,
@@ -4033,9 +3791,9 @@ return {
       "descript" : "MID_LAM_OASYS",
       "displayNames" : "Mid Lam",
       "needMachine" : true,
-      "priority" : 8
+      "priority" : 800
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
@@ -4057,7 +3815,7 @@ return {
         "code" : "Mid Dept_Magnetic",
         "name" : "Mid Dept",
         "subDept" : "Magnetic",
-        "sort" : 8
+        "sortBy" : 0
       },
       "unit" : "SHEET",
       "basicSetupTime" : 30,
@@ -4074,9 +3832,9 @@ return {
       "descript" : "MID_MAG_MTL",
       "displayNames" : "Mid Mag",
       "needMachine" : true,
-      "priority" : 5
+      "priority" : 500
     },
-    "title" : "Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
+    "title" : "PO#|OperationCode (Gang#)|Start/End Time|Sheet Qty|Data Format|Data Approval|Card Size|Material|Lamination Front|Lamination Back|Magstripe Type|Magstripe Size|Magstripe Color|Magstripe Track#",
     "currentTimeWorks" : 0,
     "online" : true
   },
