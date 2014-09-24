@@ -1,4 +1,4 @@
-gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', function ($window, $document, $timeout) {
+gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', 'mouseOffset', function ($window, $document, $timeout, mouseOffset) {
     var templateLocation = '';
     return {
         restrict: "E",
@@ -14,8 +14,11 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', functio
         },
         replace: true,
         scope: { menu: "=ngModel" },
-        controller: ['$scope', '$element', function ($scope, $element) {
+        controller: ['$scope', '$rootScope', '$element', function ($scope, $rootScope, $element) {
             var bodyElement = angular.element($document[0].body);
+
+            var viewScaleList = ['minute', 'hour', 'threehours', 'sixhours', 'eighthours', 'twevelhours', 'day', 'week', 'month'];
+            var key = 0, xInEm, clickedColumn, date;
 
             bodyElement.bind('click', function(e) {
                 $scope.$apply(function() {
@@ -23,7 +26,7 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', functio
                 });
             });
 
-            $scope.contextMenuLink = function(key, target, type, $element) {
+            $scope.contextMenuLink = function(key, target, type, $element, e) {
                 switch(key) {
                     case 'task':
                         switch(type) {
@@ -54,6 +57,26 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', functio
                             break;
                             case 'info':
                                 target.gantt.showTaskInformation = target;
+                            break;
+                            case 'zoomin':
+                                key = viewScaleList.indexOf($scope.$parent.viewScale) - 1;
+                                $rootScope.$$childTail.scale = viewScaleList[key];
+
+                                xInEm = mouseOffset.getOffset(e).x / $scope.$parent.getPxToEmFactor();
+                                clickedColumn = $scope.$parent.gantt.getColumnByPosition(xInEm);
+                                date = $scope.$parent.gantt.getDateByPosition(xInEm);
+
+                                $scope.$parent.scrollToDate(date);
+                            break;
+                            case 'zoomout':
+                                key = viewScaleList.indexOf($scope.$parent.viewScale) + 1;
+                                $rootScope.$$childTail.scale = viewScaleList[key];
+
+                                xInEm = mouseOffset.getOffset(e).x / $scope.$parent.getPxToEmFactor();
+                                clickedColumn = $scope.$parent.gantt.getColumnByPosition(xInEm);
+                                date = $scope.$parent.gantt.getDateByPosition(xInEm);
+
+                                $scope.$parent.scrollToDate(date);
                             break;
                             case 'delete':
                                 if (confirm('Are you sure to delete this Task?')) {
@@ -91,8 +114,30 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', functio
                         }
                     break;
                     case 'row':
-                        if (type === 'add') {
-                            target.gantt.enableTaskEditor = target;
+                        switch(type) {
+                            case 'add':
+                                target.gantt.enableTaskEditor = target;
+                            break;
+                            case 'zoomin':
+                                key = viewScaleList.indexOf($scope.$parent.viewScale) - 1;
+                                $rootScope.$$childTail.scale = viewScaleList[key];
+
+                                xInEm = mouseOffset.getOffset(e).x / $scope.$parent.getPxToEmFactor();
+                                clickedColumn = $scope.$parent.gantt.getColumnByPosition(xInEm);
+                                date = $scope.$parent.gantt.getDateByPosition(xInEm);
+
+                                $scope.$parent.scrollToDate(date);
+                            break;
+                            case 'zoomout':
+                                key = viewScaleList.indexOf($scope.$parent.viewScale) + 1;
+                                $rootScope.$$childTail.scale = viewScaleList[key];
+
+                                xInEm = mouseOffset.getOffset(e).x / $scope.$parent.getPxToEmFactor();
+                                clickedColumn = $scope.$parent.gantt.getColumnByPosition(xInEm);
+                                date = $scope.$parent.gantt.getDateByPosition(xInEm);
+
+                                $scope.$parent.scrollToDate(date);
+                            break;
                         }
                     break;
                 }

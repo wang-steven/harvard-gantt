@@ -88,7 +88,14 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                         items = [
                             { key: 'flowchart', name: 'Show Job Flow' },
                             { key: 'info', name: 'Show Information' },
+                            { key: 'divider', name: '' }
                         ];
+                        if ($scope.viewScale !== 'minute') {
+                            items.push({ key: 'zoomin', name: 'Zoom In' });
+                        }
+                        if ($scope.viewScale !== 'month') {
+                            items.push({ key: 'zoomout', name: 'Zoom Out' });
+                        }
                     } else {
                         items = [
                             { key: 'pin', name: ($scope.task.isPin === true ? 'Unpin' : 'Pin') },
@@ -98,8 +105,15 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                             { key: 'flowchart', name: 'Show Job Flow' },
                             { key: 'info', name: 'Show Information' },
                             { key: 'divider', name: '' },
-                            { key: 'delete', name: 'Delete' }
                         ];
+                        if ($scope.viewScale !== 'minute') {
+                            items.push({ key: 'zoomin', name: 'Zoom In' });
+                        }
+                        if ($scope.viewScale !== 'month') {
+                            items.push({ key: 'zoomout', name: 'Zoom Out' });
+                        }
+                        items.push({ key: 'divider', name: '' });
+                        items.push({ key: 'delete', name: 'Delete' });
                     }
                     $scope.gantt.contextMenu = {
                         event: e,

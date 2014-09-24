@@ -214,12 +214,15 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             };
 
             // Tries to center the specified date
-            $scope.scrollToDate = function(date) {
-                date = df.setTimeZero(date, true);
-                console.log(date);
+            $scope.scrollToDate = function(date, timezero) {
+                if (timezero === undefined || timezero !== true) {
+                    date = df.setTimeZero(date, true);
+                }
 
-                $scope.gantt.defaultDateRange.to = df.addDays(date, 5, true);
-                $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.defaultDateRange.to);
+                if (date - $scope.gantt.defaultDateRange.to < 0) {
+                    $scope.gantt.defaultDateRange.to = df.addDays(date, 5, true);
+                    $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.defaultDateRange.to);
+                }
                 var column = $scope.gantt.getColumnByDate(date);
                 if (column !== undefined) {
                     $timeout(function() {
@@ -359,14 +362,21 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
             $scope.raiseRowContextMenuEvent = function(evt, row, column, date) {
                 if ($scope.gantt.disable === false) {
+                    var items = [
+                        { key: 'add', name: 'Create Task' },
+                    ];
+                    if ($scope.viewScale !== 'minute') {
+                        items.push({ key: 'zoomin', name: 'Zoom In' });
+                    }
+                    if ($scope.viewScale !== 'month') {
+                        items.push({ key: 'zoomout', name: 'Zoom Out' });
+                    }
                     $scope.gantt.contextMenu = {
                         event: evt,
                         type: 'row',
                         target: row,
                         element: undefined,
-                        items: [
-                            { key: 'add', name: 'Create Task' },
-                        ]
+                        items: items
                     };
                 }
                 $scope.onRowContextClicked({ event: { evt: evt, row: row, column: column.clone(), date: date, userTriggered: true } });
