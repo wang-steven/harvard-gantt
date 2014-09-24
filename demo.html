@@ -73,8 +73,8 @@
           <hr>
           <gantt first-day-of-week="1" load-data="loadData = fn" remove-data="removeData = fn" clear-data="clearData = fn" sort-mode="mode"
             view-scale="scale" center-date="centerDate = fn"
-            column-width="scale === 'month' && 24 || scale === 'week' && 12 || scale === 'hour' && 4 || scale === 'minute' && 2 || 8"
-            column-sub-scale="scale === 'week' && 7 || scale === 'minute' && 1 || 6" work-hours="[6,7,8,9,10,11,12,13,14,15,16,17,18]"
+            column-width="scale === 'month' && 30 || scale === 'week' && 42 || scale === 'minute' && 2 || scale === 'hour' && 2 || scale === 'twevelhours' && 12 || scale === 'eighthours' && 8 || scale === 'sixhours' && 6 || scale === 'threehours' && 6 || 1"
+            column-sub-scale="scale === 'week' && 6 || scale === 'minute' && 1 || scale === 'hour' && 1 || scale === 'twevelhours' && 12 || scale === 'eighthours' && 8 || scale === 'sixhours' && 2 || scale === 'threehours' && 2 || 1" work-hours="[6,7,8,9,10,11,12,13,14,15,16,17,18]"
             show-non-work-hours="showNonWorkHours" weekend-days="[0,6]" show-weekends="showWeekends"
             max-height="maxHeight" auto-expand="true" allow-row-sorting="false" allow-task-resizing="false" allow-task-row-switching="true"
             server-config="loadServerConfiguration({serverLocation: '', jsLocationPrefix: '/'})"
@@ -102,8 +102,8 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="assets/angular.js"></script>
 <script src="assets/underscore.min.js"></script>
-<script src="assets/moment.min.js"></script>
-<script src="demo_sample_data/large.js"></script>
+<script src="assets/moment.js"></script>
+<script src="demo_sample_data/4types.js"></script>
 <script src="assets/demo.js"></script>
 <script src="assets/angular-gantt.js"></script>
 <script src="assets/angular-ui-tree.js"></script>
