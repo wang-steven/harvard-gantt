@@ -76,8 +76,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             // Initialize defaults
             if ($scope.sortMode === undefined) $scope.sortMode = "name";
             if ($scope.viewScale === undefined) $scope.viewScale = "day";
-            if ($scope.columnWidth === undefined) $scope.columnWidth = 8;
-            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 6;
+            if ($scope.columnWidth === undefined) $scope.columnWidth = 24;
+            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 24;
             if ($scope.allowTaskMoving === undefined) $scope.allowTaskMoving = true;
             if ($scope.allowTaskResizing === undefined) $scope.allowTaskResizing = true;
             if ($scope.allowTaskRowSwitching === undefined) $scope.allowTaskRowSwitching = true;
@@ -151,9 +151,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         $scope.$apply(function() {
                             var taskRange = $scope.gantt.getTasksDateRange();
                             var columnOffset = $scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor();
-                            if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
-                                var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
-                                $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.from, 'right', addColumns);
+                            if (columnOffset < $scope.ganttScroll[0].offsetWidth) {
+                                var addColumns = Math.ceil(($scope.ganttScroll[0].offsetWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
+                                $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.to, 'right', addColumns);
                             }
                         });
                     }, 10);
@@ -216,6 +216,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             // Tries to center the specified date
             $scope.scrollToDate = function(date) {
                 date = df.setTimeZero(date, true);
+                console.log(date);
 
                 $scope.gantt.defaultDateRange.to = df.addDays(date, 5, true);
                 $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.defaultDateRange.to);
@@ -236,7 +237,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 var from, to;
                 expand = expand === undefined ? 1 : parseInt(expand, 10);
 
-                console.log(expand);
+                console.log(expand, date);
 
                 // Disable left expand
                 if (direction === "left") {
@@ -450,9 +451,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     $scope.$apply(function() {
                         var taskRange = $scope.gantt.getTasksDateRange();
                         var columnOffset = $scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor();
-                        if (columnOffset <= $scope.ganttScroll[0].scrollWidth) {
-                            var addColumns = Math.ceil(($scope.ganttScroll[0].scrollWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
-                            $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.from, 'right', addColumns);
+                        if (columnOffset < $scope.ganttScroll[0].offsetWidth) {
+                            var addColumns = Math.ceil(($scope.ganttScroll[0].offsetWidth - columnOffset) / ($scope.gantt.getPositionByDate(taskRange.to) * $scope.getPxToEmFactor()));
+                            $scope.autoExpandColumns($scope.ganttScroll[0], taskRange.to, 'right', addColumns);
                         }
 
                         $scope.gantt.departmentMap = {};

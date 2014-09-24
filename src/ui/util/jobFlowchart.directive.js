@@ -159,7 +159,7 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                     for (m = 0, n = processTasksMap[k[i]], o = n.length; m < o; ++m) {
                         var checkPriority = false;
 
-                        if (foo[k[i]].length === 1 && processTasksMap[k[i]].length > 1) {
+                        if (foo[k[i]].length === 1 && processTasksMap[k[i]].length >= 1) {
                             for (r = 0, p = processTasksMap[k[i]], q = p.length; r < q; ++r) {
                                 if (p.parallel === true) {
                                     checkPriority = true;
@@ -197,9 +197,15 @@ gantt.directive('ganttJobFlowchart', ['$window', '$document', '$timeout', '_', '
                                         if (link_last) g.addEdge(null, n[m].id.toString(), k[i] + '_last', {});
                                     }
                                 }
-                            } else if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
-                                g.hasNode(k[i] + '_first')) {
-                                g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
+                            } else {
+                                if ((n[m].foo === n[0].foo || g.hasNode(n[m].previous) === false) &&
+                                    g.hasNode(k[i] + '_first')) {
+                                    g.addEdge(null, k[i] + '_first', n[m].id.toString(), {});
+                                }
+                                if ((n[m].foo === n[0].foo || n[m].next.length === 0) &&
+                                    g.hasNode(k[i] + '_last')) {
+                                    g.addEdge(null, k[i] + '_last', n[m].id.toString(), {});
+                                }
                             }
                         }
                     }

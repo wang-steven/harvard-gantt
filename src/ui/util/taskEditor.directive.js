@@ -304,27 +304,60 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                                 // fallback the task in process
                                 var fallbackOperations = [];
                                 for (i = 0, k = process.operations, l = k.length; i < l; ++i) {
-                                    if (k[i] !== data.taskId) {
+                                    if (k[i] !== task.id) {
                                         fallbackOperations.push(k[i]);
                                     }
                                 }
-                                $scope.$parent.gantt.processesMap[data.processId].operations = fallbackOperations;
-                                for (i = 0, k = $scope.$parent.gantt.processesMap[data.processId].tasks, l = k.length; i < l; ++i) {
-                                    if (k[i].id === data.taskId) {
-                                        unset($scope.$parent.gantt.processesMap[data.processId].tasks[i]);
-                                        break;
+                                if ($scope.$parent.gantt.processesMap[task.process.id] !== undefined) {
+                                    $scope.$parent.gantt.processesMap[task.process.id].operations = fallbackOperations;
+                                    for (i = 0, k = $scope.$parent.gantt.processesMap[task.process.id].tasks, l = k.length; i < l; ++i) {
+                                        if (k[i].id === task.id) {
+                                            delete $scope.$parent.gantt.processesMap[task.process.id].tasks[i];
+                                            break;
+                                        }
                                     }
                                 }
                                 // Fallback in tasks
-                                unset($scope.$parent.gantt.rowsMap[data.rowId].tasksMap[data.taskId]);
-                                unset($scope.$parent.gantt.tasksMap[data.taskId]);
+                                delete $scope.$parent.gantt.rowsMap[task.row.id].tasksMap[task.id];
+                                delete $scope.$parent.gantt.tasksMap[task.id];
                                 for (i = 0, k = $scope.editTask.job.tasks, l = k.length; i < l; ++i) {
-                                    if (k[i].id === data.taskId) {
-                                        unset($scope.editTask.job.tasks[i]);
+                                    if (k[i].id === task.id) {
+                                        delete $scope.editTask.job.tasks[i];
+                                        delete $scope.$parent.gantt.jobsMap[task.job.id].tasks[i];
                                         break;
                                     }
                                 }
+
+                                process = $scope.$parent.gantt.processesMap[task.process.id];
+                                var _operations = [];
+                                _.each(process.operations, function(operation) {
+                                    if (operation !== task.id) {
+                                        _operations.push(operation);
+                                    }
+                                });
+                                process.operations = _operations;
+
+                                var _previousOperation = null;
+                                if (task.previousOperation !== null && $scope.$parent.gantt.tasksMap[task.previousOperation] !== undefined) {
+                                    _previousOperation = $scope.$parent.gantt.tasksMap[task.previousOperation].id;
+                                }
+                                if (task.nextOperations.length > 0) {
+                                    _.each(task.nextOperations, function(task_id) {
+                                        var _task = $scope.$parent.gantt.tasksMap[task_id];
+
+                                        if (parseInt(_task.previousOperation, 10) === parseInt(task.id, 10)) {
+                                            $scope.$parent.gantt.tasksMap[task_id] = _previousOperation;
+                                        }
+                                    });
+                                }
+
+                                task.dirty = true;
+                                task.isDeleted = true;
+                                task.isManual = true;
                             }
+
+                            alert('Error!!');
+                            angular.element('#hiddenProcessing').trigger('click');
                         } else {
                             $scope.$parent.gantt.expandDefaultDateRange(task.from, task.to);
                             alert('Congratulations!!');

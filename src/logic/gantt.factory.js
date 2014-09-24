@@ -54,10 +54,12 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
         // Expands the default date range. Even if there tasks are smaller the specified date range is shown.
         self.expandDefaultDateRange = function(from, to) {
             if (from !== undefined && to !== undefined) {
-                self.defaultDateRange = {
-                    from: from,
-                    to: to
-                };
+                if (self.defaultDateRange === undefined) {
+                    self.defaultDateRange = {
+                        from: from,
+                        to: to
+                    };
+                }
                 expandDateRange(from, to);
                 expandColumns();
             }

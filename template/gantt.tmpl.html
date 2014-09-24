@@ -229,25 +229,17 @@
     </script>
     <script type="text/ng-template" id="gantt.tooltiponmachine.tmpl.html">
       <div class="tooltip-on-task-machine" ng-style="css">
-      <!--
-        <table class="tooltip-on-task-machine-table">
-          <tbody>
-            <tr>
-              <th colspan="2">{{ taskTitle }}</th>
-            </tr>
-            <tr ng-repeat="(i, head) in taskInformation.head track by $index">
-              <td class="item">{{ head }}</td><td class="value">{{ taskInformation.data[i] }}</td>
-            </tr>
-          </tobdy>
-        </table>
-        <hr>
-        -->
         <ul class="tooltip-on-task-machine-contextmenu">
           <li><a href="#" ng-click="task.isPin = !task.isPin">{{ task.isPin === true &&  'Pined' || 'Pin' }}</a></li>
           <li><a href="#" ng-click="task.isFinish = !task.isFinish">{{ task.isFinish === true && 'Finished' || 'Finish' }}</a></li>
           <li><a href="#" ng-click="editThisTask(task)">Edit Task</a></li>
           <li><a href="#" ng-click="showTaskJobFlow(task)">Show Job Flow</a></li>
           <li><a href="#" ng-click="showThisTaskInformation(task)">More Information</a></li>
+        </ul>
+        <hr>
+        <ul class="tooltip-on-task-machine-contextmenu">
+          <li><a href="#" ng-if="task.gantt.viewScale !== 'minute'" ng-click="zoomin(task)">Zoom In</a></li>
+          <li><a href="#" ng-if="task.gantt.viewScale !== 'month'" ng-click="zoomout(task)">Zoom Out</a></li>
         </ul>
         <hr>
         <ul class="tooltip-on-task-machine-contextmenu">
