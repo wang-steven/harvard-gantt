@@ -316,8 +316,8 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
 
                 if (taskHasBeenChanged === true) {
                     $scope.task.row.sortTasks(); // Sort tasks so they have the right z-order
-                    $scope.gantt.showOnProcessing = true; // Lightbox
-                    checkTaskOverlap();
+                    // $scope.gantt.showOnProcessing = true; // Lightbox
+                    // checkTaskOverlap();
                     $scope.raiseTaskUpdatedEvent($scope.task, true);
                 }
             };
