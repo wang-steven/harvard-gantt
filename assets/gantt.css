@@ -484,3 +484,7 @@ ul.tooltip-on-task-machine-contextmenu li {
     margin: 0;
     line-height: 1.2em;
 }
+
+.require_field {
+    color: red;
+}
