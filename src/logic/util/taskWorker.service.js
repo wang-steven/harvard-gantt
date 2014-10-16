@@ -100,7 +100,7 @@ gantt.service('taskWorker', [ 'dateFunctions', function (df) {
                             if (gantt.tasksMap[j[i].id].rowHasBeenChanged === true &&
                                 gantt.tasksMap[j[i].id].preventRowId !== gantt.tasksMap[j[i].id].row.id) {
                                 gantt.tasksMap[j[i].id].row.removeTask(j[i].id);
-                                gantt.rowsMap[j[i].preventRowId].tasksMap[j[i].id] = gantt.tasksMap[j[i].id];
+                                gantt.rowsMap[j[i].preventRowId].tasks[j[i].id] = gantt.tasksMap[j[i].id];
                                 gantt.rowsMap[j[i].preventRowId].tasks.push(gantt.tasksMap[j[i].id]);
                                 gantt.rowsMap[j[i].preventRowId].setTasksMinMaxDate();
                                 gantt.tasksMap[j[i].id].row = gantt.rowsMap[j[i].preventRowId];
@@ -118,7 +118,7 @@ gantt.service('taskWorker', [ 'dateFunctions', function (df) {
                         if (task.rowHasBeenChanged === true &&
                             task.preventRowId !== task.row.id) {
                             task.row.removeTask(task.id);
-                            gantt.rowsMap[task.preventRowId].tasksMap[task.id] = task;
+                            gantt.rowsMap[task.preventRowId].tasks[task.id] = task;
                             gantt.rowsMap[task.preventRowId].tasks.push(task);
                             gantt.rowsMap[task.preventRowId].setTasksMinMaxDate();
                             task.row = gantt.rowsMap[task.preventRowId];
