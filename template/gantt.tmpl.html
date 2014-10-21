@@ -190,6 +190,7 @@
         <table class="tree-node-table" ng-style="tableWidth()">
           <tbody ui-tree-nodes="" ng-model="machine.tasks">
             <tr id="tree-node-table-header">
+              <th class="task-selector"><input type="checkbox" id="select-all-tasks-on-machine" ng-model="taskSelectAll"></th>
               <th class="task-id">ID</th>
               <th class="task-pono">PO#</th>
               <th class="task-code">#</th>
@@ -216,6 +217,7 @@
       </div>
     </script>
     <script type="text/ng-template" id="default.ui-tree.tmpl.html">
+      <td class="task-selector"><input type="checkbox" name="task[{{ task.id }}]" id="task-{{ task.id }}" ng-model="task.selected" ng-checked="taskSelectAll == true"></td>
       <td ui-tree-handle class="task-id">{{ task.id }}</td>
       <td ui-tree-handle class="task-pono">{{ task.job.poNo}}</td>
       <td ui-tree-handle class="task-code">{{ task.data.operationCode }}</td>

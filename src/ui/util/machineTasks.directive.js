@@ -22,8 +22,11 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
               k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
               k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
               k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+              k[i].selected = false;
             }
             $scope.extentionTh = $scope.machine.data.title.split('|');
+            $scope.taskSelectAll = false;
+
             $scope.css = function(color) {
                 return {
                     background: color,
@@ -60,7 +63,6 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
             };
 
             $timeout(function() {
-                console.log('fire');
                 for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
                     angular.element(tr[i]).bind('mousedown', $element, disableContextMenuHandler);
                     angular.element(tr[i]).bind('contextmenu', $element, contextMenuHandler);
@@ -68,20 +70,32 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
             }, 10);
 
             var processTask = function(task) {
-              worker.run(task, $scope.gantt, function(reject) {
-                if (reject === false) {
-                  console.log(reject);
-                }
+                $timeout(function() {
+                    $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
 
-                $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
+                    for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
+                      k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
+                      k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
+                      k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+                    }
 
-                for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
-                  k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
-                  k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
-                  k[i].editorDuring = (k[i].to - k[i].from) / 60000;
-                }
-                angular.element('#hiddenProcessing').trigger('click');
-              });
+                    $scope.gantt.showOnProcessing = false;
+                }, 100);
+
+              // worker.run(task, $scope.gantt, function(reject) {
+              //   if (reject === false) {
+              //     console.log(reject);
+              //   }
+
+              //   $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
+
+              //   for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
+              //     k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
+              //     k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
+              //     k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+              //   }
+              //   angular.element('#hiddenProcessing').trigger('click');
+              // });
             };
 
             var previousProcesses = [];
@@ -161,19 +175,31 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                 dropped: function(event) {
                     var source = event.source,
                         task = source.nodeScope.task,
-                        dest = event.dest;
+                        dest = event.dest, i, k, l;
 
                     if (dest.index - 1 >= 0 && dest.index !== source.index) {
                         $scope.gantt.showOnProcessing = true;
 
                         var prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)],
-                            currentTask = $scope.gantt.tasksOnMachine.tasks[source.index];
+                            currentTask = $scope.gantt.tasksOnMachine.tasks[source.index],
+                            w = df.clone(currentTask.data.expectedStartTime) - df.addMinutes(prevTask.to, 1, true);
                         currentTask.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.to - currentTask.from), true);
                         currentTask.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
                         currentTask.from = df.addMinutes(prevTask.to, 1, true);
 
+                        for (i = 0, k = $scope.gantt.tasksOnMachine.tasks, l = k.length; i < l; ++i) {
+                            if (k[i].selected === true) {
+                                k[i].from = df.addMilliseconds(k[i].from, w, true);
+                                k[i].to = df.addMilliseconds(k[i].to, w, true);
+                                k[i].parallelFrom = df.addMilliseconds(k[i].parallelFrom, w, true);
+                                k[i].selected = false;
+                            }
+                        }
+
                         processTask(currentTask);
                     }
+
+                    $scope.taskSelectAll = false;
                     // $timeout(function() {
                     //     for (var i = 0, tr = $element.find('tr.machine-task-node'), l = tr.length; i < l; ++i) {
                     //         angular.element(tr[i]).bind('mousedown', $element, disableContextMenuHandler);

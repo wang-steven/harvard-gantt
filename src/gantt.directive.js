@@ -609,7 +609,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             // reload data
                             // and do other things
                             // console.log(response.data.data);
-                            $scope.loadData(response.data.data);
+                            $scope.loadData(response.data.data.machines);
+                            // response.data.data.message 成功的訊息
                             // Disable the gantt all operations, change to readonly.
                             $scope.gantt.disable = true;
                         } else {

@@ -295,6 +295,13 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                         }
                     }
 
+                    $scope.$parent.gantt.showOnProcessing = true; // Lightbox
+
+                    $scope.$parent.gantt.expandDefaultDateRange(task.from, task.to);
+                    alert('Congratulations!!');
+                    $scope.disableTaskEditor();
+                    $scope.$parent.gantt.showOnProcessing = false; // Lightbox
+
                     // Run the task worker to test the new or modified task.
 
                     // $scope.$parent.gantt.showOnProcessing = true; // Lightbox

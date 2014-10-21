@@ -106,7 +106,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     var items = [];
                     if ($scope.gantt.disable === true) {
                         items = [
-                            { key: 'flowchart', name: 'Show Job Flow' },
+                            // { key: 'flowchart', name: 'Show Job Flow' },
                             { key: 'info', name: 'Show Information' },
                             { key: 'divider', name: '' }
                         ];
@@ -122,8 +122,8 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                             { key: 'finished', name: ($scope.task.isFinished === true ? 'Finished' : 'Finish') },
                             { key: 'add', name: 'Create Task' },
                             { key: 'edit', name: 'Edit Task' },
-                            { key: 'flowchart', name: 'Show Job Flow' },
-                            { key: 'info', name: 'Show Information' },
+                            // { key: 'flowchart', name: 'Show Job Flow' },
+                            // { key: 'info', name: 'Show Information' },
                             { key: 'divider', name: '' },
                         ];
                         if ($scope.viewScale !== 'minute') {
@@ -318,10 +318,10 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 }, 5);
                 smartEvent($scope, windowElement, 'mousemove', taskMoveHandler).bind();
 
-                smartEvent($scope, windowElement, 'mouseup', function() {
+                smartEvent($scope, windowElement, 'mouseup', function(e) {
                     $scope.$apply(function() {
                         windowElement.unbind('mousemove', taskMoveHandler);
-                        disableMoveMode();
+                        disableMoveMode(e);
                     });
                 }).bindOnce();
 
@@ -334,17 +334,18 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 });
             };
 
-            var disableMoveMode = function () {
+            var disableMoveMode = function (e) {
                 $scope.task.isMoving = false;
                 clearScrollInterval();
                 mouseOffsetInEm = [];
 
-                if ($scope.gantt.multipleTasksSelected.length > 0) {
-                    _.each($scope.gantt.multipleTasksSelected, function(task_id) {
-                        $scope.gantt.tasksMap[task_id].isHighlight = false;
-                    });
+                if (e.shiftKey === false) {
+                    if ($scope.gantt.multipleTasksSelected.length > 0) {
+                        _.each($scope.gantt.multipleTasksSelected, function(task_id) {
+                            $scope.gantt.tasksMap[task_id].isHighlight = false;
+                        });
+                    }
                 }
-                $scope.gantt.multipleTasksSelected = [];
 
                 $element.css("cursor", '');
                 angular.element($document[0].body).css({
@@ -354,11 +355,11 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     'user-select': '',
                     'cursor': ''
                 });
-
                 if (taskHasBeenChanged === true) {
                     $scope.task.row.sortTasks(); // Sort tasks so they have the right z-order
                     // $scope.gantt.showOnProcessing = true; // Lightbox
                     // checkTaskOverlap();
+                    checkTaskReject();
                     $scope.raiseTaskUpdatedEvent($scope.task, true);
                 }
             };
@@ -376,6 +377,77 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                         }
                     }
                 }
+            };
+
+            var checkTaskReject = function() {
+                var i, j, k, l, m, n, o, w,
+                    rejectTaskMoving = false,
+                    map = $scope.gantt.tasksMap,
+                    processesMap = $scope.gantt.processesMap,
+                    task, originSetupFinishTime,
+                    dateFormat = 'YYYY-MM-DDTHH:mm:ss',
+                    tasks = $scope.gantt.multipleTasksSelected.length > 0 ? $scope.gantt.multipleTasksSelected : [];
+                    tasks.push($scope.task.id);
+
+                if (tasks.length > 0) {
+                    for (j = 0, n = tasks.length; j < n; j++) {
+                        for (i = 0, k = _.keys(map), l = k.length; i < l; i++) {
+                            task = $scope.gantt.tasksMap[tasks[j]];
+                            console.log(processesMap[map[k[i]].process.id], processesMap[task.process.id]);
+                            if (map[k[i]].process.id === task.process.id) {
+
+                            } else {
+                                if (task.from >= map[k[i]].from && (
+                                    processesMap[map[k[i]].process.id].previous.indexOf(task.process.id) >= 0 ||
+                                    processesMap[task.process.id].next.indexOf(map[k[i]].process.id) >= 0)) {
+                                    console.log('reject 1');
+                                    rejectTaskMoving = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (rejectTaskMoving === true) {
+                    console.log('reject!!!');
+                } else {
+                    console.log('all good to go.');
+
+                    for (j = 0, n = tasks.length; j < n; j++) {
+                        task = $scope.gantt.tasksMap[tasks[j]];
+
+                        if (task.id !== $scope.task.id) {
+                            w = df.clone($scope.task.from) - df.clone($scope.task.data.expectedStartTime);
+                            task.from = df.addMilliseconds(task.from, w, true);
+                            task.to = df.addMilliseconds(task.to, w, true);
+                            task.parallelFrom = df.addMilliseconds(task.parallelFrom, w, true);
+                        } else {
+                            if (task.isParallel === true) {
+                                task.parallelFrom = df.addMilliseconds(df.addMinutes(task.parallelFrom, 1, true), task.parallelFrom - task.from, true);
+                            } else {
+                                task.parallelFrom = df.addMilliseconds(df.addMinutes(task.to, 1, true), task.parallelFrom - task.from, true);
+                            }
+                        }
+
+                        originSetupFinishTime = df.clone(task.data.expectedSetupFinishTime) - df.clone(task.data.expectedStartTime);
+                        originSetupFinishTime = df.addMilliseconds(task.from, originSetupFinishTime, true);
+
+                        task.data.expectedStartTime = moment(task.from).format(dateFormat);
+                        task.data.expectedFinishTime = moment(task.to).format(dateFormat);
+                        task.data.expectedSetupFinishTime = moment(originSetupFinishTime).format(dateFormat);
+                        if (task.isParallel === true) {
+                            task.parallelFrom = df.addMinutes(originSetupFinishTime, task.data.s2sMins, true);
+                        } else {
+                            task.parallelFrom = task.to;
+                        }
+                        task.row.setMinMaxDateByTask(task);
+                        task.updatePosAndSize();
+                        task.checkIfMilestone();
+                    }
+                }
+
+                $scope.gantt.multipleTasksSelected = [];
             };
 
             var checkTaskOverlap = function() {

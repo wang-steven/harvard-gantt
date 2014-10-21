@@ -56,6 +56,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
             // url: POST or PUT /company/scheduler/plans/confirm
             // request params:
 
+            // save, defautl: false, 是否要儲存
             // check, default: true, 計算前是否要執行precondition check?
             // calculate, defaul: true, 是否要計算
             // calculateFrom, default: system day + 1 day, 從哪一天開始計算

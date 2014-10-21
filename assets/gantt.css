@@ -20,7 +20,7 @@
     width: auto;
     height: auto;
     overflow: hidden;
-    z-index: 999999999;
+    z-index: 99;
 }
 
 .gantt-head, .gantt-labels {
@@ -136,7 +136,7 @@
 /* Move row to top when hovering to ensure its tooltips
      appear above other tasks which may have higher z-index.  */
 .gantt-row:hover {
-    z-index: 999999;
+    z-index: 99;
 }
 
 .gantt-row-height {
@@ -204,7 +204,7 @@
     opacity: 0;
 }
 .tooltip-on-task-machine {
-    z-index: 999;
+    z-index: 99;
 }
 
 .gantt-task-info-content {
@@ -321,7 +321,7 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    z-index: 999999;
+    z-index: 9999;
     background: rgba(0, 0, 0, 0.8);
     text-align: center;
     color: white;
@@ -395,6 +395,10 @@
 .gantt-tasks-on-mahcine-ui-tree input { display: inline-block; width: 90%; color: black; }
 .gantt-tasks-on-mahcine-ui-tree .task-id,
 .angular-ui-tree-nodes .task-id { width: 10em; text-align: center; padding: 1.5em 0; display: none; }
+
+.gantt-tasks-on-mahcine-ui-tree .task-selector,
+.angular-ui-tree-nodes .task-selector { width: 2em; text-align: center; padding: 1.5em 0; }
+
 .gantt-tasks-on-mahcine-ui-tree .task-subject,
 .angular-ui-tree-nodes .task-subject { width: 10em; text-align: center; }
 
