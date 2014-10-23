@@ -187,12 +187,12 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             } else if (x + self.width >= self.gantt.width) {
                 x = self.gantt.width - self.width;
             }
+            var w = df.clone(self.data.expectedFinishTime) - df.clone(self.data.expectedStartTime);
 
             self.from = self.gantt.getDateByPosition(x, true);
             self.left = self.gantt.getPositionByDate(self.from);
-
-            self.to = self.gantt.getDateByPosition(self.left + self.width, false);
-            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
+            self.to = df.addMilliseconds(self.from, w, true);// self.gantt.getDateByPosition(self.left + self.width, false);
+            self.width = Math.round(w * 10) / 10;
 
             self.row.setMinMaxDateByTask(self);
         };
