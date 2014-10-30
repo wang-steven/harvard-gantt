@@ -191,8 +191,9 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
 
             self.from = self.gantt.getDateByPosition(x, true);
             self.left = self.gantt.getPositionByDate(self.from);
-            self.to = df.addMilliseconds(self.from, w, true);// self.gantt.getDateByPosition(self.left + self.width, false);
-            self.width = Math.round(w * 10) / 10;
+
+            self.to = df.addMilliseconds(self.from, w, true);
+            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
 
             self.row.setMinMaxDateByTask(self);
         };

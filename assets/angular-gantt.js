@@ -2628,8 +2628,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
             self.from = self.gantt.getDateByPosition(x, true);
             self.left = self.gantt.getPositionByDate(self.from);
-            self.to = df.addMilliseconds(self.from, w, true);// self.gantt.getDateByPosition(self.left + self.width, false);
-            self.width = Math.round(w * 10) / 10;
+
+            self.to = df.addMilliseconds(self.from, w, true);
+            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
 
             self.row.setMinMaxDateByTask(self);
         };
