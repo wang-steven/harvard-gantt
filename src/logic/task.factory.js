@@ -12,6 +12,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
         self.priority = priority;
         self.from = df.clone(from);
         self.to = df.clone(to);
+        self.tmp = df.clone(from);
         self.process = data.process;
         self.job = data.job;
         self.previousOperation = data.previousOperation;
@@ -26,6 +27,11 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
         self.est = df.clone(from);
         self.lct = df.clone(to);
         self.showup = true;
+
+        self.tmp = self.from;
+        self.during = df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime);
+        self.left = 0;
+        self.width = 0;
 
         if (est !== undefined && lct !== undefined) {
             self.est = df.clone(est);  //Earliest Start Time
@@ -66,40 +72,40 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             self.isParallel = !!self.data.parallel;
             self.checkParallelFrom();
         };
-        self.rejectMoving = function() {
-            var from = (self.data.actualStartTime === null || self.data.actualStartTime === undefined) ? self.data.expectedStartTime : self.data.actualStartTime,
-                to = (self.data.actualFinishTime === null || self.data.actualFinishTime === undefined) ? self.data.expectedFinishTime : self.data.actualFinishTime,
-                parallelFrom = self.data.actualSetupFinishTime === null || self.data.actualSetupFinishTime === undefined ? self.data.expectedSetupFinishTime : self.data.actualSetupFinishTime;
-            self.dirty = false;
-            self.from = df.clone(from);
-            self.to = df.clone(to);
-            if (self.isParallel === true) {
-                self.parallelFrom = df.clone(parallelFrom);
-                self.parallelFrom = df.addMinutes(self.parallelFrom, self.data.s2sMins, true);
-            } else {
-                self.parallelFrom = self.to;
-            }
-            self.row.setMinMaxDateByTask(self);
-            self.updatePosAndSize();
-            self.checkIfMilestone();
-        };
-        self.updateMoving = function() {
-            self.dirty = false;
-            var from = (self.data.actualStartTime === null || self.data.actualStartTime === undefined) ? self.data.expectedStartTime : self.data.actualStartTime,
-                to = (self.data.actualFinishTime === null || self.data.actualFinishTime === undefined) ? self.data.expectedFinishTime : self.data.actualFinishTime,
-                parallelFrom = self.data.actualSetupFinishTime === null || self.data.actualSetupFinishTime === undefined ? self.data.expectedSetupFinishTime : self.data.actualSetupFinishTime;
-            var originSetupFinishTime = df.clone(parallelFrom) - df.clone(from);
-            originSetupFinishTime = df.addMilliseconds(self.from, originSetupFinishTime, true);
+        // self.rejectMoving = function() {
+        //     var from = (self.data.actualStartTime === null || self.data.actualStartTime === undefined) ? self.data.expectedStartTime : self.data.actualStartTime,
+        //         to = (self.data.actualFinishTime === null || self.data.actualFinishTime === undefined) ? self.data.expectedFinishTime : self.data.actualFinishTime,
+        //         parallelFrom = self.data.actualSetupFinishTime === null || self.data.actualSetupFinishTime === undefined ? self.data.expectedSetupFinishTime : self.data.actualSetupFinishTime;
+        //     self.dirty = false;
+        //     self.from = df.clone(from);
+        //     self.to = df.clone(to);
+        //     if (self.isParallel === true) {
+        //         self.parallelFrom = df.clone(parallelFrom);
+        //         self.parallelFrom = df.addMinutes(self.parallelFrom, self.data.s2sMins, true);
+        //     } else {
+        //         self.parallelFrom = self.to;
+        //     }
+        //     self.row.setMinMaxDateByTask(self);
+        //     self.updatePosAndSize();
+        //     self.checkIfMilestone();
+        // };
+        // self.updateMoving = function() {
+        //     self.dirty = false;
+        //     var from = (self.data.actualStartTime === null || self.data.actualStartTime === undefined) ? self.data.expectedStartTime : self.data.actualStartTime,
+        //         to = (self.data.actualFinishTime === null || self.data.actualFinishTime === undefined) ? self.data.expectedFinishTime : self.data.actualFinishTime,
+        //         parallelFrom = self.data.actualSetupFinishTime === null || self.data.actualSetupFinishTime === undefined ? self.data.expectedSetupFinishTime : self.data.actualSetupFinishTime;
+        //     var originSetupFinishTime = df.clone(parallelFrom) - df.clone(from);
+        //     originSetupFinishTime = df.addMilliseconds(self.from, originSetupFinishTime, true);
 
-            self.expectedFinishTime = self.to.toISOString();
-            self.expectedStartTime = self.from.toISOString();
-            self.expectedSetupFinishTime = originSetupFinishTime.toISOString();
-            if (self.isParallel === true) {
-                self.parallelFrom = df.addMinutes(originSetupFinishTime, self.data.s2sMins, true);
-            } else {
-                self.parallelFrom = self.to;
-            }
-        };
+        //     self.expectedFinishTime = self.to.toISOString();
+        //     self.expectedStartTime = self.from.toISOString();
+        //     self.expectedSetupFinishTime = originSetupFinishTime.toISOString();
+        //     if (self.isParallel === true) {
+        //         self.parallelFrom = df.addMinutes(originSetupFinishTime, self.data.s2sMins, true);
+        //     } else {
+        //         self.parallelFrom = self.to;
+        //     }
+        // };
 
         self.prepareTooltips = function() {
             var tooltips = {'tip': self.data.tooltip1, 'ui': self.data.tooltip2, 'chart': self.data.tooltip3};
@@ -187,12 +193,10 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             } else if (x + self.width >= self.gantt.width) {
                 x = self.gantt.width - self.width;
             }
-            var w = df.clone(self.data.expectedFinishTime) - df.clone(self.data.expectedStartTime);
 
             self.from = self.gantt.getDateByPosition(x, true);
             self.left = self.gantt.getPositionByDate(self.from);
-
-            self.to = df.addMilliseconds(self.from, w, true);
+            self.to = df.addMilliseconds(self.from, self.during, true);
             self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
 
             self.row.setMinMaxDateByTask(self);

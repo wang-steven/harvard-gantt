@@ -75,9 +75,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
         controller: ['$scope', '$http', '$element', '$timeout', function ($scope, $http, $element, $timeout) {
             // Initialize defaults
             if ($scope.sortMode === undefined) $scope.sortMode = "name";
-            if ($scope.viewScale === undefined) $scope.viewScale = "day";
-            if ($scope.columnWidth === undefined) $scope.columnWidth = 24;
-            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 24;
+            if ($scope.viewScale === undefined) $scope.viewScale = "threehours";
+            if ($scope.columnWidth === undefined) $scope.columnWidth = 6;
+            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 2;
             if ($scope.allowTaskMoving === undefined) $scope.allowTaskMoving = true;
             if ($scope.allowTaskResizing === undefined) $scope.allowTaskResizing = true;
             if ($scope.allowTaskRowSwitching === undefined) $scope.allowTaskRowSwitching = true;
