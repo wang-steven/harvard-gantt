@@ -522,7 +522,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 $scope.gantt.expandDefaultDateRange($scope.fromDate, $scope.toDate);
             };
 
-            $scope.exportGanttData = function() {
+            $scope.exportGanttData = function(save) {
+                var isSave = save === undefined ? false : true;
+
                 var dateFormat = 'YYYY-MM-DDTHH:mm:ss';
                 // Export data
                 var rawData = [];
@@ -601,31 +603,39 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         params: {
                             calculate: true,
                             calculateFrom: moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
-                            calculateWeeks: 52
+                            calculateWeeks: 52,
+                            save: isSave
                         }
                     })).then(function(response) {
                         // Success
-                        if (response.data.messagesEmpty) {
-                            // reload data
-                            // and do other things
-                            // console.log(response.data.data);
-                            $scope.loadData(response.data.data.machines);
-                            // response.data.data.message 成功的訊息
-                            // Disable the gantt all operations, change to readonly.
-                            $scope.gantt.disable = true;
-                        } else {
-                            // TODO: bootstrap model
-                            // Add button on the top to show the model dialog
-                            console.log("===============here are some errors============");
-                            if (response.data.messages) {
-                                while (response.data.messages.length > 0) {
-                                    console.log(response.data.messages.pop().value);
+                        try {
+                            if (response.data.messagesEmpty) {
+                                // reload data
+                                // and do other things
+                                // console.log(response.data.data);
+                                $scope.loadData(response.data.data.machines);
+                                console.log(response.data.data.messages);
+                                // response.data.data.message 成功的訊息
+                                // Disable the gantt all operations, change to readonly.
+                                if (isSave) $scope.gantt.disable = true;
+                            } else {
+                                // TODO: bootstrap model
+                                // Add button on the top to show the model dialog
+                                console.log("===============here are some errors============");
+                                if (response.data.messages) {
+                                    while (response.data.messages.length > 0) {
+                                        console.log(response.data.messages.pop().value);
+                                    }
                                 }
+                                if (isSave) $scope.gantt.disable = true;
                             }
+                        } catch(e) {
+                            console.log("Server connect failed.");
                         }
                         return false;
                     }, function(response) {
                         // Error
+                        console.log("Server connect failed.");
                         return false;
                     });
                 }, 300);

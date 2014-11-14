@@ -13,7 +13,8 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
         var configuration = {
             serverLocation: (config.serverLocation || ''),
             jsLocationPrefix: (config.jsLocationPrefix || '/'),
-            saveGanttUrl: (config.saveGanttUrl || '/save')//,
+            saveGanttUrl: (config.saveGanttUrl || '/calculate'),
+            calcGanttUrl: (config.calcGanttUrl || '/calculate')
             //getPoUrl: (config.getPoUrl || '/get-po'),
             //getComboldUrl: (config.getComboldUrl || '/get-combold'),
             //getProductUrl: (config.getProductUrl || '/get-product')
@@ -62,7 +63,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
             // calculateFrom, default: system day + 1 day, 從哪一天開始計算
             // calculateWeeks, default: 12, 要計算幾周
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
-            , confirmGanttUrl: (config.confirmGanttUrl || '/company/scheduler/plans/confirm/')
+            , confirmGanttUrl: (config.confirmGanttUrl || '/company/scheduler/plans/calculate/')
         };
         console.log("initial server configuration", configuration);
         return configuration;

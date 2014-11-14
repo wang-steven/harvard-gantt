@@ -60,7 +60,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 $scope.$apply(function() {
                     $scope.gantt.contextMenu = undefined;
                     // Only raise click event if there was no task update event
-                    if (e.shiftKey === true) {
+                    if (e.shiftKey !== undefined && e.shiftKey === true) {
                         if ($scope.gantt.multipleTasksSelected.length === 0) {
                             var i, j, k, l, m, n, jMap = $scope.gantt.jobsMap;
                             for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
@@ -310,7 +310,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 var xInEm = moveStartX / $scope.getPxToEmFactor();
                 mouseOffsetInEm = xInEm - $scope.task.left;
 
-                if ($scope.gantt.multipleTasksSelected.length === 0 && e.shiftKey === true) {
+                if ($scope.gantt.multipleTasksSelected.length === 0 && (e !== undefined && e.shiftKey !== undefined && e.shiftKey === true)) {
                     _.each($scope.task.gantt.tasksMap, function(task) {
                         if (task.id !== $scope.task.id &&
                             task.data.operationCode === $scope.task.data.operationCode &&
@@ -350,7 +350,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 clearScrollInterval();
                 mouseOffsetInEm = 0;
 
-                if (e.shiftKey === false) {
+                if (e === undefined || e.shiftKey === undefined || e.shiftKey === false) {
                     if ($scope.gantt.multipleTasksSelected.length > 0) {
                         _.each($scope.gantt.multipleTasksSelected, function(task_id) {
                             $scope.gantt.tasksMap[task_id].isHighlight = false;

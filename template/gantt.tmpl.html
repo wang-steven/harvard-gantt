@@ -113,7 +113,14 @@
         </div>
     </div>
     <hr>
-    <button type="button" class="btn btn-small btn-primary btn-block" ng-click="exportGanttData()">Save</button>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-group btn-group-justified">
+          <a class="btn btn-lg btn-primary btn-block" ng-click="exportGanttData()" href="#">Calc</a>
+          <a class="btn btn-lg btn-warning btn-block" ng-click="exportGanttData(true)" href="#">Save</a>
+        </div>
+      </div>
+    </div>
     <gantt-context-menu ng-if="gantt.contextMenu !== undefined" ng-model="gantt.contextMenu"></gantt-context-menu>
     <gantt-machine-tasks ng-if="gantt.tasksOnMachine !== undefined"></gantt-machine-tasks>
     <gantt-machine-tooltip ng-if="gantt.tooltipTaskOnMachine !== undefined" ng-model="gantt.tooltipTaskOnMachine"></gantt-machine-tooltip>
