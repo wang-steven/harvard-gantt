@@ -523,6 +523,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             };
 
             $scope.exportGanttData = function(save) {
+                $scope.gantt.showOnProcessing = true;
+
                 var isSave = save === undefined ? false : true;
 
                 var dateFormat = 'YYYY-MM-DDTHH:mm:ss';
@@ -610,6 +612,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         }
                     })).then(function(response) {
                         // Success
+                        $scope.gantt.showOnProcessing = false;
                         try {
                             if (response.data.messagesEmpty) {
                                 // reload data
@@ -638,6 +641,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         return false;
                     }, function(response) {
                         // Error
+                        $scope.gantt.showOnProcessing = false;
                         console.log("Server connect failed.");
                         return false;
                     });
