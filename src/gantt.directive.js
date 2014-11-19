@@ -585,7 +585,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             timeclockEmployeeId: m[j].data.timeclockEmployeeId,
                             new: m[j].isNew,
                             delete: m[j].isDeleted,
-                            manual: m[j].isManual
+                            manual: m[j].isManual,
+                            face: m[j].data.face,
+                            rounds: m[j].data.rounds
                         });
                     }
 
@@ -613,6 +615,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                                 // reload data
                                 // and do other things
                                 // console.log(response.data.data);
+                                $scope.clearData();
                                 $scope.loadData(response.data.data.machines);
                                 console.log(response.data.data.messages);
                                 // response.data.data.message 成功的訊息
