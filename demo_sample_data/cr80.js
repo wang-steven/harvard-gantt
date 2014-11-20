@@ -1,4 +1,4 @@
-function getSampleData() {
+function getSampleData2() {
 
 return {
 "data": [ {
