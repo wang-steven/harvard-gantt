@@ -138,7 +138,7 @@
     <!-- Task template -->
     <script type="text/ng-template" id="default.task.tmpl.html">
         <div ng-show="task.isDeleted === false && task.showup === true" ng-class="(task.isMilestone === true && ['gantt-task-milestone'] || task.isHighlight === true && ['gantt-task-highlight','gantt-task'] || ['gantt-task']).concat(task.classes)"
-             ng-style="{'left': ((task.isMilestone === true || task.width === 0) && (task.left-0.3) || task.left)+'em', 'width': task.width +'em', 'z-index': (task.isMoving === true && 999 || task.priority || 10), 'background-color': task.color}">
+             ng-style="{'left': ((task.isMilestone === true || task.width === 0) && (task.left-0.3) || task.left)+'em', 'width': task.width +'em', 'z-index': (task.isMoving === true && 999 || 100), 'background-color': task.color}">
             <gantt-bounds ng-if="task.bounds !== undefined" ng-model="task"></gantt-bounds>
             <gantt-tooltip ng-if="showTooltips && (task.isMouseOver || task.isMoving)" ng-model="task"></gantt-tooltip>
             <div class="gantt-task-content">
