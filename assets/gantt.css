@@ -20,7 +20,7 @@
     width: auto;
     height: auto;
     overflow: hidden;
-    z-index: 99;
+    z-index: 999;
 }
 
 .gantt-head, .gantt-labels {
@@ -136,7 +136,7 @@
 /* Move row to top when hovering to ensure its tooltips
      appear above other tasks which may have higher z-index.  */
 .gantt-row:hover {
-    z-index: 99;
+    z-index: 999;
 }
 
 .gantt-row-height {
@@ -204,7 +204,7 @@
     opacity: 0;
 }
 .tooltip-on-task-machine {
-    z-index: 99;
+    z-index: 999;
 }
 
 .gantt-task-info-content {
@@ -258,7 +258,7 @@
     height:125%;
     top:-12.5%;
     position: absolute;
-    z-index: 99;
+    z-index: 999;
     border-left: 1px dashed;
     border-right: 1px dashed;
     pointer-events: none;
