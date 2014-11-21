@@ -365,7 +365,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     }
                     $scope.gantt.multipleTasksSelected = [];
 
-                    $scope.gantt.tasksMap[$scope.task.id].isHighlight = false;
+                    // $scope.gantt.tasksMap[$scope.task.id].isHighlight = false;
                     pressShiftKeyMove = false;
                 }
 
@@ -391,7 +391,6 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
                     for (j = 0, m = _.keys(jMap[k[i]].tasks), n = m.length; j < n; ++j) {
                         if (parseInt(k[i], 10) === parseInt($scope.task.job.id, 10)) {
-                            console.log(jMap[k[i]].tasks[m[j]].id, jMap[k[i]].tasks[m[j]].isHighlight);
                             jMap[k[i]].tasks[m[j]].priority = 999;
                             jMap[k[i]].tasks[m[j]].isHighlight = !jMap[k[i]].tasks[m[j]].isHighlight;
                         } else {
