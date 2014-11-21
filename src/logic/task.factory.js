@@ -32,6 +32,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
         self.during = df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime);
         self.left = 0;
         self.width = 0;
+        self.isHighlight = false;
 
         if (est !== undefined && lct !== undefined) {
             self.est = df.clone(est);  //Earliest Start Time

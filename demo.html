@@ -81,6 +81,7 @@
             disable="false"
             template-url="template/gantt.tmpl.html"
             on-gantt-ready="addSamples()" on-row-added="rowAddEvent(event)" on-row-clicked="rowClickEvent(event)" on-row-updated="rowUpdateEvent(event)"
+            on-server-response="serverResponse(data)"
             on-scroll="scrollEvent(event)" on-task-clicked="taskEvent(event)" on-task-updated="taskUpdate(event)"></gantt>
         </div>
         <div class="col-md-1">&nbsp;</div>

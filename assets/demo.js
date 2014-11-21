@@ -116,6 +116,10 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
         $scope.clearData();
     };
 
+    $scope.serverResponse = function(response) {
+        console.log(response);
+    };
+
     $scope.rowAddEvent = function(event) {
         // A row has been added, updated or clicked. Use this event to save back the updated row e.g. after a user re-ordered it.
         // console.log('Row event (by user: ' + event.userTriggered + '): ' + event.date + ' '  + event.row.description + ' (Custom data: ' + event.row.data + ')');

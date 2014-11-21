@@ -28,6 +28,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
             var moveStartX;
             var scrollInterval;
             var rejectTaskMoving = false;
+            var pressShiftKeyMove = false;
 
             $scope.gantt.multipleTasksSelected = [];
 
@@ -47,7 +48,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                         var mode = getMoveMode(e);
                         if (mode !== "" && mouseButton.getButton(e) === 1 && $scope.task.width > 0) {
                             var offsetX = mouseOffset.getOffsetForElement(ganttBodyElement[0], e).x;
-                            enableMoveMode(mode, offsetX, e);
+                            enableMoveMode(mode, offsetX, e.shiftKey);
 
                             e.stopPropagation();
                             e.preventDefault();
@@ -171,18 +172,23 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 });
             });
 
-            var handleMove = function(mode, mousePos) {
+            var handleMove = function(mode, mousePos, shiftKey) {
                 if ($scope.task.isMoving === false) {
                     return;
                 }
 
-                moveTask(mode, mousePos);
+                moveTask(mode, mousePos, shiftKey);
                 scrollScreen(mode, mousePos);
             };
 
-            var moveTask = function(mode, mousePos) {
+            var moveTask = function(mode, mousePos, shiftKey) {
                 $scope.task.mouseOffsetX = mousePos.x;
                 var xInEm = mousePos.x / $scope.getPxToEmFactor();
+
+                if (shiftKey !== undefined && shiftKey === true) {
+                    pressShiftKeyMove = true;
+                }
+
                 if (mode === "M") {
                     if ($scope.allowTaskRowSwitching && $scope.gantt.multipleTasksSelected.length === 0) {
                         var targetRow = getRowByY(mousePos.y);
@@ -302,7 +308,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 }
             };
 
-            var enableMoveMode = function (mode, x, e) {
+            var enableMoveMode = function (mode, x, shiftKey) {
                 taskHasBeenChanged = false;
                 $scope.task.isMoving = true;
 
@@ -310,22 +316,23 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 var xInEm = moveStartX / $scope.getPxToEmFactor();
                 mouseOffsetInEm = xInEm - $scope.task.left;
 
-                if ($scope.gantt.multipleTasksSelected.length === 0 && (e !== undefined && e.shiftKey !== undefined && e.shiftKey === true)) {
-                    _.each($scope.task.gantt.tasksMap, function(task) {
-                        if (task.id !== $scope.task.id &&
-                            task.data.operationCode === $scope.task.data.operationCode &&
-                            task.data.face === $scope.task.data.face &&
-                            task.data.rounds === $scope.task.data.rounds) {
-                            $scope.gantt.multipleTasksSelected.push(task.id);
-                        }
-                    });
-                    console.log($scope.gantt.multipleTasksSelected);
+                if (shiftKey !== undefined && shiftKey === true) {
+                    if ($scope.gantt.multipleTasksSelected.length === 0) {
+                        _.each($scope.task.gantt.tasksMap, function(task) {
+                            if (task.id !== $scope.task.id &&
+                                task.data.operationCode === $scope.task.data.operationCode &&
+                                task.data.face === $scope.task.data.face &&
+                                task.data.rounds === $scope.task.data.rounds) {
+                                $scope.gantt.multipleTasksSelected.push(task.id);
+                            }
+                        });
+                    }
                 }
 
                 var taskMoveHandler = debounce(function(e) {
                     var mousePos = mouseOffset.getOffsetForElement(ganttBodyElement[0], e);
                     clearScrollInterval();
-                    handleMove(mode, mousePos);
+                    handleMove(mode, mousePos, e.shiftKey);
                 }, 5);
                 smartEvent($scope, windowElement, 'mousemove', taskMoveHandler).bind();
 
@@ -350,13 +357,16 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 clearScrollInterval();
                 mouseOffsetInEm = 0;
 
-                if (e === undefined || e.shiftKey === undefined || e.shiftKey === false) {
+                if (e === undefined || e.shiftKey === undefined || e.shiftKey === false || pressShiftKeyMove === true) {
                     if ($scope.gantt.multipleTasksSelected.length > 0) {
                         _.each($scope.gantt.multipleTasksSelected, function(task_id) {
                             $scope.gantt.tasksMap[task_id].isHighlight = false;
                         });
                     }
                     $scope.gantt.multipleTasksSelected = [];
+
+                    $scope.gantt.tasksMap[$scope.task.id].isHighlight = false;
+                    pressShiftKeyMove = false;
                 }
 
                 $element.css("cursor", '');
@@ -381,6 +391,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
                     for (j = 0, m = _.keys(jMap[k[i]].tasks), n = m.length; j < n; ++j) {
                         if (parseInt(k[i], 10) === parseInt($scope.task.job.id, 10)) {
+                            console.log(jMap[k[i]].tasks[m[j]].id, jMap[k[i]].tasks[m[j]].isHighlight);
                             jMap[k[i]].tasks[m[j]].priority = 999;
                             jMap[k[i]].tasks[m[j]].isHighlight = !jMap[k[i]].tasks[m[j]].isHighlight;
                         } else {

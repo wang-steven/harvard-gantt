@@ -70,7 +70,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             onTaskMoveBegin: "&",
             onTaskMoveEnd: "&",
             onTaskResizeBegin: "&",
-            onTaskResizeEnd: "&"
+            onTaskResizeEnd: "&",
+            onServerResponse: "&"
         },
         controller: ['$scope', '$http', '$element', '$timeout', function ($scope, $http, $element, $timeout) {
             // Initialize defaults
@@ -284,6 +285,10 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     $scope.gantt.expandDefaultDateRange(from, to);
                 }
             });
+
+            $scope.raiseServerResponseEvent = function(state, data) {
+                $scope.onServerResponse({ data: { state: state, data: data }});
+            };
 
             $scope.raiseLabelsResized = function(width) {
                 $scope.onLabelsResized({ event: { width: width } });
@@ -621,6 +626,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                                 $scope.removeAllData();
                                 $scope.setData(response.data.data.machines);
                                 console.log(response.data.data.messages);
+
+                                $scope.raiseServerResponseEvent('ok', response);
                                 // response.data.data.message 成功的訊息
                                 // Disable the gantt all operations, change to readonly.
                                 if (isSave) $scope.gantt.disable = true;
@@ -633,15 +640,18 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                                         console.log(response.data.messages.pop().value);
                                     }
                                 }
+                                $scope.raiseServerResponseEvent('error', response);
                                 if (isSave) $scope.gantt.disable = true;
                             }
                         } catch(e) {
+                            $scope.raiseServerResponseEvent('error', response);
                             console.log("Server connect failed.");
                         }
                         return false;
                     }, function(response) {
                         // Error
                         $scope.gantt.showOnProcessing = false;
+                        $scope.raiseServerResponseEvent('error', response);
                         console.log("Server connect failed.");
                         return false;
                     });
