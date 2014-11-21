@@ -31,7 +31,7 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', 'mouseO
                     case 'task':
                         switch(type) {
                             case 'pin':
-                                if (confirm('Are you sure to '+(target.isPin ? 'pin' : 'unpin')+' this Task?')) {
+                                if (confirm('Are you sure to '+(target.isPin ? 'unpin' : 'pin')+' this Task?')) {
                                     target.isPin = !target.isPin;
                                     target.dirty = true;
                                     target.isManual = true;
