@@ -120,7 +120,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     } else {
                         items = [
                             { key: 'pin', name: ($scope.task.isPin === true ? 'Unpin' : 'Pin') },
-                            { key: 'finished', name: ($scope.task.isFinished === true ? 'Finished' : 'Finish') },
+                            // { key: 'finished', name: ($scope.task.isFinished === true ? 'Finished' : 'Finish') },
                             { key: 'add', name: 'Create Task' },
                             { key: 'edit', name: 'Edit Task' },
                             // { key: 'flowchart', name: 'Show Job Flow' },
