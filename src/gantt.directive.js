@@ -220,7 +220,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     date = df.setTimeZero(date, true);
                 }
 
-                if (date - $scope.gantt.defaultDateRange.to < 0) {
+                if (date - $scope.gantt.defaultDateRange.to > 0) {
                     $scope.gantt.defaultDateRange.to = df.addDays(date, 5, true);
                     $scope.gantt.expandDefaultDateRange($scope.gantt.getFirstColumn().date, $scope.gantt.defaultDateRange.to);
                 }

@@ -95,8 +95,8 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
     };
 
     $scope.jumpToDate = function(date) {
-        console.log(date);
         var date = date === undefined ? moment(Date.now()).toDate() : moment(date+'T00:00:00').toDate();
+        console.log(date);
         $scope.centerDate(date);
     };
 
