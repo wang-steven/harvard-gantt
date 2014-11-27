@@ -25,8 +25,8 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 $scope.$parent.gantt.enableTaskEditor = undefined;
             };
 
-            $scope.shiftTaskPriority = function(priority) {
-                $scope.editTask.priority = priority + 1;
+            $scope.shiftTaskPriority = function(task) {
+                $scope.editTask.priority = task.priority + 1;
                 for (i = 0, k = $scope.editTask.job.tasks, l = k.length; i < l; ++i) {
                     if (k[i].priority >= $scope.editTask.priority) {
                         k[i].priority = k[i].priority + 1;
@@ -375,7 +375,7 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 }
             };
 
-            var dropdown = angular.element('#modifyTask_poNo_dropdown');
+            var dropdown = angular.element(document.querySelector('#modifyTask_poNo_dropdown'));
             $scope.toggleFuzzyDropdown = function(poNo) {
                 dropdown.css('display', 'none');
                 if (poNo !== undefined) {

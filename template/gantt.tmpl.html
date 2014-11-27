@@ -491,12 +491,12 @@
                   <div class="form-group">
                     <label for="expectedStartTime" class="col-lg-3 control-label require_field">Expect Start </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="expectedStartTime" name="modifyTask_expectedStartTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedStartTime" value="{{ editTask.expectedStartTime | date: 'yyyy-MM-ddTHH:mm' }}">
+                      <input type="text" class="form-control ng-pristine" id="expectedStartTime" name="modifyTask_expectedStartTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedStartTime" value="{{ editTask.expectedStartTime | date: 'yyyy-MM-ddTHH:mm' }}" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                     <label for="expectedSetupFinishTime" class="col-lg-3 control-label">Expect Setup Finish </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="expectedSetupFinishTime" name="modifyTask_expectedSetupFinishTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
+                      <input type="text" class="form-control ng-pristine" id="expectedSetupFinishTime" name="modifyTask_expectedSetupFinishTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                   </div>
@@ -504,7 +504,7 @@
                   <div class="form-group">
                     <label for="expectedFinishTime" class="col-lg-3 control-label require_field">Expect Production Finish </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="expectedFinishTime" name="modifyTask_expectedFinishTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
+                      <input type="text" class="form-control ng-pristine" id="expectedFinishTime" name="modifyTask_expectedFinishTime" placeholder="yyyy-MM-ddTHH:mm" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                     <label for="quantity" class="col-lg-3 control-label">Expect Quantity </label>
@@ -525,12 +525,12 @@
                   <div class="form-group">
                     <label for="actualStartTime" class="col-lg-3 control-label">Actual Start </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="actualStartTime" name="modifyTask_actualStartTime" ng-model="editTask.actualStartTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualStartTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true">
+                      <input type="text" class="form-control ng-pristine" id="actualStartTime" name="modifyTask_actualStartTime" ng-model="editTask.actualStartTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualStartTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                     <label for="actualSetupFinishTime" class="col-lg-3 control-label">Actual Setup Finish </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="actualSetupFinishTime" name="modifyTask_actualSetupFinishTime" ng-model="editTask.actualSetupFinishTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualSetupFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true">
+                      <input type="text" class="form-control ng-pristine" id="actualSetupFinishTime" name="modifyTask_actualSetupFinishTime" ng-model="editTask.actualSetupFinishTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualSetupFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                   </div>
@@ -538,7 +538,7 @@
                   <div class="form-group">
                     <label for="actualFinishTime" class="col-lg-3 control-label">Actual Production Finish </label>
                     <div class="col-lg-3">
-                      <input type="datetime-local" class="form-control" id="actualFinishTime" name="modifyTask_actualFinishTime" ng-model="editTask.actualFinishTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true">
+                      <input type="text" class="form-control ng-pristine" id="actualFinishTime" name="modifyTask_actualFinishTime" ng-model="editTask.actualFinishTime" placeholder="yyyy-MM-ddTHH:mm" value="{{ editTask.actualFinishTime | date: 'yyyy-MM-ddTHH:mm' }}" ng-required="editTask.inProcessing === true" date-time required="true" view="hours" partial="true">
                         <span class="help-block"><div class="text-danger"></div></span>
                     </div>
                     <label for="actualQuantity" class="col-lg-3 control-label">Actual Quantity </label>

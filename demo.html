@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="assets/css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+<link rel="stylesheet" href="assets/bootstrap.min.css">
 <link rel="stylesheet" href="assets/angular-ui-tree.min.css">
-<link rel="stylesheet" href="assets/plugins/chardinjs/chardinjs.css">
+<link rel="stylesheet" href="assets/daterange-picker.css">
+<link rel="stylesheet" href="assets/datepicker.css">
+<link rel="stylesheet" href="assets/timepicker.css">
+<link rel="stylesheet" href="assets/angular-datepicker.min.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/gantt.css">
+<script type="text/javascript" src="assets/angular.min.js"></script>
 <title>Gantt</title>
 </head>
 <body style="padding: 10px">
@@ -62,12 +64,12 @@
               <div class="btn-group">
                 <button class="btn btn-default" ng-click="jumpToDate()">Today</button>
               </div>
-              <div class="input-group">
-                <input type="text" class="form-control" ng-model="jumpToDateTime" value="{{ jumpToDateTime }}">
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="button" ng-click="jumpToDate(jumpToDateTime)">Jump</button>
-                </span>
+              <div style="width: 16em;display:inline-block;vertical-align:middle;">
+                <div class="input-group">
+                  <input class="form-control ng-pristine" type="text" ng-model="jumpToDateTime" value="{{ jumpToDateTime }}" date-time required="true" view="hours" partial="true"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
               </div>
+              <button class="btn btn-default" type="button" ng-click="jumpToDate(jumpToDateTime)">Jump</button>
             </div>
           </form>
           <hr>
@@ -93,17 +95,14 @@
 
 </div>
 
-
-<script src="assets/d3.v3.min.js" defer></script>
-<script src="assets/graphlib.min.js" defer></script>
-<script src="assets/dagre-d3.min.js" defer></script>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="assets/angular.js"></script>
+<script src="assets/jquery.js"></script>
+<script src="assets/bootstrap.min.js"></script>
 <script src="assets/underscore.min.js"></script>
-<script src="assets/moment.js"></script>
+<script src="assets/moment.min.js"></script>
+<script src="assets/bootstrap-datepicker.js"></script>
+<script src="assets/bootstrap-timepicker.js"></script>
+<script src="assets/daterange-picker.js"></script>
+<script src="assets/angular-datepicker.min.js"></script>
 <script src="demo_sample_data/4type-with-rounds.js"></script>
 <script src="demo_sample_data/cr80.js"></script>
 <script src="assets/demo.js"></script>

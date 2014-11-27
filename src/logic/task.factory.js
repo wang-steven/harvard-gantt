@@ -131,7 +131,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
         // Updates the pos and size of the task according to the from - to date
         self.updatePosAndSize = function() {
             self.left = self.gantt.getPositionByDate(self.from);
-            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
+            self.width = Math.ceil((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
 
             self.row.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
             for (var i = 0, k = self.row.tasks, l = k.length; i < l; i++) {
@@ -153,7 +153,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             if (self.est !== undefined && self.lct !== undefined) {
                 self.bounds = {};
                 self.bounds.left = self.gantt.getPositionByDate(self.est);
-                self.bounds.width = Math.round((self.gantt.getPositionByDate(self.lct) - self.bounds.left) * 10) / 10;
+                self.bounds.width = Math.ceil((self.gantt.getPositionByDate(self.lct) - self.bounds.left) * 10) / 10;
             }
         };
 
@@ -198,7 +198,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             self.from = self.gantt.getDateByPosition(x, true);
             self.left = self.gantt.getPositionByDate(self.from);
             self.to = df.addMilliseconds(self.from, self.during, true);
-            self.width = Math.round((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
+            self.width = Math.ceil((self.gantt.getPositionByDate(self.to) - self.left) * 10) / 10;
 
             self.row.setMinMaxDateByTask(self);
         };

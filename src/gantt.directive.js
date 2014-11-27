@@ -3,7 +3,7 @@
  Author: Marco Schweighauser (2013)
  License: MIT License. See README.md
  */
-var gantt = angular.module('gantt', ['underscore', 'ui.tree']);
+var gantt = angular.module('gantt', ['datePicker', 'underscore', 'ui.tree']);
 
 gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', 'keepScrollPos', function (Gantt, df, mouseOffset, debounce, keepScrollPos) {
     var templateLocation = '';
