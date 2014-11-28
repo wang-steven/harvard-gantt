@@ -26,7 +26,7 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', 'mouseO
                 });
             });
 
-            $scope.contextMenuLink = function(key, target, type, $element, e) {
+            $scope.contextMenuLink = function(key, target, type, e) {
                 switch(key) {
                     case 'task':
                         switch(type) {
@@ -141,6 +141,7 @@ gantt.directive('ganttContextMenu', ['$window', '$document', '$timeout', 'mouseO
                         }
                     break;
                 }
+                return false;
             };
 
             // var parentElement = $element.parent();

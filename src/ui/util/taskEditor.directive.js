@@ -20,6 +20,47 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
             var bodyElement = angular.element($document[0].body),
                 i, j, k, l, m, n, ajaxConfig = $scope.$parent.gantt.ajaxUrl;
 
+            var ajaxTimer = null;
+            $scope.editTask = {
+                type: 'New',
+                rowId: $scope.task.id,
+                taskId: 0,
+                job: {},
+                poNo: '',
+                fuzzyPoNo: '',
+                operationCode: '',
+                comboId: '',
+                productId: '',
+                processId: '',
+                comboList: [],
+                productList: [],
+                processList: [],
+                processingType: 'GANG',
+                factoryOperation: {},
+                priority: 0,
+                quantity: 0,
+                sheetUp: 0,
+                up: 0,
+                isPin: false,
+                isParallel: false,
+                isFinished: false,
+                inProcessing: false,
+                parallelCode: '',
+                s2sMins: -1,
+                timeclockEmployeeId: 0,
+                runOnMachineId: $scope.task.id,
+                expectedStartTime: null,
+                expectedSetupFinishTime: null,
+                expectedFinishTime: null,
+                actualStartTime: null,
+                actualSetupFinishTime: null,
+                actualFinishTime: null,
+                actualQuantity: 0,
+                actualRunOnMachineId: $scope.task.id,
+                rounds: 1,
+                new: false,
+                face: null
+            };
             // Close task editor.
             $scope.disableTaskEditor = function() {
                 $scope.$parent.gantt.enableTaskEditor = undefined;
@@ -124,12 +165,17 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 data.parallelCode = data.parallelCode === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.parallelCode : null) : data.parallelCode;
                 data.s2sMins = data.s2sMins === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.s2sMins : -1) : data.s2sMins;
                 data.timeclockEmployeeId = data.timeclockEmployeeId === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.timeclockEmployeeId : null) : data.timeclockEmployeeId;
-                data.expectedStartTime = data.expectedStartTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.from : null) : data.expectedStartTime;
-                data.expectedSetupFinishTime = data.expectedSetupFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? df.addMilliseconds(df.clone($scope.task.data.expectedSetupFinishTime), $scope.task.to - $scope.task.from, true) : null) : data.expectedSetupFinishTime;
-                data.expectedFinishTime = data.expectedFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.to : null) : data.expectedFinishTime;
-                data.actualStartTime = data.actualStartTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualStartTime : null) : data.actualStartTime;
-                data.actualSetupFinishTime = data.actualSetupFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualSetupFinishTime : null) : data.actualSetupFinishTime;
-                data.actualFinishTime = data.actualFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualFinishTime : null) : data.actualFinishTime;
+                data.rounds = data.rounds === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.rounds : 1) : data.rounds;
+                data.new = data.new === undefined ? false : true;
+                data.face = data.face === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.face : null) : null;
+
+                data.expectedStartTime = data.expectedStartTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.from : null) : df.clone(data.expectedStartTime);
+                data.expectedSetupFinishTime = data.expectedSetupFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? df.addMilliseconds(df.clone($scope.task.data.expectedSetupFinishTime), $scope.task.to - $scope.task.from, true) : null) : df.clone(data.expectedSetupFinishTime);
+                data.expectedFinishTime = data.expectedFinishTime === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.to : null) : df.clone(data.expectedFinishTime);
+
+                data.actualStartTime = (data.actualStartTime === undefined || data.actualStartTime === '') ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualStartTime : null) : df.clone(data.actualStartTime);
+                data.actualSetupFinishTime = (data.actualSetupFinishTime === undefined || data.actualSetupFinishTime === '') ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualSetupFinishTime : null) : df.clone(data.actualSetupFinishTime);
+                data.actualFinishTime = (data.actualFinishTime === undefined || data.actualFinishTime === '') ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualFinishTime : null) : df.clone(data.actualFinishTime);
                 data.actualQuantity = data.actualQuantity === undefined ? (typeof $scope.task === 'object' && $scope.task.name === 'Task' ? $scope.task.data.actualQuantit : null) : data.actualQuantity;
 
                 // TODO: validation
@@ -187,117 +233,153 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     error_message = '5';
                 }
 
-
                 if (data_checking === false || data.rowId === 0) {
                     alert('Data check failed!');
                 } else {
-                    // Get the process data and modify.
-                    var process = $scope.$parent.gantt.processesMap[data.processId];
-                    process.operations.push(data.taskId);
+                    $scope.$parent.gantt.showOnProcessing = true; // Lightbox
+                    if (data.new === true && data.type === 'New') {
+                        // Get the process data and modify.
+                        var process = $scope.$parent.gantt.processesMap[data.processId];
+                        process.operations.push(data.taskId);
 
-                    // Color 1, task on the same job
-                    // Color 2, machine any task
+                        // Color 1, task on the same job
+                        // Color 2, machine any task
 
-                    var taskData = {
-                        id: data.taskId,
-                        oid: data.taskId,
-                        part: 0,
-                        operationCode: data.operationCode,
-                        priority: data.priority,
-                        job: {
-                            id: $scope.editTask.job.id,
-                            poNo: $scope.editTask.job.poNo,
-                            comboId: $scope.editTask.job.comboId,
-                            comboType: $scope.editTask.job.comboType,
-                            comboQuantity: $scope.editTask.job.comboQuantity,
-                        },
-                        process: {
-                          id: data.processId,
-                          needWaitPrevProcess: process.waitPrevious,
-                          operations: process.operations,
-                          previousProcesses: process.previous,
-                          productId: data.productId
-                        },
-                        previousOperation: data.previousTask,
-                        nextOperations: data.nextTask,
-                        runOnMachineId: data.rowId,
-                        actualRunOnMachineId: null,
-                        quantity: data.quantity,
-                        actualQuantity: 0,
-                        processingType: data.processingType,
-                        factoryOperation: $scope.editTask.factoryOperation,
-                        jobFile: null,
-                        manual: true,
-                        pin: data.isPin,
-                        setupTime: (df.clone(data.expectedSetupFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60,
-                        productionTime: (df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60,
-                        productionCapacity: 0,
-                        s2sMins: data.s2sMins,
-                        up: data.up,
-                        sheetUp: data.sheetUp,
-                        expectedStartTime: data.expectedStartTime + ':00.000',
-                        expectedSetupFinishTime: data.expectedSetupFinishTime + ':00.000',
-                        expectedFinishTime: data.expectedFinishTime + ':00.000',
-                        actualStartTime: data.actualStartTime === null ? null: data.actualStartTime + ':00.000',
-                        actualSetupFinishTime: data.actualSetupFinishTime === null ? null: data.actualSetupFinishTime + ':00.000',
-                        actualFinishTime: data.actualFinishTime === null ? null: data.actualFinishTime + ':00.000',
-                        finished: data.isFinish,
-                        inProcessing: data.inProcessing,
-                        delete: false,
-                        parallel: data.isParallel,
-                        parallelCode: data.parallelCode,
-                        expectedMoldId: null,
-                        tooltip1: data.operationCode + '|' + data.comboId + '|' + data.poNo,
-                        tooltip2: data.operationCode + '|' + data.comboId + '|' + data.poNo,
-                        tooltip3: data.operationCode + '|' + data.comboId + '|' + data.poNo,
-                        color1: '0xffff00',
-                        color2: '',
-                        timeclockEmployeeId: null,
-                        new: true
-                    };
-                    /**
-                     * Add the task to the Gantt and run the test.
-                     */
-                    var row = $scope.$parent.gantt.rowsMap[data.rowId];
-                    var task = row.addTask(taskData);
+                        var taskData = {
+                            id: data.taskId,
+                            oid: data.taskId,
+                            part: 0,
+                            operationCode: data.operationCode,
+                            priority: data.priority,
+                            job: {
+                                id: $scope.editTask.job.id,
+                                poNo: $scope.editTask.job.poNo,
+                                comboId: $scope.editTask.job.comboId,
+                                comboType: $scope.editTask.job.comboType,
+                                comboQuantity: $scope.editTask.job.comboQuantity,
+                            },
+                            process: {
+                              id: data.processId,
+                              needWaitPrevProcess: process.waitPrevious,
+                              operations: process.operations,
+                              previousProcesses: process.previous,
+                              productId: data.productId
+                            },
+                            previousOperation: data.previousTask,
+                            nextOperations: data.nextTask,
+                            runOnMachineId: data.rowId,
+                            actualRunOnMachineId: null,
+                            quantity: data.quantity,
+                            actualQuantity: 0,
+                            processingType: data.processingType,
+                            factoryOperation: $scope.editTask.factoryOperation,
+                            jobFile: null,
+                            manual: true,
+                            pin: data.isPin,
+                            setupTime: (df.clone(data.expectedSetupFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60,
+                            productionTime: (df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60,
+                            productionCapacity: 0,
+                            s2sMins: data.s2sMins,
+                            up: data.up,
+                            sheetUp: data.sheetUp,
+                            expectedStartTime: data.expectedStartTime,
+                            expectedSetupFinishTime: data.expectedSetupFinishTime,
+                            expectedFinishTime: data.expectedFinishTime,
+                            actualStartTime: data.actualStartTime === null ? null: data.actualStartTime,
+                            actualSetupFinishTime: data.actualSetupFinishTime === null ? null: data.actualSetupFinishTime,
+                            actualFinishTime: data.actualFinishTime === null ? null: data.actualFinishTime,
+                            finished: data.isFinished,
+                            inProcessing: data.inProcessing,
+                            delete: false,
+                            parallel: data.isParallel,
+                            parallelCode: data.parallelCode,
+                            expectedMoldId: null,
+                            tooltip1: data.operationCode + '|' + data.comboId + '|' + data.poNo,
+                            tooltip2: data.operationCode + '|' + data.comboId + '|' + data.poNo,
+                            tooltip3: data.operationCode + '|' + data.comboId + '|' + data.poNo,
+                            color1: '0xffff00',
+                            color2: '',
+                            timeclockEmployeeId: null,
+                            new: data.new,
+                            face: data.face,
+                            rounds: data.rounds
+                        };
+                        /**
+                         * Add the task to the Gantt and run the test.
+                         */
+                        var row = $scope.$parent.gantt.rowsMap[data.rowId];
+                        var task = row.addTask(taskData);
 
-                    row.setMinMaxDateByTask(task);
-                    task.updatePosAndSize();
-                    task.checkIfMilestone();
+                        row.setMinMaxDateByTask(task);
+                        task.updatePosAndSize();
+                        task.checkIfMilestone();
 
-                    if (task.process.id in $scope.$parent.gantt.processesMap) {
-                        process = $scope.$parent.gantt.processesMap[task.process.id];
-                        process.addTask(task);
-                        process.addPrevious(task.process.previousProcesses);
-                    } else {
-                        process = new Processes(task.process, $scope.$parent.gantt);
-                        process.addTask(task);
-                        process.addPrevious(task.process.previousProcesses);
-                        $scope.$parent.gantt.processesMap[task.process.id] = process;
-                    }
+                        if (task.process.id in $scope.$parent.gantt.processesMap) {
+                            process = $scope.$parent.gantt.processesMap[task.process.id];
+                            process.addTask(task);
+                            process.addPrevious(task.process.previousProcesses);
+                        } else {
+                            process = new Processes(task.process, $scope.$parent.gantt);
+                            process.addTask(task);
+                            process.addPrevious(task.process.previousProcesses);
+                            $scope.$parent.gantt.processesMap[task.process.id] = process;
+                        }
 
-                    var job;
-                    if (task.job.id in $scope.$parent.gantt.jobsMap) {
-                        job = $scope.$parent.gantt.jobsMap[task.job.id];
-                        job.addTask($scope.$parent.gantt.rowKey, task);
-                    } else {
-                        job = new Jobs(task.job, $scope.$parent.gantt);
-                        job.addTask($scope.$parent.gantt.rowKey, task);
+                        var job;
+                        if (task.job.id in $scope.$parent.gantt.jobsMap) {
+                            job = $scope.$parent.gantt.jobsMap[task.job.id];
+                            job.addTask($scope.$parent.gantt.rowKey, task);
+                        } else {
+                            job = new Jobs(task.job, $scope.$parent.gantt);
+                            job.addTask($scope.$parent.gantt.rowKey, task);
 
-                        $scope.$parent.gantt.jobsMap[task.job.id] = job;
-                    }
+                            $scope.$parent.gantt.jobsMap[task.job.id] = job;
+                        }
 
-                    for (i = 0, l = _.keys($scope.$parent.gantt.processesMap); i < l.length; ++i) {
-                        for (j = 0, k = $scope.$parent.gantt.processesMap[l[i]].previous; j < k.length; ++j) {
-                            if ($scope.$parent.gantt.processesMap[k[j]] !== undefined) {
-                                $scope.$parent.gantt.processesMap[k[j]].addNext([$scope.$parent.gantt.processesMap[l[i]].id]);
+                        for (i = 0, l = _.keys($scope.$parent.gantt.processesMap); i < l.length; ++i) {
+                            for (j = 0, k = $scope.$parent.gantt.processesMap[l[i]].previous; j < k.length; ++j) {
+                                if ($scope.$parent.gantt.processesMap[k[j]] !== undefined) {
+                                    $scope.$parent.gantt.processesMap[k[j]].addNext([$scope.$parent.gantt.processesMap[l[i]].id]);
+                                }
                             }
                         }
+                        $scope.$parent.gantt.expandDefaultDateRange(task.from, task.to);
+                    } else {
+                        data.expectedStartTime = df.clone(data.expectedStartTime);
+                        data.expectedSetupFinishTime = df.clone(data.expectedSetupFinishTime);
+                        data.expectedFinishTime = df.clone(data.expectedFinishTime);
+                        data.actualStartTime = data.actualStartTime === null ? null : df.clone(data.actualStartTime);
+                        data.actualSetupFinishTime = data.actualSetupFinishTime === null ? null : df.clone(data.actualSetupFinishTime);
+                        data.actualFinishTime = data.actualFinishTime === null ? null : df.clone(data.actualFinishTime);
+
+                        $scope.task.data.operationCode = data.operationCode;
+                        $scope.task.data.priority = data.priority;
+                        $scope.task.data.processingType = data.processingType;
+                        $scope.task.data.rounds = data.rounds;
+                        $scope.task.data.manual = true;
+                        $scope.task.data.finished = data.isFinised;
+                        $scope.task.data.inProcessing = data.inProcessing;
+                        $scope.task.data.pin = data.isPin;
+                        $scope.task.data.up = data.up;
+                        $scope.task.data.sheetup = data.sheetUp;
+                        $scope.task.data.s2sMins = data.s2sMins;
+                        $scope.task.data.quantity = data.quantity;
+                        $scope.task.data.setupTime = (df.clone(data.expectedSetupFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60;
+                        $scope.task.data.productionTime = (df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime)) / 1000 / 60;
+                        $scope.task.data.expectedStartTime = moment(data.expectedStartTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+                        $scope.task.data.expectedSetupFinishTime = moment(data.expectedSetupFinishTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+                        $scope.task.data.expectedFinishTime = moment(data.expectedFinishTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+                        $scope.task.data.actualStartTime = data.actualStartTime === null ? null: moment(data.actualStartTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+                        $scope.task.data.actualSetupFinishTime = data.actualSetupFinishTime === null ? null: moment(data.actualSetupFinishTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+                        $scope.task.data.actualFinishTime = data.actualFinishTime === null ? null: moment(data.actualFinishTime.toISOString()).format('YYYY-MM-DDTHH:mm:ss');
+
+                        $scope.task.from = data.expectedStartTime;
+                        $scope.task.to = data.expectedFinishTime;
+
+                        $scope.$parent.gantt.expandDefaultDateRange($scope.task.from, $scope.task.to);
+                        $scope.task.updatePosAndSize();
                     }
 
-                    $scope.$parent.gantt.showOnProcessing = true; // Lightbox
-
-                    $scope.$parent.gantt.expandDefaultDateRange(task.from, task.to);
                     alert('Congratulations!!');
                     $scope.disableTaskEditor();
                     $scope.$parent.gantt.showOnProcessing = false; // Lightbox
@@ -540,45 +622,6 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 return $q.reject(response.data.message);
             }
 
-            var ajaxTimer = null;
-            $scope.editTask = {
-                type: 'New',
-                rowId: $scope.task.id,
-                taskId: 0,
-                job: {},
-                poNo: '',
-                fuzzyPoNo: '',
-                operationCode: '',
-                comboId: '',
-                productId: '',
-                processId: '',
-                comboList: [],
-                productList: [],
-                processList: [],
-                processingType: 'GANG',
-                factoryOperation: {},
-                priority: 0,
-                quantity: 0,
-                sheetUp: 0,
-                up: 0,
-                isPin: false,
-                isParallel: false,
-                isFinished: false,
-                inProcessing: false,
-                parallelCode: '',
-                s2sMins: -1,
-                timeclockEmployeeId: 0,
-                runOnMachineId: $scope.task.id,
-                expectedStartTime: null,
-                expectedSetupFinishTime: null,
-                expectedFinishTime: null,
-                actualStartTime: null,
-                actualSetupFinishTime: null,
-                actualFinishTime: null,
-                actualQuantity: 0,
-                actualRunOnMachineId: $scope.task.id,
-            };
-
             if (typeof $scope.task === 'object' && $scope.task.name === 'Task') {
                 $scope.editTask = $scope.task;
 
@@ -593,7 +636,7 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                         value: $scope.task.data.job.comboId
                     }],
                     comboId: $scope.task.data.job.comboId,
-                    operationCode: $scope.task.operationCode,
+                    operationCode: $scope.task.data.operationCode,
                     processList: [{
                         label:  $scope.task.data.process.id,
                         value: $scope.task.data.process.id
@@ -626,7 +669,10 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     actualSetupFinishTime: $scope.task.data.actualSetupFinishTime === null || $scope.task.data.actualSetupFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualSetupFinishTime)).format('YYYY-MM-DDTHH:mm'),
                     actualFinishTime: $scope.task.data.actualFinishTime === null || $scope.task.data.actualFinishTime === '' ? '' : moment(df.clone($scope.task.data.actualFinishTime)).format('YYYY-MM-DDTHH:mm'),
                     actualQuantity: $scope.task.data.actualQuantity,
-                    actualRunOnMachineId: $scope.task.row.id
+                    actualRunOnMachineId: $scope.task.row.id,
+                    rounds: $scope.task.data.rounds,
+                    new: false,
+                    face: $scope.task.data.face,
                 };
 
                 if (ajaxTimer !== null) clearTimeout(ajaxTimer);
@@ -716,6 +762,7 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                     }
                 });
             } else {
+                console.log('something wrong!');
                 $scope.editTask = {};
             }
 

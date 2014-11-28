@@ -116,8 +116,8 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn-group btn-group-justified">
-          <a class="btn btn-lg btn-primary btn-block" ng-click="exportGanttData()" href="#">Calc</a>
-          <a class="btn btn-lg btn-warning btn-block" ng-click="exportGanttData(true)" href="#">Save</a>
+          <a class="btn btn-lg btn-primary btn-block" ng-click="exportGanttData()" href="javascript:%20void(0)">Calc</a>
+          <a class="btn btn-lg btn-warning btn-block" ng-click="exportGanttData(true)" href="javascript:%20void(0)">Save</a>
         </div>
       </div>
     </div>
@@ -239,15 +239,15 @@
     <script type="text/ng-template" id="gantt.tooltiponmachine.tmpl.html">
       <div class="tooltip-on-task-machine" ng-style="css">
         <ul class="tooltip-on-task-machine-contextmenu">
-          <li><a href="#" ng-click="task.isPin = !task.isPin">{{ task.isPin === true &&  'Pined' || 'Pin' }}</a></li>
-          <li><a href="#" ng-click="task.isFinish = !task.isFinish">{{ task.isFinish === true && 'Finished' || 'Finish' }}</a></li>
-          <li><a href="#" ng-click="editThisTask(task)">Edit Task</a></li>
-          <li><a href="#" ng-click="showTaskJobFlow(task)">Show Job Flow</a></li>
-          <li><a href="#" ng-click="showThisTaskInformation(task)">More Information</a></li>
+          <li><spa href="javascript:%20void(0)"an ng-click="task.isPin = !task.isPin">{{ task.isPin === true &&  'Pined' || 'Pin' }}</a></li>
+          <li><a href="javascript:%20void(0)" ng-click="task.isFinish = !task.isFinish">{{ task.isFinish === true && 'Finished' || 'Finish' }}</a></li>
+          <li><a href="javascript:%20void(0)" ng-click="editThisTask(task)">Edit Task</a></li>
+          <li><a href="javascript:%20void(0)" ng-click="showTaskJobFlow(task)">Show Job Flow</a></li>
+          <li><a href="javascript:%20void(0)" ng-click="showThisTaskInformation(task)">More Information</a></li>
         </ul>
         <hr>
         <ul class="tooltip-on-task-machine-contextmenu">
-          <li><a href="#" ng-click="deleteThisTask(task)">Delete</a></li>
+          <li><a href="javascript:%20void(0)" ng-click="deleteThisTask(task)">Delete</a></li>
         </ul>
       </div>
     </script>
@@ -267,7 +267,7 @@
     <script type="text/ng-template" id="default.contentmenu.tmpl.html">
       <div class="gantt-context-menu" ng-style="{top: menu.event.clientY+'px', left: menu.event.clientX+'px'}">
         <ul class="dropdown-menu" role="menu">
-          <li ng-repeat="item in menu.items" class="{{ item.key === 'divider' ? item.key : '' }}"><a ng-if="item.key !== 'divider'" ng-click="contextMenuLink(menu.type, menu.target, item.key, menu.element, menu.event)" href="#">{{ item.name }}</a></li>
+          <li ng-repeat="item in menu.items" class="{{ item.key === 'divider' ? item.key : '' }}"><a href="javascript:%20void(0)" ng-if="item.key !== 'divider'" ng-click="contextMenuLink(menu.type, menu.target, item.key, menu.event)">{{ item.name }}</a></li>
         </ul>
       </div>
     </script>
@@ -289,9 +289,9 @@
         </div>
         <div class="form-group">
           <ul class="pagination" style="margin: 0;">
-            <li><a href="#" ng-click="previousColumnPage()"><i class="glyphicon glyphicon-chevron-left"></i></a></li>
-            <li><a href="#">{{ columnPage }}</a></li>
-            <li><a href="#" ng-click="nextColumnPage()"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
+            <li><a href="javascript:%20void(0)" ng-click="previousColumnPage()"><i class="glyphicon glyphicon-chevron-left"></i></a></li>
+            <li><a href="javascript:%20void(0)">{{ columnPage }}</a></li>
+            <li><a href="javascript:%20void(0)" ng-click="nextColumnPage()"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
           </ul>
         </div>
       </form>
@@ -408,6 +408,14 @@
                     <div class="col-lg-4">
                       <div class="input-group">
                         <input type="text" class="form-control" name="modifyTask_operationCode" ng-model="editTask.operationCode" value="{{ editTask.operationCode }}" required></input>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="rounds" class="col-lg-2 control-label require_field">Rounds </label>
+                    <div class="col-lg-4">
+                      <div class="input-group">
+                        <input type="number" class="form-control" name="modifyTask_rounds" ng-model="editTask.rounds" required value="{{ editTask.rounds }}">
                       </div>
                     </div>
                   </div>
@@ -561,10 +569,10 @@
 
             <div class="row">
               <div class="btn-group btn-group-justified">
-                <a href="#" class="btn btn-lg btn-primary btn-block" data-loading-text="Loading" id="saveButton" ng-click="saveTaskEditor()">
+                <a href="javascript:%20void(0)" class="btn btn-lg btn-primary btn-block" data-loading-text="Loading" id="saveButton" ng-click="saveTaskEditor()">
                   <span class="glyphicon glyphicon-save"></span>&nbsp;Save
                 </a>
-                <a href="#" class="btn btn-lg btn-warning btn-block" data-loading-text="Loading" id="cancelButton" ng-click="disableTaskEditor()">
+                <a href="javascript:%20void(0)" class="btn btn-lg btn-warning btn-block" data-loading-text="Loading" id="cancelButton" ng-click="disableTaskEditor()">
                   <span class="glyphicon glyphicon-share-alt"></span>&nbsp;Close
                 </a>
               </div>

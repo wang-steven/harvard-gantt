@@ -502,7 +502,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     if (reject === false) {
 
                     }
-                    angular.element('#hiddenProcessing').trigger('click');
+                    angular.element(document.getElementById('#hiddenProcessing')).trigger('click');
                     job.tasks.sort(function(t1, t2) { return t1.left - t2.left; });
                 });
             };

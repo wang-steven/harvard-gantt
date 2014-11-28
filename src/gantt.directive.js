@@ -601,6 +601,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                     rawData.push(machine);
                 }
 
+                console.log(rawData);
+
                 var cache = JSON.stringify(rawData);
 
                 var ajaxTimer = setTimeout(function() {

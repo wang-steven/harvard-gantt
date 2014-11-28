@@ -73,6 +73,9 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             self.isParallel = !!self.data.parallel;
             self.checkParallelFrom();
         };
+        self.checkIfNew = function() {
+            self.isNew = !!self.data.new;
+        };
         // self.rejectMoving = function() {
         //     var from = (self.data.actualStartTime === null || self.data.actualStartTime === undefined) ? self.data.expectedStartTime : self.data.actualStartTime,
         //         to = (self.data.actualFinishTime === null || self.data.actualFinishTime === undefined) ? self.data.expectedFinishTime : self.data.actualFinishTime,
@@ -115,6 +118,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             }
         };
 
+        self.checkIfNew();
         self.checkIfDelete();
         self.checkIfManual();
         self.checkIfMilestone();
