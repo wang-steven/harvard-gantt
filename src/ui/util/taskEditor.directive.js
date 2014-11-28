@@ -310,6 +310,8 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                         var row = $scope.$parent.gantt.rowsMap[data.rowId];
                         var task = row.addTask(taskData);
 
+                        console.log(task);
+
                         row.setMinMaxDateByTask(task);
                         task.updatePosAndSize();
                         task.checkIfMilestone();
@@ -375,10 +377,12 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
 
                         $scope.task.from = data.expectedStartTime;
                         $scope.task.to = data.expectedFinishTime;
+                        $scope.task.updatePosAndSize();
+                        $scope.task.checkIfMilestone();
 
                         $scope.$parent.gantt.expandDefaultDateRange($scope.task.from, $scope.task.to);
-                        $scope.task.updatePosAndSize();
                     }
+
 
                     alert('Congratulations!!');
                     $scope.disableTaskEditor();

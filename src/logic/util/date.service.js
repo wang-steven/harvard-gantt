@@ -2,13 +2,16 @@ gantt.service('dateFunctions', [ function () {
     // Date calculations from: http://www.datejs.com/ | MIT License
     return {
         isNumber: function(n) { return !isNaN(parseFloat(n)) && isFinite(n); },
-        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o.constructor === String); },
-        isDate: function(d) { return typeof d == "object" && d.constructor === Date; },
+        isString: function(o) { return typeof o == "string" || (typeof o == "object" && o !== null && o.constructor !== undefined && o.constructor === String); },
+        isDate: function(d) { return typeof d == "object" && d !== null && d.constructor === Date; },
+        isNull: function(d) { return d === null || d === undefined; },
         clone: function(date) {
             if (this.isString(date)) {
                 return moment(date, 'YYYY-MM-DDTHH:mm:ss').clone().toDate();
             } else if (this.isDate(date) || this.isNumber(date)) {
                 return moment(date).clone().toDate();
+            } else if (this.isNull(date)) {
+                return null;
             } else {
                 return moment(Date.now()).clone().toDate();
             }
