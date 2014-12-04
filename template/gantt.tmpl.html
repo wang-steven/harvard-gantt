@@ -194,9 +194,9 @@
     <script type="text/ng-template" id="default.tasksonmachine.tmpl.html">
       <div ui-tree="treeOptions" class="gantt-tasks-on-mahcine-ui-tree" data-max-depth="1">
         <h1 class="tree-node-slogan">{{machine.description}}</h1>
-        <table class="tree-node-table" ng-style="tableWidth()">
+        <table class="tree-node-table" ng-style="tableWidth">
           <tbody ui-tree-nodes="" ng-model="machine.tasks">
-            <tr id="tree-node-table-header">
+            <tr >
               <th class="task-selector"><input type="checkbox" id="select-all-tasks-on-machine" ng-model="taskSelectAll"></th>
               <th class="task-id">ID</th>
               <th class="task-pono">PO#</th>
@@ -231,8 +231,8 @@
       <td ui-tree-handle class="task-jobtype">{{ task.data.processingType }}</td>
       <td ui-tree-handle class="task-quantity">{{ task.data.quantity }}</td>
       <td ui-tree-handle  class="task-code"  ng-repeat="(i, th) in extentionTh">{{ task.tooltips.ui[i] }}</td>
-      <td class="task-from"><input type="datetime-local" ng-model="task.editorFrom" ng-readonly="true"></td>
-      <td class="task-to"><input type="datetime-local" ng-model="task.editorTo" ng-readonly="true"></td>
+      <td class="task-from"><input type="text" ng-model="task.editorFrom" ng-readonly="true"></td>
+      <td class="task-to"><input type="text" ng-model="task.editorTo" ng-readonly="true"></td>
       <td class="task-minutes"><input type="number" ng-model="task.editorDuring" size="4" ng-readonly="true"></td>
       <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" disabled></td>
     </script>

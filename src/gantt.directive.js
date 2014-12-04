@@ -450,7 +450,11 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
 
             $scope.setData = keepScrollPos($scope, function (data) {
                 if (data === undefined || typeof data !== 'object' || data.length === 0) {
-                    throw 'error';
+                    throw 'Loading JSON Data Error';
+                }
+
+                if (data.messages !== undefined && data.messages.length > 0) {
+                    $scope.raiseServerResponseEvent('initial', data.messages);
                 }
 
                 $scope.gantt.addData(data,

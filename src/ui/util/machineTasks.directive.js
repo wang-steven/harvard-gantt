@@ -33,15 +33,11 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                     color: coloured.isDarkColoured(color.replace('#', '')) ? '#ffffff' : '#000000'
                 };
             };
-            var tempTableWidth = [];
-            $scope.tableWidth = function() {
-                tempTableWidth.push(angular.element('#tree-node-table-header').width());
-                if (tempTableWidth.length > 1) {
-                    return {
-                        width: Math.max.apply( Math, tempTableWidth ) + 'px'
-                    };
-                }
+
+            $scope.tableWidth = {
+                width: $scope.extentionTh.length * 5 + (17+17+4+3+52) + 'em'
             };
+
             var contextMenuHandler = function(e) {
                 var task = $scope.gantt.tasksMap[angular.element(e.currentTarget).data('task-id')];
                 $scope.gantt.tooltipTaskOnMachine = {

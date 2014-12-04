@@ -229,9 +229,24 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
 
         // Adds or update rows and tasks.
         self.addData = function(data, addEventFn, updateEventFN) {
-            for (var i = 0, l = data.length; i < l; i++) {
-                var rowData = data[i];
-                var isUpdate = addRow(rowData);
+            var source, type;
+            if (data.machines !== undefined && data.machines.length > 0) {
+                source = data.machines;
+                type = 'machine';
+            } else if (data.molds !== undefined && data.molds.length > 0) {
+                source = data.molds;
+                type = 'mold';
+            } else if (data.jobs !== undefined && data.jobs.length > 0) {
+                source = data.jobs;
+                type = 'job';
+            } else {
+                // row = rowData;
+                throw 'Loading JSON Data Error!';
+            }
+
+            for (var i = 0, l = source.length; i < l; i++) {
+                var rowData = source[i];
+                var isUpdate = addRow(rowData, type);
                 var row = self.rowsMap[rowData.id];
 
                 if (isUpdate === true && updateEventFN !== undefined) {
@@ -263,20 +278,9 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
         };
 
         // Adds a row to the list of rows. Merges the row and it tasks if there is already one with the same id
-        var addRow = function(rowData) {
+        var addRow = function(rowData, type) {
             // Copy to new row (add) or merge with existing (update)
-            var row, rowId, type, isUpdate = false;
-
-            if (rowData.machine !== undefined) {
-                row = rowData.machine;
-                type = 'machine';
-            } else if (rowData.mold !== undefined) {
-                row = rowData.mold;
-                type = 'mold';
-            } else {
-                // row = rowData;
-                throw 'error';
-            }
+            var row = rowData[type], rowId, isUpdate = false;
 
             if (row.id in self.rowsMap) {
                 row = self.rowsMap[row.id];
