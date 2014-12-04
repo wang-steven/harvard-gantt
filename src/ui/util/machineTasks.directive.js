@@ -70,9 +70,9 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                     $scope.machine.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
 
                     for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
-                      k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
-                      k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
-                      k[i].editorDuring = (k[i].to - k[i].from) / 60000;
+                        k[i].editorFrom = moment(k[i].from).format('YYYY-MM-DDTHH:mm');
+                        k[i].editorTo = moment(k[i].to).format('YYYY-MM-DDTHH:mm');
+                        k[i].editorDuring = (k[i].to - k[i].from) / 60000;
 
                         k[i].row.setMinMaxDateByTask(k[i]);
                         k[i].updatePosAndSize();
@@ -174,29 +174,56 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                 },
                 dropped: function(event) {
                     var source = event.source,
-                        task = source.nodeScope.task,
-                        dest = event.dest, i, k, l;
+                        dest = event.dest,
+                        currentTask = source.nodeScope.task,
+                        pw, i, k, l;
 
-                    var prevTask = $scope.gantt.tasksOnMachine.tasks[(dest.index - 1)],
-                        currentTask = $scope.gantt.tasksOnMachine.tasks[source.index];
-                    if (prevTask !== undefined && currentTask !== undefined) {
-                        $scope.gantt.showOnProcessing = true;
+                    // $scope.gantt.showOnProcessing = true;
 
-                        var w = df.clone(currentTask.data.expectedStartTime) - df.addMinutes(prevTask.to, 1, true);
-                        currentTask.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.to - currentTask.from), true);
-                        currentTask.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
-                        currentTask.from = df.addMinutes(prevTask.to, 1, true);
+                    var checkpoint = _.indexOf(_.map($scope.machine.tasks, function(task) {
+                        return task.id;
+                    }), currentTask.id);
 
-                        for (i = 0, k = $scope.gantt.tasksOnMachine.tasks, l = k.length; i < l; ++i) {
-                            if (k[i].selected === true) {
-                                k[i].from = df.addMilliseconds(k[i].from, w, true);
-                                k[i].to = df.addMilliseconds(k[i].to, w, true);
-                                k[i].parallelFrom = df.addMilliseconds(k[i].parallelFrom, w, true);
+                    // Check the task
+                    if (checkpoint === $scope.machine.tasks.length - 1) {
+                        currentTask.parallelFrom = df.addMilliseconds(df.addMinutes($scope.machine.tasks[checkpoint - 1].to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
+                        currentTask.from = df.addMinutes($scope.machine.tasks[checkpoint - 1].to, 1, true);
+                        currentTask.to = df.addMilliseconds(currentTask.from, currentTask.during, true);
+                        currentTask.tmp = currentTask.from;
+                    } else {
+                        if (checkpoint === 0) {
+                            pw = currentTask.to - $scope.machine.tasks[1].from;
+                        } else {
+                            if (currentTask.from < $scope.machine.tasks[checkpoint - 1].to) {
+                                pw = $scope.machine.tasks[checkpoint - 1].to - currentTask.from;
+                            } else {
+                                pw = currentTask.from - $scope.machine.tasks[checkpoint + 1].to;
                             }
                         }
+                        pw = pw + 60*1000;
+                        for (i = checkpoint, k = $scope.machine.tasks, l = k.length; i < l; i++) {
+                            if (k[i].id === currentTask.id) continue;
 
-                        processTask(currentTask);
+                            k[i].from = df.addMilliseconds(k[i].from, pw, true);
+                            k[i].to = df.addMilliseconds(k[i].to, pw, true);
+                            k[i].parallelFrom = df.addMilliseconds(k[i].parallelFrom, pw, true);
+                            k[i].tmp = k[i].from;
+                        }
                     }
+                    processTask(currentTask);
+
+                    // var w = df.clone(currentTask.data.expectedStartTime) - df.addMinutes(prevTask.to, 1, true);
+                    // currentTask.to = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.to - currentTask.from), true);
+                    // currentTask.parallelFrom = df.addMilliseconds(df.addMinutes(prevTask.to, 1, true), (currentTask.parallelFrom - currentTask.from), true);
+                    // currentTask.from = df.addMinutes(prevTask.to, 1, true);
+
+                    // for (i = 0, k = $scope.machine.tasks, l = k.length; i < l; ++i) {
+                    //     if (k[i].selected === true) {
+                    //         k[i].from = df.addMilliseconds(k[i].from, w, true);
+                    //         k[i].to = df.addMilliseconds(k[i].to, w, true);
+                    //         k[i].parallelFrom = df.addMilliseconds(k[i].parallelFrom, w, true);
+                    //     }
+                    // }
 
                     // $scope.taskSelectAll = false;
                     // $timeout(function() {

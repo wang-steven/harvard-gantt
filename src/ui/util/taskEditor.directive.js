@@ -377,8 +377,8 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
 
                         $scope.task.from = data.expectedStartTime;
                         $scope.task.tmp = $scope.task.from;
-                        $scope.task.during = $scope.task.to - $scope.task.from;
                         $scope.task.to = data.expectedFinishTime;
+                        $scope.task.during = $scope.task.to - $scope.task.from;
                         $scope.task.updatePosAndSize();
                         $scope.task.checkIfMilestone();
 
