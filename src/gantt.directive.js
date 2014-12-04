@@ -625,9 +625,6 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         // Success
                         $scope.gantt.showOnProcessing = false;
                         try {
-                            console.log('2222222');
-                            console.log(response.data.data.machines);
-                            console.log(response.data.data.messages);
                             if (response.data.messagesEmpty) {
                                 // reload data
                                 // and do other things
