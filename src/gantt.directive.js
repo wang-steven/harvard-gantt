@@ -625,13 +625,13 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         // Success
                         $scope.gantt.showOnProcessing = false;
                         try {
-                            if (response.data.data.messagesEmpty) {
+                            if (response.data.messagesEmpty) {
                                 // reload data
                                 // and do other things
                                 // console.log(response.data.data);
                                 $scope.removeAllData();
-                                $scope.setData(response.data.data.data.machines);
-                                console.log(response.data.data.data.messages);
+                                $scope.setData(response.data.data.machines);
+                                console.log(response.data.data.messages);
 
                                 $scope.raiseServerResponseEvent('ok', response);
                                 // response.data.data.message 成功的訊息
