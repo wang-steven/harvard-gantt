@@ -7,12 +7,14 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	$scope.maxHeight = 0;
 	$scope.showWeekends = true;
 	$scope.showNonWorkHours = true;
-	$scope.jumpToDateTime = moment(new Date()).format('YYYY-MM-DD');
+	$scope.jumpToDateTime = new Date();
 
 	$scope.loadServerConfiguration = function(config) {
 		var configuration = {
-			serverLocation: (config.serverLocation || ''),
-			jsLocationPrefix: (config.jsLocationPrefix || '')
+			serverLocation: (config.serverLocation || '')
+            ,jsLocationPrefix: (config.jsLocationPrefix || '/')
+            ,saveGanttUrl: (config.saveGanttUrl || '/calculate')
+            ,calcGanttUrl: (config.calcGanttUrl || '/calculate')
 
 			// 以字串(term)模糊查詢符合的PoNo
 			// url: GET /company/sales/pos/like/{term}
@@ -64,14 +66,14 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 			// calculateWeeks, default: 12, 要計算幾周
 			// return tw.com.softleader.harvard.aps.service.result.ApsMessage
 			,
-			confirmGanttUrl: (config.confirmGanttUrl || 'company/scheduler/plans/confirm/')
+			confirmGanttUrl: (config.confirmGanttUrl || 'company/scheduler/plans/calculate/')
 		};
 		console.log("initial server configuration", configuration);
 		return configuration;
 	};
 
 	$scope.addMachines = function() {
-		if (getSampleMachineData().data.length) {
+		if (!!getSampleMachineData().data.machines && getSampleMachineData().data.machines.length) {
 			console.log('have sample data, use it.');
 			$scope.loadData(getSampleMachineData().data);
 		} else {
@@ -106,7 +108,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 		var date = date === undefined ? new Date() : new Date(date);
 		$scope.centerDate(date);
 	};
-
+	
 	$scope.triggerMaxHeight = function() {
 		if ($scope.maxHeight === 0) {
 			$scope.maxHeight = 320;// ;(window.outerHeight - (document.getElementById('form-box').offsetTop +
@@ -123,6 +125,38 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	$scope.removeSamples = function() {
 		$scope.clearData();
 	};
+	
+	 $scope.serverResponse = function(response) {
+        console.log(response);
+        // UI initial有訊息, 先另外印在console
+        if (response.state == 'initial') {
+        	// alert("UI initialization message, Please contact your System Administrator.");
+        	console.log("UI initialization message: " + response.data.join("\r\n") );
+        } 
+        
+        // server端有回應結果狀態
+        if (response.data.status) {
+	        if (response.data.status == 200) { 
+				// 計算被打斷
+				if (!response.data.data.messagesEmpty) {
+					alert("Calculate break:\r\n" + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n") + '\r\nRollback all moves!');
+					console.log("Calculate break by server: " + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
+				} 
+				// 計算完成
+				else {
+					// 計算完成, 但有訊息
+					if (response.data.data.data.messages.length > 0) {
+						// 先印在console..
+						// console.log(response.data.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
+					}
+				}
+			} 
+	        // 無法連接到server端
+	        else {
+				alert("Connect to server failed: [" + response.data.status + "] " + response.data.statusText);
+			}
+        }
+    };
 
 	$scope.rowAddEvent = function(event) {
 		// A row has been added, updated or clicked. Use this event to save back the updated row e.g. after a user re-ordered it.

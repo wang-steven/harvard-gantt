@@ -625,13 +625,13 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                         // Success
                         $scope.gantt.showOnProcessing = false;
                         try {
-                            if (response.data.messagesEmpty) {
+                            if (response.data.data.messagesEmpty) {
                                 // reload data
                                 // and do other things
                                 // console.log(response.data.data);
                                 $scope.removeAllData();
-                                $scope.setData(response.data.data.machines);
-                                console.log(response.data.data.messages);
+                                $scope.setData(response.data.data.data.machines);
+                                console.log(response.data.data.data.messages);
 
                                 $scope.raiseServerResponseEvent('ok', response);
                                 // response.data.data.message 成功的訊息
@@ -640,18 +640,18 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             } else {
                                 // TODO: bootstrap model
                                 // Add button on the top to show the model dialog
-                                console.log("===============here are some errors============");
-                                if (response.data.messages) {
-                                    while (response.data.messages.length > 0) {
-                                        console.log(response.data.messages.pop().value);
-                                    }
-                                }
+                                // console.log("===============here are some errors============");
+                                // if (response.data..data.messages) {
+                                //    while (response.data..data.messages.length > 0) {
+                                        // console.log(response.data.messages.pop().value);
+                                //    }
+                                //}
                                 $scope.raiseServerResponseEvent('error', response);
                                 if (isSave) $scope.gantt.disable = true;
                             }
                         } catch(e) {
                             $scope.raiseServerResponseEvent('error', response);
-                            console.log("Server connect failed.");
+                            console.log("Server connect exception: " + e);
                         }
                         return false;
                     }, function(response) {
