@@ -31,6 +31,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
             var pressShiftKeyMove = false;
 
             $scope.gantt.multipleTasksSelected = [];
+            $scope.gantt.gangSelected = [];
 
             $scope.css = function(backgroundColor) {
                 return {
@@ -48,7 +49,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                         var mode = getMoveMode(e);
                         if (mode !== "" && mouseButton.getButton(e) === 1 && $scope.task.width > 0) {
                             var offsetX = mouseOffset.getOffsetForElement(ganttBodyElement[0], e).x;
-                            enableMoveMode(mode, offsetX, e.shiftKey);
+                            enableMoveMode(mode, offsetX, e.shiftKey, e.altKey);
 
                             e.stopPropagation();
                             e.preventDefault();
@@ -61,26 +62,36 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 $scope.$apply(function() {
                     $scope.gantt.contextMenu = undefined;
                     // Only raise click event if there was no task update event
-                    if (e.shiftKey !== undefined && e.shiftKey === true) {
-                        if ($scope.gantt.multipleTasksSelected.length === 0) {
-                            var i, j, k, l, m, n, jMap = $scope.gantt.jobsMap;
-                            for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
-                                for (j = 0, m = _.keys(jMap[k[i]].tasks), n = m.length; j < n; ++j) {
-                                    jMap[k[i]].tasks[m[j]].isHighlight = false;
-                                }
-                            }
-                        }
-                        if ($scope.gantt.multipleTasksSelected.indexOf($scope.task.id) >= 0) {
-                            delete $scope.gantt.multipleTasksSelected[$scope.gantt.multipleTasksSelected.indexOf($scope.task.id)];
-                            $scope.task.isHighlight = false;
-                        } else {
-                            $scope.gantt.multipleTasksSelected.push($scope.task.id);
-                            $scope.task.isHighlight = true;
-                        }
+
+                    if (e.altKey === true) {
+                        $scope.gantt.multipleTasksSelected.push($scope.task.id);
+                        $scope.gantt.tasksMap[$scope.task.id].isHighlight = true;
                     } else {
-                        if (!taskHasBeenChanged) {
-                            toggleTaskHighlight();
-                            $scope.raiseTaskClickedEvent(e, $scope.task);
+                        $scope.gantt.multipleTasksSelected = [];
+                        if (taskHasBeenChanged === true) {
+                            $scope.gantt.gangSelected = [];
+                        } else {
+                            if (e.shiftKey !== undefined && e.shiftKey === true) {
+                                $scope.gantt.multipleTasksSelected = [];
+                                if ($scope.gantt.gangSelected.length === 0) {
+                                    var i, j, k, l, m, n, jMap = $scope.gantt.jobsMap;
+                                    for (i = 0, k = _.keys(jMap), l = k.length; i < l; ++i) {
+                                        for (j = 0, m = _.keys(jMap[k[i]].tasks), n = m.length; j < n; ++j) {
+                                            jMap[k[i]].tasks[m[j]].isHighlight = false;
+                                        }
+                                    }
+                                }
+                                if ($scope.gantt.gangSelected.indexOf($scope.task.id) >= 0) {
+                                    delete $scope.gantt.gangSelected[$scope.gantt.gangSelected.indexOf($scope.task.id)];
+                                    $scope.task.isHighlight = false;
+                                } else {
+                                    $scope.gantt.gangSelected.push($scope.task.id);
+                                    $scope.task.isHighlight = true;
+                                }
+                            } else {
+                                toggleTaskHighlight();
+                                $scope.raiseTaskClickedEvent(e, $scope.task);
+                            }
                         }
                     }
 
@@ -172,25 +183,21 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 });
             });
 
-            var handleMove = function(mode, mousePos, shiftKey) {
+            var handleMove = function(mode, mousePos, shiftKey, altKey) {
                 if ($scope.task.isMoving === false) {
                     return;
                 }
 
-                moveTask(mode, mousePos, shiftKey);
+                moveTask(mode, mousePos, shiftKey, altKey);
                 scrollScreen(mode, mousePos);
             };
 
-            var moveTask = function(mode, mousePos, shiftKey) {
+            var moveTask = function(mode, mousePos, shiftKey, altKey) {
                 $scope.task.mouseOffsetX = mousePos.x;
                 var xInEm = mousePos.x / $scope.getPxToEmFactor();
 
-                if (shiftKey !== undefined && shiftKey === true) {
-                    pressShiftKeyMove = true;
-                }
-
                 if (mode === "M") {
-                    if ($scope.allowTaskRowSwitching && $scope.gantt.multipleTasksSelected.length === 0) {
+                    if ($scope.allowTaskRowSwitching && $scope.gantt.multipleTasksSelected.length === 0 && $scope.gantt.gangSelected.length === 0) {
                         var targetRow = getRowByY(mousePos.y);
                         if (targetRow !== undefined &&
                             targetRow.showup === true &&
@@ -203,17 +210,35 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     if ($scope.allowTaskMoving) {
                         $scope.task.tmp = $scope.task.left;
                         $scope.task.moveTo(xInEm - mouseOffsetInEm);
-                        if ($scope.gantt.multipleTasksSelected.length > 0) {
-                            var _during = $scope.task.tmp - $scope.task.left;
-                            if (_during !== 0) {
-                                _.each($scope.gantt.multipleTasksSelected, function(task_id) {
-                                    if (task_id !== $scope.task.id) {
-                                        $scope.task.gantt.tasksMap[task_id].mouseOffsetX = mousePos.x;
-                                        $scope.task.gantt.tasksMap[task_id].moveTo($scope.task.gantt.tasksMap[task_id].left - _during);
-                                    }
-                                });
+
+                        var _during;
+
+                        if (shiftKey === true) {
+                            if ($scope.gantt.gangSelected.length > 0) {
+                                _during = $scope.task.tmp - $scope.task.left;
+                                if (_during !== 0) {
+                                    _.each($scope.gantt.gangSelected, function(task_id) {
+                                        if (task_id !== $scope.task.id) {
+                                            $scope.task.gantt.tasksMap[task_id].mouseOffsetX = mousePos.x;
+                                            $scope.task.gantt.tasksMap[task_id].moveTo($scope.task.gantt.tasksMap[task_id].left - _during);
+                                        }
+                                    });
+                                }
+                                $scope.task.tmp = $scope.task.from;
                             }
-                            $scope.task.tmp = $scope.task.from;
+                        } else {
+                            if ($scope.gantt.multipleTasksSelected.length > 0) {
+                                _during = $scope.task.tmp - $scope.task.left;
+                                if (_during !== 0) {
+                                    _.each($scope.gantt.multipleTasksSelected, function(task_id) {
+                                        if (task_id !== $scope.task.id) {
+                                            $scope.task.gantt.tasksMap[task_id].mouseOffsetX = mousePos.x;
+                                            $scope.task.gantt.tasksMap[task_id].moveTo($scope.task.gantt.tasksMap[task_id].left - _during);
+                                        }
+                                    });
+                                }
+                                $scope.task.tmp = $scope.task.from;
+                            }
                         }
                     }
                 } else if (mode === "E") {
@@ -308,7 +333,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 }
             };
 
-            var enableMoveMode = function (mode, x, shiftKey) {
+            var enableMoveMode = function (mode, x, shiftKey, altKey) {
                 taskHasBeenChanged = false;
                 $scope.task.isMoving = true;
 
@@ -317,18 +342,15 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                 mouseOffsetInEm = xInEm - $scope.task.left;
 
                 if (shiftKey !== undefined && shiftKey === true) {
-                    if ($scope.gantt.multipleTasksSelected.length === 0) {
-                        _.each($scope.task.gantt.tasksMap, function(task) {
-                            if (task.id !== $scope.task.id &&
-                                task.data.operationCode === $scope.task.data.operationCode &&
-                                task.data.face === $scope.task.data.face &&
-                                task.data.rounds === $scope.task.data.rounds) {
-                                $scope.gantt.multipleTasksSelected.push(task.id);
-                            }
-                        });
-                    }
+                    $scope.gantt.multipleTasksSelected = [];
+                    $scope.gantt.gangSelected = [];
+                    _.each($scope.task.gantt.tasksMap, function(task) {
+                        if (task.id !== $scope.task.id &&
+                            task.data.taskGroup === $scope.task.data.taskGroup) {
+                            $scope.gantt.gangSelected.push(task.id);
+                        }
+                    });
                 }
-                console.log($scope.gantt.multipleTasksSelected);
 
                 var taskMoveHandler = debounce(function(e) {
                     var mousePos = mouseOffset.getOffsetForElement(ganttBodyElement[0], e);
@@ -354,11 +376,12 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
             };
 
             var disableMoveMode = function (e) {
+                $scope.gantt.contextMenu = undefined;
                 $scope.task.isMoving = false;
                 clearScrollInterval();
                 mouseOffsetInEm = 0;
 
-                if (e === undefined || e.shiftKey === undefined || e.shiftKey === false || pressShiftKeyMove === true) {
+                if (e.altKey === undefined || e.altKey === false) {
                     if ($scope.gantt.multipleTasksSelected.length > 0) {
                         _.each($scope.gantt.multipleTasksSelected, function(task_id) {
                             $scope.gantt.tasksMap[task_id].isHighlight = false;
@@ -367,7 +390,6 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     $scope.gantt.multipleTasksSelected = [];
 
                     $scope.task.isHighlight = false;
-                    pressShiftKeyMove = false;
                 }
 
                 $element.css("cursor", '');
@@ -383,6 +405,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     // $scope.gantt.showOnProcessing = true; // Lightbox
                     // checkTaskOverlap();
                     $scope.gantt.multipleTasksSelected = [];
+                    $scope.gantt.gangSelected = [];
                     checkTaskReject();
                     $scope.raiseTaskUpdatedEvent($scope.task, true);
                 }
