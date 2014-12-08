@@ -77,7 +77,7 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
             };
 
             $scope.saveTaskEditor = function() {
-                var data = $scope.editTask, data_checking = true, error_message = '';
+                var data = $scope.editTask, data_checking = false, error_message = '';
 
                 // serialization data
                 /**
@@ -202,38 +202,14 @@ gantt.directive('ganttTaskEditor', ['$window', '$document', '$timeout', 'dateFun
                 // 1. Parallel = N
                 // 2. Start to Start Minutes = -1
 
-                if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
-                    data.quantity === null || data.priority === null || data.expectedStartTime === null ||
-                    data.expectedSetupFinishTime === null || data.expectedFinishTime === null) {
-                    data_checking = false;
-                    error_message = '1';
-                }
-                if (data.processingType === 'GANG' && (data.up === null || data.sheetUp === null)) {
-                    data_checking = false;
-                    error_message = '2';
-                }
-                if (data.isParallel === true && data.parallelCode === null) {
-                    data_checking = false;
-                    error_message = '3';
-                }
-                if (data.isPin === true && (data.expectedStartTime === null ||
-                    data.expectedSetupFinishTime === null ||
-                    data.expectedFinishTime === null ||
-                    data.quantity === null)) {
-                    data_checking = false;
-                    error_message = '4';
-                }
-                if (data.inProcessing === true && (data.expectedStartTime === null ||
-                    data.expectedSetupFinishTime === null ||
-                    data.expectedFinishTime === null || data.actualStartTime === null ||
-                    data.actualSetupFinishTime === null ||
-                    data.actualFinishTime === null ||
-                    data.actualQuantity === null)) {
-                    data_checking = false;
-                    error_message = '5';
+                var response = $scope.$parent.raiseTaskEditorSaved(data);
+
+                if (response.state === 'ok') {
+                    data_checking = true;
                 }
 
-                if (data_checking === false || data.rowId === 0) {
+                if (data_checking === false) {
+                    console.log(response);
                     alert('Data check failed!');
                 } else {
                     $scope.$parent.gantt.showOnProcessing = true; // Lightbox

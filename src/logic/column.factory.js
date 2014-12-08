@@ -100,12 +100,14 @@ gantt.factory('Column', [ 'dateFunctions', function (df) {
             // If day === 7, then jump forward to next week
             var direction = day !== 7 && day < 0 ? -1: 1; // -1: <<<<< | 1: >>>>>
 
-            df.setToDayOfWeek(res, day !== 7 ? firstDayIsSunday(day): firstDayIsSunday(day) + 7, false, direction);
+            res = df.setToDayOfWeek(res, day !== 7 ? firstDayIsSunday(day): firstDayIsSunday(day) + 7, false, direction);
+
             return res;
         };
 
         column.getPositionByDate = function(date) {
-            return calcPbyD(column, date, column.daysInWeek, firstDayIs0(date.getDay()), getWeek(date), getWeek(column.date));
+            var ps = calcPbyD(column, date, column.daysInWeek, firstDayIs0(date.getDay()), getWeek(date), getWeek(column.date));
+            return ps;
         };
 
         return column;

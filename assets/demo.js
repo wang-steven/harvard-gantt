@@ -119,6 +119,45 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
     $scope.serverResponse = function(response) {
         console.log(response);
     };
+    $scope.taskEditorSaved = function(data) {
+        var data_checking, error_message;
+
+        if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
+            data.quantity === null || data.priority === null || data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null || data.expectedFinishTime === null) {
+            data_checking = false;
+            error_message = '1';
+        }
+        if (data.processingType === 'GANG' && (data.up === null || data.sheetUp === null)) {
+            data_checking = false;
+            error_message = '2';
+        }
+        if (data.isParallel === true && data.parallelCode === null) {
+            data_checking = false;
+            error_message = '3';
+        }
+        if (data.isPin === true && (data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null ||
+            data.expectedFinishTime === null ||
+            data.quantity === null)) {
+            data_checking = false;
+            error_message = '4';
+        }
+        if (data.inProcessing === true && (data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null ||
+            data.expectedFinishTime === null || data.actualStartTime === null ||
+            data.actualSetupFinishTime === null ||
+            data.actualFinishTime === null ||
+            data.actualQuantity === null)) {
+            data_checking = false;
+            error_message = '5';
+        }
+
+        return {
+            state: 'ok',
+            data: data
+        };
+    };
 
     $scope.rowAddEvent = function(event) {
         // A row has been added, updated or clicked. Use this event to save back the updated row e.g. after a user re-ordered it.

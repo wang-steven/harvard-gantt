@@ -195,7 +195,6 @@ gantt.factory('ColumnGenerator', [ 'Column', 'dateFunctions', function (Column, 
                         left += columnWidth;
                     }
                 }
-
                 date = df.addDays(date, 1);
             }
 

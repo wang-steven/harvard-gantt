@@ -208,6 +208,8 @@ gantt.directive('ganttMachineTasks', ['$window', '$document', '$timeout', 'debou
                             k[i].to = df.addMilliseconds(k[i].to, pw, true);
                             k[i].parallelFrom = df.addMilliseconds(k[i].parallelFrom, pw, true);
                             k[i].tmp = k[i].from;
+
+                            if (i + 1 < l && k[i].to < k[(i + 1)].from) break;
                         }
                     }
                     processTask(currentTask);

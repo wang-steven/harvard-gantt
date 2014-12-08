@@ -234,7 +234,7 @@
       <td class="task-from"><input type="text" ng-model="task.editorFrom" ng-readonly="true"></td>
       <td class="task-to"><input type="text" ng-model="task.editorTo" ng-readonly="true"></td>
       <td class="task-minutes"><input type="number" ng-model="task.editorDuring" size="4" ng-readonly="true"></td>
-      <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" disabled></td>
+      <td class="task-pin"><input type="checkbox" ng-checked="task.isPin == true" ng-click="task.isPin = !task.isPin"></td>
     </script>
     <script type="text/ng-template" id="gantt.tooltiponmachine.tmpl.html">
       <div class="tooltip-on-task-machine" ng-style="css">

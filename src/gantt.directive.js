@@ -71,6 +71,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             onTaskMoveEnd: "&",
             onTaskResizeBegin: "&",
             onTaskResizeEnd: "&",
+            onTaskEditorSaved: "&",
             onServerResponse: "&"
         },
         controller: ['$scope', '$http', '$element', '$timeout', function ($scope, $http, $element, $timeout) {
@@ -78,7 +79,7 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
             if ($scope.sortMode === undefined) $scope.sortMode = "name";
             if ($scope.viewScale === undefined) $scope.viewScale = "threehours";
             if ($scope.columnWidth === undefined) $scope.columnWidth = 6;
-            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 2;
+            if ($scope.columnSubScale === undefined) $scope.columnSubScale = 48;
             if ($scope.allowTaskMoving === undefined) $scope.allowTaskMoving = true;
             if ($scope.allowTaskResizing === undefined) $scope.allowTaskResizing = true;
             if ($scope.allowTaskRowSwitching === undefined) $scope.allowTaskRowSwitching = true;
@@ -290,6 +291,9 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                 $scope.onServerResponse({ data: { state: state, data: data }});
             };
 
+            $scope.raiseTaskEditorSaved = function(data) {
+                return $scope.onTaskEditorSaved({ data: data });
+            };
             $scope.raiseLabelsResized = function(width) {
                 $scope.onLabelsResized({ event: { width: width } });
             };

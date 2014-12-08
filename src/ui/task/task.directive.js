@@ -328,6 +328,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                         });
                     }
                 }
+                console.log($scope.gantt.multipleTasksSelected);
 
                 var taskMoveHandler = debounce(function(e) {
                     var mousePos = mouseOffset.getOffsetForElement(ganttBodyElement[0], e);
@@ -365,7 +366,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     }
                     $scope.gantt.multipleTasksSelected = [];
 
-                    // $scope.gantt.tasksMap[$scope.task.id].isHighlight = false;
+                    $scope.task.isHighlight = false;
                     pressShiftKeyMove = false;
                 }
 
@@ -381,6 +382,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     $scope.task.row.sortTasks(); // Sort tasks so they have the right z-order
                     // $scope.gantt.showOnProcessing = true; // Lightbox
                     // checkTaskOverlap();
+                    $scope.gantt.multipleTasksSelected = [];
                     checkTaskReject();
                     $scope.raiseTaskUpdatedEvent($scope.task, true);
                 }

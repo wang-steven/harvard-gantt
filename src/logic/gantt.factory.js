@@ -39,7 +39,8 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
                 case 'sixhours': self.columnGenerator = new ColumnGenerator.CustomHoursGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours, 6); break;
                 case 'eighthours': self.columnGenerator = new ColumnGenerator.CustomHoursGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours, 8); break;
                 case 'twevelhours': self.columnGenerator = new ColumnGenerator.CustomHoursGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours, 12); break;
-                case 'day': self.columnGenerator = new ColumnGenerator.DayGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours); break;
+                case 'day': self.columnGenerator = new ColumnGenerator.CustomHoursGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours, 24); break;
+                // case 'day': self.columnGenerator = new ColumnGenerator.DayGenerator(columnWidth, columnSubScale, weekendDays, showWeekends, workHours, showNonWorkHours); break;
                 case 'week': self.columnGenerator = new ColumnGenerator.WeekGenerator(columnWidth, columnSubScale, firstDayOfWeek); break;
                 case 'month': self.columnGenerator = new ColumnGenerator.MonthGenerator(columnWidth, columnSubScale); break;
                 default:
