@@ -346,6 +346,7 @@ gantt.directive('ganttTask', ['$window', '$document', '$timeout', 'smartEvent', 
                     $scope.gantt.gangSelected = [];
                     _.each($scope.task.gantt.tasksMap, function(task) {
                         if (task.id !== $scope.task.id &&
+                            task.data.taskGroup.length > 0 &&
                             task.data.taskGroup === $scope.task.data.taskGroup) {
                             $scope.gantt.gangSelected.push(task.id);
                         }
