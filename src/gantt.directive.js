@@ -602,7 +602,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             delete: m[j].isDeleted,
                             manual: m[j].isManual,
                             face: m[j].data.face,
-                            rounds: m[j].data.rounds
+                            rounds: m[j].data.rounds,
+                            machineShiftLabel: m[j].data.machineShiftLabel
                         });
                     }
 
