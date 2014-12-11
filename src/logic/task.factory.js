@@ -26,7 +26,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
         self.openContextMenu = false;
         self.est = df.clone(from);
         self.lct = df.clone(to);
-        self.showup = true;
+        self.showup = !data.delete;
 
         self.tmp = self.from;
         self.during = df.clone(data.expectedFinishTime) - df.clone(data.expectedStartTime);
