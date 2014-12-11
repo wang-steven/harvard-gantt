@@ -336,6 +336,7 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
                 for (i = 0, l = tasks.length; i < l; i++) {
                     var task = row.addTask(tasks[i]);
                     if (task === undefined) continue;
+                    if (task.from === null || task.from === undefined || task.to === null || task.to === undefined) continue;
                     expandDateRange(task.from, task.to);
                     task.updatePosAndSize();
 

@@ -98,8 +98,11 @@ gantt.factory('Row', ['Task', 'dateFunctions', '_', function (Task, df, _) {
             if (task !== undefined) {
                 self.sortTasks();
                 self.setMinMaxDateByTask(task);
+
+                return task;
+            } else {
+                return undefined;
             }
-            return task;
         };
 
         // Removes the task from the existing row and adds it to he current one
