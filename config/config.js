@@ -145,24 +145,30 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
         else if (response.state == 'error') {
         	// server有回應但計算被打斷
         	if (response.data.data && !response.data.data.messagesEmpty) {
-				alert("Calculate break:\r\n" + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n") + '\r\nRollback all moves!');
+				alert("Calculate break:\r\n" + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
 				console.log("Calculate break by server: " + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
 			}
         	// 以外的其他錯誤
         	else {
-        		alert("Something went wrong...\r\n[" + response.data.status + "] " + response.data.statusText + "\r\nRollback all moves!");
+        		alert("Something went wrong...\r\n[" + response.data.status + "] " + response.data.statusText);
         	}
         }
     };
     $scope.taskEditorSaved = function(data) {
         var data_checking = true , error_message;
-
+        console.log(data);
         if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
-            data.quantity === null || data.priority === null || data.expectedStartTime === null ||
-            data.expectedSetupFinishTime === null || data.expectedFinishTime === null) {
+            data.priority === null || data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null || data.expectedFinishTime === null ||
+            data.operationCode === null || data.quantity === null || data.quantity <= 0 ||
+            data.rounds === null || data.rounds <= 0 || !data.nextTask || data.nextTask.length <= 0 || !data.previousTask ) {
             data_checking = false;
             error_message = '1';
+        } else if(!(data.expectedStartTime <= data.expectedSetupFinishTime && data.expectedSetupFinishTime <= data.expectedFinishTime)){
+        	data_checking = false;
+        	error_message = '6';
         }
+
         if (data.processingType === 'GANG' && (data.up === null || data.sheetUp === null)) {
             data_checking = false;
             error_message = '2';
@@ -186,6 +192,13 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
             data.actualQuantity === null)) {
             data_checking = false;
             error_message = '5';
+        }
+        if (data.isFinished == true || data.isFinished == "true" && (data.actualStartTime === null || data.actualSetupFinishTime === null || data.actualFinishTime === null)){
+        	data_checking = false;
+        	error_message = '7';
+        } else if (data.isFinished == true || data.isFinished == "true" && !(data.actualStartTime <= data.actualSetupFinishTime && data.actualSetupFinishTime <= data.actualFinishTime)){
+        	data_checking = false;
+        	error_message = '8';
         }
 
         return {
