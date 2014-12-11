@@ -209,7 +209,7 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
 
         self.copy = function(task) {
             self.subject = task.subject;
-            self.color = task.color;
+            self.color = task.color1.replace('0x', '#');
             self.classes = task.classes;
             self.priority = task.priority;
             self.from = df.clone(task.expectedStartTime);
