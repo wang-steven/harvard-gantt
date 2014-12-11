@@ -71,8 +71,9 @@ gantt.factory('Row', ['Task', 'dateFunctions', '_', function (Task, df, _) {
             var task, dateRange, from, to;
 
             if (taskData.id in self.tasksMap) {
-                task = self.tasksMap[taskData.id];
-                task.copy(taskData);
+                console.log('[ERROR] Multuple Task Data', taskData);
+                // task = self.tasksMap[taskData.id];
+                // task.copy(taskData);
             } else {
                 var color = taskData.color1.replace('0x', '#');
                 var data = {}, x;
