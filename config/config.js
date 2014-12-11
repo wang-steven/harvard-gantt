@@ -108,7 +108,7 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 		var date = date === undefined ? new Date() : new Date(date);
 		$scope.centerDate(date);
 	};
-	
+
 	$scope.triggerMaxHeight = function() {
 		if ($scope.maxHeight === 0) {
 			$scope.maxHeight = 320;// ;(window.outerHeight - (document.getElementById('form-box').offsetTop +
@@ -125,37 +125,87 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	$scope.removeSamples = function() {
 		$scope.clearData();
 	};
-	
+
 	 $scope.serverResponse = function(response) {
         console.log(response);
         // UI initial有訊息, 先另外印在console
         if (response.state == 'initial') {
         	// alert("UI initialization message, Please contact your System Administrator.");
         	console.log("UI initialization message: " + response.data.join("\r\n") );
-        } 
-        
-        // server端有回應結果狀態
-        if (response.data.status) {
-	        if (response.data.status == 200) { 
-				// 計算被打斷
-				if (!response.data.data.messagesEmpty) {
-					alert("Calculate break:\r\n" + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n") + '\r\nRollback all moves!');
-					console.log("Calculate break by server: " + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
-				} 
-				// 計算完成
-				else {
-					// 計算完成, 但有訊息
-					if (response.data.data.data.messages.length > 0) {
-						// 先印在console..
-						// console.log(response.data.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
-					}
-				}
-			} 
-	        // 無法連接到server端
-	        else {
-				alert("Connect to server failed: [" + response.data.status + "] " + response.data.statusText);
+        }
+
+        else if (response.state == 'ok') {
+        	// server有回應計算完成, 但有訊息
+        	if (!response.data.data.data.messagesEmpty) {
+				// 先印在console..
+				// console.log(response.data.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
 			}
         }
+
+        else if (response.state == 'error') {
+        	// server有回應但計算被打斷
+        	if (response.data.data && !response.data.data.messagesEmpty) {
+				alert("Calculate break:\r\n" + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
+				console.log("Calculate break by server: " + response.data.data.messages.map(function(msg) {return msg.value;}).join("\r\n"));
+			}
+        	// 以外的其他錯誤
+        	else {
+        		alert("Something went wrong...\r\n[" + response.data.status + "] " + response.data.statusText);
+        	}
+        }
+    };
+    $scope.taskEditorSaved = function(data) {
+        var data_checking = true , error_message;
+        console.log(data);
+        if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
+            data.priority === null || data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null || data.expectedFinishTime === null ||
+            data.operationCode === null || data.quantity === null || data.quantity <= 0 ||
+            data.rounds === null || data.rounds <= 0 || !data.nextTask || data.nextTask.length <= 0 || !data.previousTask ) {
+            data_checking = false;
+            error_message = '1';
+        } else if(!(data.expectedStartTime <= data.expectedSetupFinishTime && data.expectedSetupFinishTime <= data.expectedFinishTime)){
+        	data_checking = false;
+        	error_message = '6';
+        }
+
+        if (data.processingType === 'GANG' && (data.up === null || data.sheetUp === null)) {
+            data_checking = false;
+            error_message = '2';
+        }
+        if (data.isParallel === true && data.parallelCode === null) {
+            data_checking = false;
+            error_message = '3';
+        }
+        if (data.isPin === true && (data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null ||
+            data.expectedFinishTime === null ||
+            data.quantity === null)) {
+            data_checking = false;
+            error_message = '4';
+        }
+        if (data.inProcessing === true && (data.expectedStartTime === null ||
+            data.expectedSetupFinishTime === null ||
+            data.expectedFinishTime === null || data.actualStartTime === null ||
+            data.actualSetupFinishTime === null ||
+            data.actualFinishTime === null ||
+            data.actualQuantity === null)) {
+            data_checking = false;
+            error_message = '5';
+        }
+        if (data.isFinished == true || data.isFinished == "true" && (data.actualStartTime === null || data.actualSetupFinishTime === null || data.actualFinishTime === null)){
+        	data_checking = false;
+        	error_message = '7';
+        } else if (data.isFinished == true || data.isFinished == "true" && !(data.actualStartTime <= data.actualSetupFinishTime && data.actualSetupFinishTime <= data.actualFinishTime)){
+        	data_checking = false;
+        	error_message = '8';
+        }
+
+        return {
+            state: data_checking ? 'ok' : 'error',
+            data: data,
+            errorMessage: error_message
+        };
     };
 
 	$scope.rowAddEvent = function(event) {
