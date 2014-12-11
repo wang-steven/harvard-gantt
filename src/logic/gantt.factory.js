@@ -24,7 +24,7 @@ gantt.factory('Gantt', ['Row', 'Jobs', 'Processes', 'ColumnGenerator', 'HeaderGe
         self.columns = [];
         self.headers = {};
         self.width = 0;
-        self.defaultDateRange = undefined;
+        self.defaultDateRange = {from: new Date(), to: new Date()};
         self.contextMenu = undefined;
         self.jobFlowChart = undefined;
         self.tasksOnMachine = undefined;

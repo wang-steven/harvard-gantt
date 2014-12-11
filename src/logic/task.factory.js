@@ -140,12 +140,12 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             self.row.tasks.sort(function(t1, t2) { return t1.from - t2.from; });
             for (var i = 0, k = self.row.tasks, l = k.length; i < l; i++) {
                 if (k[i].id === self.id) {
-                    if (k[(i-1)] !== undefined) {
+                    if (k[(i-1)] !== undefined && k[(i-1)].to !== undefined) {
                         self.est = df.addMinutes(k[(i-1)].to, 1, true);
                     } else {
                         self.est = df.clone(self.from);
                     }
-                    if (k[(i+1)] !== undefined) {
+                    if (k[(i+1)] !== undefined && k[(i+1)].from !== undefined) {
                         self.lct = df.addMinutes(k[(i+1)].from, -1, true);
                     } else {
                         self.lct = df.clone(self.to);
@@ -212,12 +212,11 @@ gantt.factory('Task', ['dateFunctions', '_', function (df, _) {
             self.color = task.color;
             self.classes = task.classes;
             self.priority = task.priority;
-            self.from = df.clone(task.from);
-            self.to = df.clone(task.to);
-            self.est = task.est !== undefined ? df.clone(task.est): undefined;
-            self.lct = task.lct !== undefined ? df.clone(task.lct): undefined;
-            data = task.data;
-            self.isMilestone = task.isMilestone;
+            self.from = df.clone(task.expectedStartTime);
+            self.to = df.clone(task.expectedFinishTime);
+            self.data = task.data;
+
+            self.updatePosAndSize();
         };
 
         self.clone = function() {
