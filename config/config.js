@@ -104,8 +104,8 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
 	};
 
 	$scope.jumpToDate = function(date) {
-		console.log(date);
 		var date = date === undefined ? new Date() : new Date(date);
+		console.log(date);
 		$scope.centerDate(date);
 	};
 
@@ -155,56 +155,119 @@ ganttApp.controller("ganttController", ['$scope', '$http', '$location', function
         }
     };
     $scope.taskEditorSaved = function(data) {
-        var data_checking = true , error_message;
+        var data_checking = true;
+        var error_message = new Array();
         console.log(data);
-        if (data.poNo === null || data.comboId === null /*|| data.productId === null*/ || data.processId === null || data.processingType === null ||
-            data.priority === null || data.expectedStartTime === null ||
-            data.expectedSetupFinishTime === null || data.expectedFinishTime === null ||
-            data.operationCode === null || data.quantity === null || data.quantity <= 0 ||
-            data.rounds === null || data.rounds <= 0 || !data.nextTask || data.nextTask.length <= 0 || !data.previousTask ) {
-            data_checking = false;
-            error_message = '1';
-        } else if(!(data.expectedStartTime <= data.expectedSetupFinishTime && data.expectedSetupFinishTime <= data.expectedFinishTime)){
+
+        if(!data.poNo){
         	data_checking = false;
-        	error_message = '6';
+        	error_message.push('[PO#] must not be empty');
+        }
+        if(!data.comboId){
+        	data_checking = false;
+        	error_message.push('[ComboId] must not be empty');
+        }
+        if(!data.processId){
+        	data_checking = false;
+        	error_message.push('[Process] must not be empty');
+        }
+        if(!data.processingType){
+        	data_checking = false;
+        	error_message.push('[Processing Type] must not be empty');
+        }
+        if(data.type == "New"){
+        	if(!data.previousTask){
+            	data_checking = false;
+            	error_message.push('When insert a new task, [Previous Task] must not be empty');
+            }
+            if(!data.nextTask){
+            	data_checking = false;
+            	error_message.push('When insert a new task, [Next Task] must not be empty');
+            }
+            if(data.nextTask.length <= 0){
+            	data_checking = false;
+            	error_message.push('When insert a new task, [Next Task] must not be empty');
+            }
+        }
+        if(!data.operationCode){
+        	data_checking = false;
+        	error_message.push('[Operation Code] must not be empty');
+        }
+        if(data.rounds === null){
+        	data_checking = false;
+        	error_message.push('[Rounds] must not be empty');
+        } else if(data.rounds <= 0){
+        	data_checking = false;
+        	error_message.push('[Rounds] must be greater then 0');
+        }
+        if(!data.priority){
+        	data_checking = false;
+        	error_message.push('[Priority] must not be empty');
+        }
+        if(!data.expectedStartTime){
+        	data_checking = false;
+        	error_message.push('[Expect Start] must not be empty');
+        }
+        if(!data.expectedSetupFinishTime){
+        	data_checking = false;
+        	error_message.push('[Expect Setup Finish] must not be empty');
+        }
+        if(!data.expectedFinishTime){
+        	data_checking = false;
+        	error_message.push('[Expect Production Finish] must not be empty');
+        }
+        if(data.quantity === null){
+        	data_checking = false;
+        	error_message.push('[Expect Quantity] must not be empty');
+        } else if(data.quantity <= 0){
+        	data_checking = false;
+        	error_message.push('[Expect Quantity] must be greater then 0');
         }
 
-        if (data.processingType === 'GANG' && (data.up === null || data.sheetUp === null)) {
+        if(data.expectedStartTime && data.expectedSetupFinishTime && data.expectedFinishTime &&
+        	!(data.expectedStartTime <= data.expectedSetupFinishTime && data.expectedSetupFinishTime <= data.expectedFinishTime)){
+        	data_checking = false;
+        	error_message.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
+        }
+
+        if (data.processingType === 'GANG' && (data.up === null || !data.sheetUp === null)) {
             data_checking = false;
-            error_message = '2';
+            error_message.push('When [Processing Type] is Gang, [Up] must not be empty');
         }
         if (data.isParallel === true && data.parallelCode === null) {
             data_checking = false;
-            error_message = '3';
+            error_message.push('Some thing is error');
         }
-        if (data.isPin === true && (data.expectedStartTime === null ||
-            data.expectedSetupFinishTime === null ||
-            data.expectedFinishTime === null ||
-            data.quantity === null)) {
-            data_checking = false;
-            error_message = '4';
+        if (data.inProcessing === true){
+        	if (!data.actualStartTime){
+        		data_checking = false;
+                error_message.push('When [In Processing] is Yes, [Actual Start] must not be empty');
+        	}
         }
-        if (data.inProcessing === true && (data.expectedStartTime === null ||
-            data.expectedSetupFinishTime === null ||
-            data.expectedFinishTime === null || data.actualStartTime === null ||
-            data.actualSetupFinishTime === null ||
-            data.actualFinishTime === null ||
-            data.actualQuantity === null)) {
-            data_checking = false;
-            error_message = '5';
-        }
-        if (data.isFinished == true || data.isFinished == "true" && (data.actualStartTime === null || data.actualSetupFinishTime === null || data.actualFinishTime === null)){
-        	data_checking = false;
-        	error_message = '7';
+        if (data.isFinished == true || data.isFinished == "true" &&
+        		(!data.actualStartTime || !data.actualSetupFinishTime ||
+        		!data.actualFinishTime || data.actualQuantity === null || data.actualQuantity <= 0)){
+        	if (!data.actualStartTime){
+        		data_checking = false;
+                error_message.push('When [Finish] is Yes, [Actual Start] must not be empty');
+        	}
+        	if (!data.actualSetupFinishTime){
+        		data_checking = false;
+                error_message.push('When [Finish] is Yes, [Actual Setup Finish] must not be empty');
+        	}
+        	if (!data.actualFinishTime){
+        		data_checking = false;
+                error_message.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
+        	}
         } else if (data.isFinished == true || data.isFinished == "true" && !(data.actualStartTime <= data.actualSetupFinishTime && data.actualSetupFinishTime <= data.actualFinishTime)){
         	data_checking = false;
-        	error_message = '8';
+        	error_message = '[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]';
         }
 
         return {
             state: data_checking ? 'ok' : 'error',
             data: data,
-            errorMessage: error_message
+            error_message: error_message
         };
     };
 

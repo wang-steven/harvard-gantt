@@ -656,7 +656,8 @@ gantt.directive('gantt', ['Gantt', 'dateFunctions', 'mouseOffset', 'debounce', '
                             }
                         } catch(e) {
                             $scope.raiseServerResponseEvent('error', response);
-                            console.log("Server connect exception: " + e);
+                            console.log("exception happend during getting data from server");
+                            console.log(e);
                         }
                         return false;
                     }, function(response) {
